@@ -1,0 +1,2253 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>PLAVE Caligo Pt.2</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0f1e;--sur:#131726;--sur2:#1a2035;--sur3:#202840;
+  --bd:#252e4a;--bd2:#303d60;
+  --tx:#dce6f8;--tx2:#7e96c4;--tx3:#4a5e8a;
+  --ac:#4f7eff;--ac2:#7b5fff;--ac-g:rgba(79,126,255,.15);
+  --ok:#22c55e;--warn:#f59e0b;--err:#ef4444;--info:#06b6d4;
+  --pk:#a855f7;--pk-g:rgba(168,85,247,.12);
+  --r:10px;--r-sm:6px;
+  --sh:0 4px 24px rgba(0,0,0,.6);
+}
+[data-theme="light"]{
+  --bg:#eef1ff;--sur:#fff;--sur2:#f4f6ff;--sur3:#eaedfa;
+  --bd:#d0d8f0;--bd2:#b0bcdf;
+  --tx:#1a2340;--tx2:#5a6e96;--tx3:#8fa3cc;
+  --sh:0 4px 20px rgba(20,40,100,.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.5;overflow:hidden;height:100vh;height:100svh}
+a{color:var(--ac);text-decoration:none}
+button{cursor:pointer;font-family:inherit;font-size:14px;border:none;outline:none}
+input,select,textarea{font-family:inherit;font-size:14px;color:var(--tx);background:var(--sur2);border:1px solid var(--bd);border-radius:var(--r-sm);padding:8px 12px;width:100%;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--ac)}
+textarea{resize:vertical}
+select option{background:var(--sur)}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px}
+
+/* LAYOUT */
+.app{display:flex;flex-direction:column;height:100vh;height:100svh;min-height:-webkit-fill-available}
+.hdr{background:var(--sur);border-bottom:1px solid var(--bd);padding:0 16px;height:52px;display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:50}
+.hdr-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;background:linear-gradient(135deg,var(--ac),var(--ac2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap}
+.rate-row{flex:1;display:flex;gap:6px;justify-content:center;flex-wrap:nowrap;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none}
+.rate-row::-webkit-scrollbar{display:none}
+.rate-chip{display:flex;align-items:center;gap:4px;background:var(--sur2);border:1px solid var(--bd);border-radius:16px;padding:3px 9px;font-size:11px;white-space:nowrap;flex-shrink:0}
+.rate-chip b{color:var(--ac);font-weight:600}
+.hdr-btns{display:flex;gap:4px;flex-shrink:0}
+.iBtn{width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--r-sm);font-size:15px;cursor:pointer;transition:border-color .15s}
+.iBtn:hover{border-color:var(--ac)}
+
+/* TABS - desktop top */
+.tabs-bar{background:var(--sur);border-bottom:1px solid var(--bd);display:flex;padding:0 16px;flex-shrink:0;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none}
+.tabs-bar::-webkit-scrollbar{display:none}
+.tab{padding:12px 16px;font-size:13px;font-weight:500;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s}
+.tab:hover{color:var(--tx)}
+.tab.on{color:var(--ac);border-bottom-color:var(--ac)}
+.sub-tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap}
+.sub-tab{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;background:var(--sur2);border:1px solid var(--bd);color:var(--tx2);cursor:pointer;transition:all .15s}
+.sub-tab.on{background:var(--ac-g);border-color:var(--ac);color:var(--ac)}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px;padding-bottom:calc(72px + env(safe-area-inset-bottom,0px));-webkit-overflow-scrolling:touch}
+
+/* MOBILE BOTTOM NAV */
+.bot-nav{position:fixed;bottom:0;left:0;right:0;background:var(--sur);border-top:1px solid var(--bd);display:none;z-index:100;height:56px;padding-bottom:env(safe-area-inset-bottom,0px)}
+.bot-nav-inner{display:flex;height:100%}
+.bot-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;font-size:10px;color:var(--tx2);transition:color .15s}
+.bot-tab.on{color:var(--ac)}
+.bot-tab span{font-size:20px;line-height:1}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--r-sm);font-weight:500;font-size:13px;transition:all .15s;cursor:pointer;white-space:nowrap}
+.btn-p{background:var(--ac);color:#fff;border:none}
+.btn-p:hover{filter:brightness(1.1)}
+.btn-s{background:var(--sur2);color:var(--tx);border:1px solid var(--bd)}
+.btn-s:hover{border-color:var(--ac);color:var(--ac)}
+.btn-d{background:var(--err);color:#fff;border:none}
+.btn-sm{padding:4px 10px;font-size:12px}
+.btn-xs{padding:3px 8px;font-size:11px}
+
+/* CARDS */
+.card{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:16px}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.card-ttl{font-weight:600;font-size:14px;display:flex;align-items:center;gap:6px}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.g4{grid-template-columns:1fr 1fr 1fr 1fr}
+
+/* STAT */
+.stat{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ac)}
+.stat.ok::before{background:var(--ok)}
+.stat.warn::before{background:var(--warn)}
+.stat.pk::before{background:var(--pk)}
+.stat.info::before{background:var(--info)}
+.stat-lb{font-size:11px;color:var(--tx2);margin-bottom:6px}
+.stat-v{font-size:22px;font-weight:700;font-family:'Space Grotesk',monospace}
+.stat-sub{font-size:11px;color:var(--tx3);margin-top:3px}
+
+/* BADGES */
+.bx{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:16px;font-size:11px;font-weight:600;white-space:nowrap}
+.bx-wait{background:rgba(90,110,150,.2);color:var(--tx2);border:1px solid var(--bd)}
+.bx-ord{background:rgba(79,126,255,.15);color:var(--ac);border:1px solid var(--ac)}
+.bx-sw{background:rgba(245,158,11,.12);color:var(--warn);border:1px solid var(--warn)}
+.bx-sh{background:rgba(6,182,212,.12);color:var(--info);border:1px solid var(--info)}
+.bx-del{background:rgba(34,197,94,.12);color:var(--ok);border:1px solid var(--ok)}
+.bx-none{background:rgba(90,110,150,.1);color:var(--tx3);border:1px solid var(--bd)}
+.bx-dom{background:rgba(79,126,255,.08);color:var(--ac);border:1px solid var(--bd)}
+.bx-ovs{background:rgba(168,85,247,.08);color:var(--pk);border:1px solid var(--bd)}
+.bx-pk{background:var(--pk-g);color:var(--pk);border:1px solid var(--pk)}
+.bx-prx{background:rgba(245,158,11,.1);color:var(--warn);border:1px solid var(--bd)}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:8px 10px;font-size:11px;font-weight:600;color:var(--tx2);border-bottom:1px solid var(--bd);white-space:nowrap}
+td{padding:8px 10px;border-bottom:1px solid var(--bd);font-size:13px;vertical-align:middle}
+.tr-click{cursor:pointer;transition:background .12s}
+.tr-click:hover td{background:var(--ac-g)}
+.tr-foot td{font-weight:700;border-top:2px solid var(--bd);border-bottom:none}
+.tr-detail td{padding:0}
+.detail-inner{background:var(--sur2);padding:12px;font-size:13px;animation:slideD .15s ease}
+@keyframes slideD{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.mono{font-family:'Space Grotesk',monospace}
+.tr{text-align:right}
+.tc{text-align:center}
+
+/* PURCHASE CARDS */
+.pcard{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:10px;transition:border-color .15s}
+.pcard:hover{border-color:var(--bd2)}
+.pcard-hdr{display:flex;align-items:center;gap:8px;padding:12px 14px;flex-wrap:wrap}
+.pcard-body{padding:10px 14px;border-top:1px solid var(--bd)}
+.pcard-store{font-weight:600;font-size:14px}
+
+/* FORM */
+.fg{margin-bottom:13px}
+.fl{display:block;font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:5px}
+.fl .req{color:var(--err);margin-left:2px}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.fn{font-size:11px;color:var(--tx3);margin-top:3px}
+.divider{border:none;border-top:1px solid var(--bd);margin:14px 0}
+
+/* ALBUM ROWS */
+.alb-row{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--bd);transition:background .1s}
+.alb-row:last-child{border-bottom:none}
+.alb-row.perk{background:var(--pk-g)}
+.alb-info{flex:1}
+.alb-name{font-size:13px;font-weight:500}
+.alb-price{font-size:11px;color:var(--tx2);margin-top:1px}
+.qty-ctrl{display:flex;align-items:center;gap:6px}
+.qty-btn{width:28px;height:28px;border-radius:4px;background:var(--sur2);border:1px solid var(--bd);color:var(--tx);font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .1s;flex-shrink:0}
+.qty-btn:hover:not(:disabled){border-color:var(--ac);color:var(--ac)}
+.qty-btn:disabled{opacity:.3;cursor:default}
+.qty-in{width:46px;text-align:center;padding:4px;font-size:15px;font-weight:700}
+
+/* COST BOX */
+.cost-box{background:var(--sur2);border-radius:var(--r-sm);padding:10px 12px;font-size:12px}
+.cost-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0}
+.cost-row.total{border-top:1px solid var(--bd);margin-top:4px;padding-top:6px;font-weight:700;font-size:13px}
+
+/* PROGRESS */
+.prog{height:5px;border-radius:3px;background:var(--sur2);overflow:hidden;margin-top:5px}
+.prog-f{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--ac),var(--ac2));transition:width .4s}
+
+/* DEADLINE */
+.dl-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--sur2);border-radius:var(--r-sm);border-left:3px solid transparent;margin-bottom:6px}
+.dl-item.urg{border-left-color:var(--err)}
+.dl-item.soon{border-left-color:var(--warn)}
+.dl-item.done{opacity:.5}
+
+/* CALENDAR */
+.cal-wrap{user-select:none}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cal-nav-title{font-size:16px;font-weight:700}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-dow{font-size:11px;font-weight:600;color:var(--tx2);text-align:center;padding:4px 0}
+.cal-day{min-height:60px;background:var(--sur2);border-radius:6px;padding:4px;cursor:pointer;border:1px solid transparent;transition:border-color .1s;position:relative}
+.cal-day:hover{border-color:var(--bd2)}
+.cal-day.today{border-color:var(--ac)}
+.cal-day.other-month .cal-dn{color:var(--tx3)}
+.cal-day.selected{background:var(--ac-g);border-color:var(--ac)}
+.cal-dn{font-size:12px;font-weight:600;margin-bottom:2px}
+.cal-dots{display:flex;flex-wrap:wrap;gap:2px}
+.cal-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cal-dot.dl{background:var(--err)}
+.cal-dot.off{background:var(--pk)}
+.cal-dot.pur{background:var(--ac)}
+.cal-day-detail{background:var(--sur2);border:1px solid var(--bd);border-radius:var(--r);padding:12px;margin-top:10px;font-size:13px}
+.cal-ev{padding:6px 0;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px}
+.cal-ev:last-child{border-bottom:none}
+.cal-ev-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* STORE CARD */
+.scard{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:14px;transition:all .15s;margin-bottom:10px}
+.scard:hover{border-color:var(--bd2)}
+.scard-name{font-weight:600;font-size:14px}
+.scard-dist{font-size:11px;color:var(--tx2);margin-top:2px}
+.store-prices{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:8px}
+.sp-item{background:var(--sur2);border-radius:4px;padding:5px 8px}
+.sp-item.perk{border:1px solid var(--pk);background:var(--pk-g)}
+.sp-lb{font-size:10px;color:var(--tx3)}
+.sp-v{font-size:12px;font-weight:600}
+
+/* MODAL */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .2s}
+.ov.open{opacity:1;pointer-events:all}
+.modal{background:var(--sur);border:1px solid var(--bd2);border-radius:var(--r);width:100%;max-width:640px;max-height:92vh;display:flex;flex-direction:column;box-shadow:var(--sh)}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.modal-ttl{font-weight:700;font-size:15px}
+.modal-body{overflow-y:auto;padding:18px;flex:1}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid var(--bd);flex-shrink:0}
+
+/* TOGGLE CHIPS */
+.chip-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--sur2);border:1px solid var(--bd);color:var(--tx2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.chip.on{background:var(--ac-g);border-color:var(--ac);color:var(--ac)}
+.chip.sm{padding:4px 10px;font-size:11px}
+.toggle-pill{display:flex;background:var(--sur2);border:1px solid var(--bd);border-radius:20px;overflow:hidden}
+.toggle-pill button{padding:5px 14px;font-size:12px;font-weight:500;background:none;color:var(--tx2);transition:all .15s}
+.toggle-pill button.on{background:var(--ac);color:#fff}
+
+/* PRICE TABLE */
+.ptbl th{background:var(--sur2)}
+.ptbl input{padding:5px 8px;font-size:13px;text-align:right}
+
+/* MISC */
+.empty{text-align:center;padding:48px 20px;color:var(--tx2)}
+.empty-ico{font-size:40px;margin-bottom:10px}
+.alert-info{background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.25);color:var(--info);padding:8px 12px;border-radius:var(--r-sm);font-size:12px;margin-bottom:10px}
+.section-ttl{font-size:13px;font-weight:600;color:var(--tx2);margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--bd)}
+.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;background:var(--sur2);border:1px solid var(--bd);color:var(--tx2)}
+
+
+/* ADMIN LOCK */
+.admin-locked{position:relative;pointer-events:none;filter:blur(3px);user-select:none}
+.admin-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;gap:8px;pointer-events:all;filter:none}
+.lock-box{background:var(--sur);border:1px solid var(--bd2);border-radius:var(--r);padding:20px;text-align:center;min-width:220px;box-shadow:var(--sh)}
+
+/* CALENDAR v2 */
+.cal-day{min-height:52px;background:var(--sur2);border-radius:5px;padding:3px 4px;cursor:pointer;border:1px solid transparent;transition:all .1s;position:relative;overflow:hidden}
+.cal-day.has-ev{border-color:var(--bd)}
+.cal-day.today{border-color:var(--ac);background:var(--ac-g)}
+.cal-day.selected{border-color:var(--ac);background:var(--ac-g)}
+.cal-day.other-month{opacity:.25;cursor:default;pointer-events:none}
+.cal-dn{font-size:11px;font-weight:700;margin-bottom:2px}
+.cal-ev-strip{font-size:9px;padding:1px 3px;border-radius:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;line-height:1.4}
+.cal-ev-strip.dl{background:rgba(239,68,68,.15);color:var(--err)}
+.cal-ev-strip.off{background:rgba(168,85,247,.15);color:var(--pk)}
+.cal-ev-strip.pur{background:rgba(79,126,255,.15);color:var(--ac)}
+.cal-ev-strip.release{background:rgba(123,95,255,.2);color:var(--ac2);font-weight:700;border:1px solid rgba(123,95,255,.3)}
+.cal-detail{background:var(--sur2);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-top:10px}
+.cal-detail-ev{padding:10px 0;border-bottom:1px solid var(--bd)}
+.cal-detail-ev:last-child{border-bottom:none}
+.cal-detail-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.cal-info-row{display:flex;gap:6px;align-items:flex-start;font-size:12px;color:var(--tx2);margin-bottom:3px}
+.cal-info-row span:first-child{flex-shrink:0;width:16px;text-align:center}
+
+/* SORT BAR */
+.sort-bar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:10px;padding:8px;background:var(--sur2);border-radius:var(--r-sm);border:1px solid var(--bd)}
+.sort-lbl{font-size:11px;color:var(--tx2);white-space:nowrap}
+
+
+/* STORE SPEND CARDS (mobile) */
+.spend-cards{display:flex;flex-direction:column;gap:8px}
+.spend-card{background:var(--sur2);border:1px solid var(--bd);border-radius:var(--r-sm);padding:12px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.spend-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--ac)}
+.spend-card:hover{border-color:var(--bd2)}
+.spend-card-name{font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.spend-card-meta{font-size:11px;color:var(--tx2);margin-top:3px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.spend-card-amt{font-family:'Space Grotesk',monospace;font-weight:700;font-size:16px;color:var(--ac);white-space:nowrap}
+.spend-card-detail{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);font-size:13px}
+.spend-card-detail.open{display:block}
+.spend-total{background:var(--ac-g);border:1px solid var(--ac);border-radius:var(--r-sm);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.spend-total-lb{font-size:13px;font-weight:600}
+.spend-total-v{font-family:'Space Grotesk',monospace;font-weight:700;font-size:18px;color:var(--ac)}
+
+/* STAT CARDS MOBILE */
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.stat-sm{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r-sm);padding:12px;position:relative;overflow:hidden}
+.stat-sm::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac)}
+.stat-sm.ok::before{background:var(--ok)}
+.stat-sm.warn::before{background:var(--warn)}
+.stat-sm.info::before{background:var(--info)}
+.stat-sm-lb{font-size:10px;color:var(--tx2);margin-bottom:4px}
+.stat-sm-v{font-family:'Space Grotesk',monospace;font-weight:700;font-size:20px}
+.stat-sm-sub{font-size:10px;color:var(--tx3);margin-top:2px}
+
+/* STATUS STRIP */
+.status-strip{display:flex;gap:4px;padding:10px 12px;background:var(--sur);border:1px solid var(--bd);border-radius:var(--r-sm);margin-bottom:12px;flex-wrap:wrap;align-items:center}
+
+/* DEADLINE COMPACT */
+.dl-compact{display:flex;align-items:center;gap:8px;padding:7px 10px;border-bottom:1px solid var(--bd)}
+.dl-compact:last-child{border-bottom:none}
+.dl-compact-name{flex:1;font-size:13px;font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dl-compact-date{font-size:11px;color:var(--tx2);white-space:nowrap}
+.dl-compact-d{font-weight:700;font-size:12px;white-space:nowrap;min-width:42px;text-align:right}
+
+.store-list-item:hover{background:var(--sur3)!important}
+.store-list-item.sel{background:var(--ac-g);border-left:3px solid var(--ac)}
+/* STORE LABEL */
+.store-full{display:flex;flex-direction:column;gap:1px}
+.store-full-main{font-size:13px;font-weight:600}
+.store-full-sub{font-size:11px;color:var(--tx2)}
+
+/* SPEND SPLIT */
+.spend-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0}
+
+
+/* HEADLINE */
+.hdr-headline{flex:1;text-align:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;overflow:hidden;
+  background:linear-gradient(90deg,var(--ac),var(--pk),var(--ac));-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;white-space:nowrap;letter-spacing:.5px;animation:shimmer 3s ease infinite;
+  background-size:200% auto}
+@keyframes shimmer{0%{background-position:0% center}50%{background-position:100% center}100%{background-position:0% center}}
+
+/* RATE POPUP */
+.rate-popup{position:fixed;top:54px;right:8px;background:var(--sur);border:1px solid var(--bd2);border-radius:var(--r);
+  padding:14px 16px;z-index:300;min-width:220px;box-shadow:var(--sh);display:none}
+.rate-popup.open{display:block;animation:fadeIn .15s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.rate-row-item{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--bd);font-size:13px}
+.rate-row-item:last-child{border-bottom:none}
+.rate-row-item b{color:var(--ac);font-family:'Space Grotesk',monospace}
+
+/* DATA MGR MODAL */
+.data-section{background:var(--sur2);border-radius:var(--r-sm);padding:12px;margin-bottom:12px}
+.data-section-ttl{font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.data-section p{font-size:12px;color:var(--tx2);margin-bottom:8px;line-height:1.6}
+
+/* PLATFORM badge (was dist) */
+.bx-plt{background:rgba(245,158,11,.1);color:var(--warn);border:1px solid rgba(245,158,11,.4)}
+.bx-plt2{background:rgba(6,182,212,.1);color:var(--info);border:1px solid rgba(6,182,212,.4)}
+
+/* [음총] icon */
+.eumchong-icon::before{content:'🎵 ';font-style:normal}
+.store-eumchong{border-left:3px solid var(--info) !important}
+
+/* FOOTER */
+.app-footer{text-align:center;font-size:11px;color:var(--tx3);padding:10px;border-top:1px solid var(--bd);background:var(--sur);flex-shrink:0}
+
+/* CAL TOGGLE */
+.cal-toggle-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+
+/* HIDE EXPIRED */
+.expired-hide-btn{font-size:11px}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  .tabs-bar{display:none}
+  .bot-nav{display:block}
+  .main{padding:10px;padding-bottom:66px}
+  .g4,.g3{grid-template-columns:1fr 1fr}
+  .g2{grid-template-columns:1fr}
+  .fr3{grid-template-columns:1fr 1fr}
+  .fr2{grid-template-columns:1fr}
+  .stat-v{font-size:18px}
+  .modal{max-height:94vh;max-height:94svh;border-radius:var(--r) var(--r) 0 0;margin-top:auto;align-self:flex-end;width:100%;max-width:100%}
+  .ov{align-items:flex-end;padding:0}
+  .modal-body{padding:14px}
+  .modal-hdr{padding:12px 16px}
+  .hdr{height:48px;padding:0 10px;gap:6px}
+  .hdr-logo{font-size:14px}
+  .hdr-headline{font-size:11px}
+  .iBtn{width:30px;height:30px;font-size:14px}
+  .card{padding:12px}
+  .card-hdr{margin-bottom:8px}
+  table{font-size:12px}
+  th,td{padding:6px 8px}
+  .pcard-hdr{padding:10px 12px;gap:6px}
+  .pcard-body{padding:8px 12px}
+  .sub-tabs{gap:4px}
+  .sub-tab{padding:5px 10px;font-size:12px}
+  .chip{padding:4px 10px;font-size:11px}
+  .sort-bar{padding:6px 8px;gap:5px}
+  .cal-day{min-height:44px;padding:2px 3px}
+  .cal-dn{font-size:10px}
+  .cal-ev-strip{font-size:8px}
+  .cal-nav-title{font-size:14px}
+  .btn{padding:6px 12px;font-size:12px}
+  .btn-sm{padding:4px 8px;font-size:11px}
+}
+@media(max-width:380px){
+  .g4,.g3,.g2{grid-template-columns:1fr}
+  .fr3,.fr2{grid-template-columns:1fr}
+  .hdr-headline{display:none}
+  .stat-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div>
+      <div class="hdr-logo">PLAVE · Caligo Pt.2</div>
+    </div>
+    <div class="hdr-headline">🎯 초동 200만장 LASSGO !</div>
+    <div class="hdr-btns">
+      <div class="iBtn" onclick="toggleRatePopup()" title="환율 보기" id="rate-icon-btn">💱</div>
+      <div class="iBtn" onclick="openDataMgr()" title="데이터 관리">💾</div>
+      <input type="file" id="imp" accept=".json" style="display:none" onchange="importData(this)">
+      <div class="iBtn" id="theme-btn" onclick="toggleTheme()">🌙</div>
+      <div class="iBtn" id="admin-secret-btn" onclick="secretAdminTap()" title="" style="opacity:0.2;font-size:11px">⚙</div>
+    </div>
+  </div>
+
+  <div class="tabs-bar" id="tabs-bar">
+    <div class="tab on" data-tab="dash" onclick="go('dash')">📊 대시보드</div>
+    <div class="tab" data-tab="purch" onclick="go('purch')">🛒 구매기록</div>
+    <div class="tab" data-tab="cal" onclick="go('cal')">📅 캘린더</div>
+    <!-- admin tab hidden -->
+  </div>
+
+  <div class="main" id="main"></div>
+
+  <div class="bot-nav">
+    <div class="bot-nav-inner">
+      <div class="bot-tab on" data-tab="dash" onclick="go('dash')"><span>📊</span>대시보드</div>
+      <div class="bot-tab" data-tab="purch" onclick="go('purch')"><span>🛒</span>구매</div>
+      <div class="bot-tab" data-tab="cal" onclick="go('cal')"><span>📅</span>캘린더</div>
+      <div class="bot-tab" id="bot-admin" style="display:none" data-tab="mgr" onclick="go('mgr')"><span>⚙</span>관리</div>
+    </div>
+  </div>
+
+<div class="app-footer">
+  <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap">
+    <span>Last update: Mar 27</span>
+    <span style="color:var(--bd2)">·</span>
+    <span>by <b>@plli_ze</b></span>
+    <span style="color:var(--bd2)">·</span>
+    <button onclick="showUpdateLog()" style="background:none;border:none;color:var(--ac);font-size:11px;cursor:pointer;font-family:inherit;padding:0;text-decoration:underline">업데이트 로그</button>
+  </div>
+</div>
+</div>
+
+<div class="rate-popup" id="rate-popup"></div>
+<div class="ov" id="ov" onclick="ovClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-hdr"><div class="modal-ttl" id="m-ttl"></div><div class="iBtn" onclick="closeM()">✕</div></div>
+    <div class="modal-body" id="m-body"></div>
+    <div class="modal-foot" id="m-foot"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════
+const ALBUMS = [
+  {k:'PHOTOBOOK', lb:'PHOTOBOOK'},
+  {k:'POCAALBUM', lb:'POCAALBUM'},
+  {k:'ID_PASS',  lb:'ID PASS'},
+  {k:'INVENTORY',lb:'INVENTORY'},
+];
+const COUNTRIES = {
+  KR:{lb:'🇰🇷 한국', cur:'KRW', ovs:false},
+  JP:{lb:'🇯🇵 일본', cur:'JPY', ovs:true},
+  CN:{lb:'🇨🇳 중국', cur:'CNY', ovs:true},
+  TW:{lb:'🇹🇼 대만', cur:'TWD', ovs:true},
+  US:{lb:'🇺🇸 미국', cur:'USD', ovs:true},
+  OTHER:{lb:'🌐 기타', cur:'OTHER', ovs:true},
+};
+const STATUSES = [
+  {k:'none',   lb:'미구매',   cls:'bx-none'},
+  {k:'waiting',lb:'구매대기', cls:'bx-wait'},
+  {k:'ordered',lb:'구매완료', cls:'bx-ord'},
+  {k:'shipwait',lb:'배송대기',cls:'bx-sw'},
+  {k:'shipping',lb:'배송중',  cls:'bx-sh'},
+  {k:'delivered',lb:'배송완료',cls:'bx-del'},
+];
+const INIT_PRICES = {"KR": {"PHOTOBOOK": 20000, "POCAALBUM": 8200, "ID_PASS": 14900, "INVENTORY": 17100}, "JP": {"PHOTOBOOK": null, "POCAALBUM": null, "ID_PASS": 2420, "INVENTORY": null}, "CN": {"PHOTOBOOK": 96, "POCAALBUM": null, "ID_PASS": null, "INVENTORY": null}, "TW": {"PHOTOBOOK": null, "POCAALBUM": 210, "ID_PASS": null, "INVENTORY": null}, "US": {"PHOTOBOOK": null, "POCAALBUM": null, "ID_PASS": 29.98, "INVENTORY": null}, "OTHER": {"PHOTOBOOK": null, "POCAALBUM": null, "ID_PASS": null, "INVENTORY": null}};
+const DEF_RATES = {JPY:9.429, CNY:217.5556, USD:1504.0284, TWD:47.0702, OTHER:1};
+
+// ═══════════════════════════════════════════
+// INITIAL STORE DATA
+// ═══════════════════════════════════════════
+const INIT_DISTRIBUTORS = [{"id": "dcs1774546040116", "name": "공구플랫폼"}, {"id": "dcs1774619306510", "name": "디어마이뮤즈"}, {"id": "d2", "name": "메이크스타"}, {"id": "d3", "name": "무신사"}, {"id": "dcs1774619302089", "name": "버프즈"}, {"id": "dcs1774619310313", "name": "비트로드"}, {"id": "d8", "name": "애니메이트"}, {"id": "d5", "name": "영풍문고 / MusicArt"}, {"id": "d4", "name": "올리브영"}, {"id": "dcs1774619329527", "name": "케타포"}, {"id": "dcs1774544809341", "name": "훗타운"}, {"id": "d9", "name": "Hello82"}, {"id": "d7", "name": "HMV Japan"}, {"id": "d10", "name": "TME (腾讯音乐)"}, {"id": "d6", "name": "Tower Records Japan"}, {"id": "dcs1774543391747", "name": "VLASTSHOP"}, {"id": "dcs1774619738077", "name": "WEVERSE"}, {"id": "d11", "name": "Will Music Taiwan"}];
+const INIT_STORES = [{"name": "길보드", "distId": "", "country": "KR", "unpoPerk": "POCAALBUM", "priceMode": "country", "customPrices": {}, "purchaseStart": "2026-04-20T15:00", "purchaseEnd": "2026-04-20T23:00", "purchaseEndTxt": "", "offlineStart": "2026-04-20", "offlineEnd": "2026-04-20", "offlineNote": "모든 버전 구매시 미공포", "defDomShip": 0, "defOvsShip": 0, "url": "https://caligopt2popup.oopy.io/32d4cacd-15c9-80d4-91e3-e505275bb65c", "custom": true, "id": "cs1774546479074"}, {"name": "더현대서울", "distId": "", "country": "KR", "unpoPerk": "POCAALBUM", "priceMode": "country", "customPrices": {}, "purchaseStart": "", "purchaseEnd": "", "purchaseEndTxt": "", "offlineStart": "2026-04-14", "offlineEnd": "2026-04-19", "offlineNote": "https://caligopt2popup.oopy.io/32d4cacd-15c9-80e1-b7b5-d07592ac0481\n모든 버전 구매시 미공포", "defDomShip": 0, "defOvsShip": 0, "url": "", "custom": true, "id": "cs1774546314667"}, {"id": "s3", "distId": "d2", "name": "메이크스타", "country": "KR", "priceMode": "country", "customPrices": {}, "unpoPerk": "POCAALBUM", "purchaseStart": "2026-03-24T11:00", "purchaseEnd": "2026-04-20T19:59", "purchaseEndTxt": "", "offlineStart": "2026-04-14", "offlineEnd": "2026-04-20", "offlineNote": "[강남] MAKESTAR SPACE GANGNAM", "url": "https://www.makestar.com/product/16439", "defDomShip": 3000, "defOvsShip": 0, "custom": true, "offlineHours": "매일 12:00~20:00", "offlineAddress": "서울시 학동로23길 29 B1", "offlineLuckyDraw": false}, {"id": "s4", "distId": "d3", "name": "무신사 (1차, 레드)", "country": "KR", "priceMode": "country", "customPrices": {}, "unpoPerk": "ID_PASS", "purchaseStart": "2026-03-24T11:00", "purchaseEnd": "2026-04-13T23:59", "purchaseEndTxt": "", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "url": "https://www.musinsa.com/search/goods?keyword=PLAVE+4th+Mini+Album+Caligo+Pt.2", "defDomShip": 0, "defOvsShip": 0, "custom": true, "offlineHours": "", "offlineAddress": "", "offlineLuckyDraw": false}, {"id": "s5", "distId": "d3", "name": "무신사 (2차)", "country": "KR", "priceMode": "country", "customPrices": {}, "unpoPerk": "ID_PASS", "purchaseStart": "2026-04-14T11:00", "purchaseEnd": "2026-04-20T23:00", "purchaseEndTxt": "", "offlineStart": "2026-04-14", "offlineEnd": "2026-04-20", "offlineNote": "무신사 온라인: 블랙\n무신사 스토어 성수 (연무장길 83 1F) - 레드\n무신사 스토어 명동 (명동길 13) - 블랙", "url": "https://www.musinsa.com/search/goods?keyword=PLAVE+4th+Mini+Album+Caligo+Pt.2&gf=A&keywordType=keyword", "defDomShip": 0, "defOvsShip": 0, "custom": true, "offlineHours": "11:00~10:00 ", "offlineAddress": "", "offlineLuckyDraw": false}, {"id": "s10", "distId": "d8", "name": "애니메이트", "country": "KR", "priceMode": "country", "customPrices": {}, "unpoPerk": "ID_PASS", "purchaseStart": "2026-03-24T11:00", "purchaseEnd": "", "purchaseEndTxt": "특전 소진시까지", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "url": "https://animate-onlineshop.co.kr/goods/goods_view.php?goodsNo=1000089045", "defDomShip": 0, "defOvsShip": 0, "custom": true, "offlineHours": "", "offlineAddress": "", "offlineLuckyDraw": false}, {"id": "s7", "distId": "d5", "name": "영풍문고 (뮤직아트)", "country": "KR", "priceMode": "country", "customPrices": {}, "unpoPerk": "POCAALBUM", "purchaseStart": "2026-03-24T11:00", "purchaseEnd": "2026-04-20T22:00", "purchaseEndTxt": "", "offlineStart": "2026-04-14", "offlineEnd": "2026-04-20", "offlineNote": "📍 the stage by Musicart (청계천로 41 영풍빌딩 B2)\n📍 영풍문고 여의도 IFC몰점 (국제금융로 10 L2)\n📍 영풍문고 홍대점 (양화로 161 케이스퀘어 B2)", "url": "http://musicart.kr/shop/shopdetail.html?branduid=3530779", "defDomShip": 3000, "defOvsShip": 0, "custom": true, "offlineHours": "10:00 - 22:00", "offlineAddress": "", "offlineLuckyDraw": false}, {"id": "s6", "distId": "d4", "name": "올리브영", "country": "KR", "priceMode": "country", "customPrices": {}, "unpoPerk": "ID_PASS", "purchaseStart": "2026-03-24T11:00", "purchaseEnd": "2026-04-20T22:00", "purchaseEndTxt": "", "offlineStart": "2026-04-14", "offlineEnd": "2026-04-20", "offlineNote": "📍 올리브영N 성수 (연무장7길 13) 10:00~22:00\n📍 올리브영 홍대놀이터점 (와우산로21길 29) 10:00~22:00", "url": "https://www.oliveyoung.co.kr/store/planshop/getPlanShopDetail.do?dispCatNo=500000100018171", "defDomShip": 0, "defOvsShip": 0, "custom": true, "offlineHours": "", "offlineAddress": "", "offlineLuckyDraw": false}, {"id": "s8", "distId": "d6", "name": "타워레코드", "country": "JP", "priceMode": "country", "customPrices": {}, "unpoPerk": "ID_PASS", "purchaseStart": "2026-03-24T11:00", "purchaseEnd": "", "purchaseEndTxt": "특전 소진시까지", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "url": "", "defDomShip": 0, "defOvsShip": 1210, "custom": true, "offlineHours": "", "offlineAddress": "", "offlineLuckyDraw": false}, {"name": "타워레코드", "distId": "dcs1774546040116", "country": "KR", "unpoPerk": "ID_PASS", "priceMode": "custom", "customPrices": {"PHOTOBOOK": 24410, "POCAALBUM": null, "ID_PASS": null, "INVENTORY": null}, "purchaseStart": "", "purchaseEnd": "", "purchaseEndTxt": "", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "defDomShip": 0, "defOvsShip": 0, "url": "https://x.com/Plave_Album/status/2036341423856034026?s=20", "custom": true, "id": "cs1774546219159", "offlineHours": "", "offlineAddress": "", "offlineLuckyDraw": false}, {"id": "s11", "distId": "d9", "name": "Hello82 (예판)", "country": "US", "priceMode": "country", "customPrices": {}, "unpoPerk": "ID_PASS", "purchaseStart": "2026-03-24T11:00", "purchaseEnd": "2026-04-17T23:59", "purchaseEndTxt": "", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "url": "https://hello82.com/", "defDomShip": 0, "defOvsShip": 0, "custom": true}, {"id": "s12", "distId": "d9", "name": "Hello82 (팝업)", "country": "US", "priceMode": "country", "customPrices": {}, "unpoPerk": "ID_PASS", "purchaseStart": "2026-03-24T11:00", "purchaseEnd": "2026-04-17T23:59", "purchaseEndTxt": "", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "url": "https://hello82.com/", "defDomShip": 0, "defOvsShip": 0, "custom": true}, {"id": "s9", "distId": "d7", "name": "HMV", "country": "JP", "priceMode": "country", "customPrices": {}, "unpoPerk": "ID_PASS", "purchaseStart": "2026-03-24T11:00", "purchaseEnd": "", "purchaseEndTxt": "특전 소진시까지", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "url": "", "defDomShip": 0, "defOvsShip": 330, "custom": true, "offlineHours": "", "offlineAddress": "", "offlineLuckyDraw": false}, {"name": "HMV", "distId": "dcs1774546040116", "country": "KR", "unpoPerk": "ID_PASS", "priceMode": "custom", "customPrices": {"PHOTOBOOK": null, "POCAALBUM": null, "ID_PASS": 24210, "INVENTORY": null}, "purchaseStart": "2026-03-24T02:28", "purchaseEnd": "2026-03-29T23:59", "purchaseEndTxt": "", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "defDomShip": 0, "defOvsShip": 0, "url": "https://x.com/Plave_Album/status/2036341423856034026?s=20", "custom": true, "id": "cs1774546033455", "offlineHours": "", "offlineAddress": "", "offlineLuckyDraw": false}, {"id": "s13", "distId": "d10", "name": "TME", "country": "CN", "priceMode": "country", "customPrices": {}, "unpoPerk": "PHOTOBOOK", "purchaseStart": "2026-03-24T11:00", "purchaseEnd": "2026-04-20T23:59", "purchaseEndTxt": "", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "url": "https://i2.y.qq.com/n3/cm/pages/putao/product_detail/index.html?productID=1205354113456059", "defDomShip": 0, "defOvsShip": 70, "custom": true, "offlineHours": "", "offlineAddress": "", "offlineLuckyDraw": false}, {"name": "TME", "distId": "dcs1774544809341", "country": "KR", "unpoPerk": "PHOTOBOOK", "priceMode": "custom", "customPrices": {"PHOTOBOOK": 22683.6, "POCAALBUM": null, "ID_PASS": null, "INVENTORY": null}, "purchaseStart": "2026-03-24T11:00", "purchaseEnd": "2026-03-27T08:00", "purchaseEndTxt": "특전 소진시까지", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "defDomShip": 0, "defOvsShip": 0, "url": "https://x.com/Plave_Album/status/2036611347409231996?s=20", "custom": true, "id": "cs1774545021788", "offlineHours": "", "offlineAddress": "", "offlineLuckyDraw": false}, {"id": "s1", "distId": "dcs1774543391747", "name": "VLAST SHOP", "country": "KR", "priceMode": "country", "customPrices": {}, "unpoPerk": "PHOTOBOOK", "purchaseStart": "2026-03-24T11:00", "purchaseEnd": "2026-03-27T23:59", "purchaseEndTxt": "", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "url": "https://vlastshop.com/product/search.html?banner_action=&keyword=PLAVE+Caligo+Pt.2", "defDomShip": 0, "defOvsShip": 0, "custom": true}, {"id": "s2", "distId": "dcs1774619738077", "name": "Weverse Shop", "country": "KR", "priceMode": "country", "customPrices": {}, "unpoPerk": "POCAALBUM", "purchaseStart": "2026-03-24T11:00", "purchaseEnd": "2026-04-13T23:59", "purchaseEndTxt": "", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "url": "https://shop.weverse.io/ko/shop/KRW/artists/167/categories/3719", "defDomShip": 3000, "defOvsShip": 0, "custom": true, "offlineHours": "", "offlineAddress": "", "offlineLuckyDraw": false}, {"id": "s14", "distId": "d11", "name": "Will Music", "country": "TW", "priceMode": "country", "customPrices": {}, "unpoPerk": "POCAALBUM", "purchaseStart": "2026-03-24T11:00", "purchaseEnd": "2026-04-20T23:59", "purchaseEndTxt": "", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "url": "", "defDomShip": 0, "defOvsShip": 0, "custom": true, "offlineHours": "", "offlineAddress": "", "offlineLuckyDraw": false}, {"name": "Will Music", "distId": "dcs1774544809341", "country": "KR", "unpoPerk": "POCAALBUM", "priceMode": "custom", "customPrices": {"PHOTOBOOK": null, "POCAALBUM": 52532, "ID_PASS": null, "INVENTORY": null}, "purchaseStart": "2026-03-24T11:00", "purchaseEnd": "2026-04-13T23:59", "purchaseEndTxt": "", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "defDomShip": 0, "defOvsShip": 0, "url": "https://x.com/Plave_Album/status/2036611347409231996?s=20", "custom": true, "id": "cs1774545187345", "offlineHours": "", "offlineAddress": "", "offlineLuckyDraw": false}, {"name": "[음총] 디어마이뮤즈", "distId": "dcs1774619306510", "country": "KR", "unpoPerk": "", "priceMode": "country", "customPrices": {}, "purchaseStart": "2026-03-24T02:25", "purchaseEnd": "2026-04-14T19:00", "purchaseEndTxt": "", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "defDomShip": 0, "defOvsShip": 0, "url": "https://x.com/Plave_Album/status/2036340525821993312?s=20", "custom": true, "id": "cs1774545937612", "offlineHours": "", "offlineAddress": "", "offlineLuckyDraw": false}, {"name": "[음총] 버프즈", "distId": "dcs1774619302089", "country": "KR", "unpoPerk": "", "priceMode": "custom", "customPrices": {"PHOTOBOOK": 19000, "POCAALBUM": 7790, "ID_PASS": 14155, "INVENTORY": 16245}, "purchaseStart": "2026-03-24T02:23", "purchaseEnd": "2026-04-03T23:59", "purchaseEndTxt": "", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "defDomShip": 0, "defOvsShip": 0, "url": "https://x.com/Plave_Album/status/2036291046146265331?s=20", "custom": true, "id": "cs1774545824537", "offlineHours": "", "offlineAddress": "", "offlineLuckyDraw": false}, {"name": "[음총] 비트로드", "distId": "dcs1774619310313", "country": "KR", "unpoPerk": "", "priceMode": "custom", "customPrices": {"PHOTOBOOK": 16500, "POCAALBUM": 10100, "ID_PASS": 18400, "INVENTORY": 21100}, "purchaseStart": "2026-03-24T02:21", "purchaseEnd": "2026-04-12T23:59", "purchaseEndTxt": "", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "defDomShip": 0, "defOvsShip": 0, "url": "https://x.com/Plave_Album/status/2036292541986001367?s=20", "custom": true, "id": "cs1774545708995", "offlineHours": "", "offlineAddress": "", "offlineLuckyDraw": false}, {"name": "[음총] 케타포", "distId": "dcs1774619329527", "country": "KR", "unpoPerk": "", "priceMode": "country", "customPrices": {}, "purchaseStart": "2026-03-24T02:18", "purchaseEnd": "2026-04-14T17:00", "purchaseEndTxt": "", "offlineStart": "", "offlineEnd": "", "offlineNote": "", "defDomShip": 0, "defOvsShip": 0, "url": "https://kr.ktown4u.com/eventinfo?eve_no=44113596&biz_no=967", "custom": true, "id": "cs1774545544751", "offlineHours": "", "offlineAddress": "", "offlineLuckyDraw": false}];
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let S = {
+  theme:'dark', tab:'dash', mgrSub:'stores',
+  distributors:[], stores:[], purchases:[],
+  countryPrices: JSON.parse(JSON.stringify(INIT_PRICES)),
+  rates:{
+    JPY:{rate:9.4537, manual:false, updAt:"2026-03-26T16:42:10.568Z"},
+    CNY:{rate:218.3126, manual:false, updAt:"2026-03-26T16:42:10.568Z"},
+    USD:{rate:1507.7751, manual:false, updAt:"2026-03-26T16:42:10.568Z"},
+    TWD:{rate:47.1855, manual:false, updAt:"2026-03-26T16:42:10.568Z"},
+    OTHER:{rate:1, manual:true, name:'기타', updAt:null},
+  },
+  ratesAt:'2026-03-26T17:40:18.345Z',
+  filterStatus:'', hideZero:false, purchView:'list',
+  calYear: new Date().getFullYear(), calMonth: new Date().getMonth(),
+  calDay: null,
+  sortBy:'date', sortDir:'desc', sortStore:'',
+  adminUnlocked:false,
+  calShowOnline:true, calShowOffline:true,
+  hideExpired:false,
+  dataAt:'2026-03-27',
+};
+
+function save(){try{const toSave={...S,adminUnlocked:false};localStorage.setItem('plave2_v2',JSON.stringify(toSave));}catch(e){}}
+function load(){
+  // Always reset from latest init data
+  S.distributors = JSON.parse(JSON.stringify(INIT_DISTRIBUTORS));
+  S.stores       = JSON.parse(JSON.stringify(INIT_STORES));
+  S.countryPrices= JSON.parse(JSON.stringify(INIT_PRICES));
+  S.rates = {JPY:{rate:9.4537,manual:false,updAt:"2026-03-26T16:42:10.568Z"},
+             CNY:{rate:218.3126,manual:false,updAt:"2026-03-26T16:42:10.568Z"},
+             USD:{rate:1507.7751,manual:false,updAt:"2026-03-26T16:42:10.568Z"},
+             TWD:{rate:47.1855,manual:false,updAt:"2026-03-26T16:42:10.568Z"},
+             OTHER:{rate:1,manual:true,name:'기타',updAt:null}};
+  S.ratesAt = "2026-03-26T17:40:18.345Z";
+  // Restore only user preferences and purchases from localStorage
+  try{
+    const raw=localStorage.getItem('plave2_v2');
+    if(raw){
+      const sv=JSON.parse(raw);
+      if(sv.purchases)    S.purchases=sv.purchases;
+      if(sv.theme)        S.theme=sv.theme;
+      if(sv.filterStatus) S.filterStatus=sv.filterStatus;
+      if(sv.hideZero)     S.hideZero=sv.hideZero;
+      if(sv.calYear)      S.calYear=sv.calYear;
+      if(sv.calMonth)     S.calMonth=sv.calMonth;
+    }
+  }catch(e){}
+  applyTheme();
+}
+
+// ═══════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════
+function rate(cur){if(cur==='KRW')return 1;return S.rates[cur]?.rate||DEF_RATES[cur]||1;}
+function toKRW(amt,cur){return Math.round(amt*rate(cur));}
+function getStoreCur(store){return COUNTRIES[store.country]?.cur||'KRW';}
+function isOvs(store){return COUNTRIES[store.country]?.ovs||false;}
+function storePrice(store,albumKey){
+  if(store.priceMode==='custom'&&store.customPrices?.[albumKey]!=null) return store.customPrices[albumKey];
+  return S.countryPrices[store.country]?.[albumKey]??null;
+}
+function calcTotal(p){
+  const store=S.stores.find(s=>s.id===p.storeId);
+  if(!store) return 0;
+  const cur=getStoreCur(store);
+  const discount=p.discount||0;
+  if(isOvs(store)){
+    const r=rate(cur);
+    let fAmt=p.foreignTotal||0;
+    if(!fAmt){
+      fAmt=(p.items||[]).reduce((sum,it)=>{
+        const pr=it.unitPrice>0?it.unitPrice:(storePrice(store,it.type)||0);
+        return sum+pr*(it.qty||0);
+      },0);
+    }
+    const base=p.directKrw>0?p.directKrw:Math.round(fAmt*r);
+    return Math.max(0, base+(p.intlShip||0)+(p.fwdFee||0)+(p.customs||0)+(p.domShip||0)-discount);
+  } else {
+    const items=(p.items||[]).reduce((sum,it)=>{
+      const pr=it.unitPrice>0?it.unitPrice:(storePrice(store,it.type)||0);
+      return sum+pr*(it.qty||0);
+    },0);
+    return Math.max(0, items+(p.domShip||0)-discount);
+  }
+}
+function totalSpend(){return S.purchases.reduce((s,p)=>s+calcTotal(p),0);}
+function fKRW(n){if(!n&&n!==0)return '—';return Math.round(n).toLocaleString('ko-KR')+'원';}
+function fFor(amt,cur){
+  if(amt==null||amt==='')return '—';
+  const syms={JPY:'¥',CNY:'¥(元)',USD:'$',TWD:'NT$',KRW:'₩'};
+  return (syms[cur]||'')+Number(amt).toLocaleString();
+}
+function fDate(dt){
+  if(!dt)return '';
+  try{return new Date(dt).toLocaleDateString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}catch(e){return dt;}
+}
+function dDays(dt){
+  if(!dt)return null;
+  return Math.ceil((new Date(dt)-new Date())/86400000);
+}
+function stBadge(st){const s=STATUSES.find(x=>x.k===st)||STATUSES[0];return `<span class="bx ${s.cls}">${s.lb}</span>`;}
+function distName(distId){return S.distributors.find(d=>d.id===distId)?.name||'';}
+function platName(distId){return distName(distId);} // alias
+function storeFull(store){
+  if(!store)return '?';
+  const dist=distName(store.distId);
+  const ctry=COUNTRIES[store.country]?.lb||store.country;
+  const lines=[store.name];
+  if(dist)lines.push(dist+' · '+ctry);
+  else lines.push(ctry);
+  return lines;
+}
+function fmtStoreName(name){
+  if(!name)return name;
+  return name.replace('[음총]','<span style="color:var(--info);font-size:11px" title="음원총판">🎵음총</span>');
+}
+function storeLabel(store,badge=true){
+  if(!store)return '?';
+  const [main,sub]=storeFull(store);
+  const bx=badge?`<span class="bx ${isOvs(store)?'bx-ovs':'bx-dom'}" style="font-size:10px;margin-right:4px">${isOvs(store)?'해외':'국내'}</span>`:'' ;
+  return `<div class="store-full">${bx}<span class="store-full-main">${main}</span><span class="store-full-sub">${sub}</span></div>`;
+}
+
+// ═══════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════
+let _tt;
+function toast(msg,type='ok'){
+  let el=document.getElementById('_toast');
+  if(!el){el=document.createElement('div');el.id='_toast';
+    el.style.cssText='position:fixed;bottom:70px;left:50%;transform:translateX(-50%);padding:10px 18px;border-radius:8px;font-size:13px;z-index:9999;transition:opacity .3s;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4)';
+    document.body.appendChild(el);}
+  el.textContent=msg;el.style.background=type==='err'?'var(--err)':type==='warn'?'var(--warn)':'var(--ok)';
+  el.style.color='#fff';el.style.opacity='1';
+  clearTimeout(_tt);_tt=setTimeout(()=>el.style.opacity='0',2800);
+}
+
+// ═══════════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════════
+function toggleTheme(){S.theme=S.theme==='dark'?'light':'dark';applyTheme();save();}
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme',S.theme);
+  const b=document.getElementById('theme-btn');
+  if(b)b.textContent=S.theme==='dark'?'🌙':'☀️';
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function go(tab){
+  S.tab=tab;
+  document.querySelectorAll('[data-tab]').forEach(el=>el.classList.toggle('on',el.dataset.tab===tab));
+  render();
+}
+function render(){
+  const map={dash:renderDash,purch:renderPurch,cal:renderCal,mgr:renderMgr};
+  (map[S.tab]||renderDash)();
+}
+
+// ═══════════════════════════════════════════
+// RATES
+// ═══════════════════════════════════════════
+async function fetchRates(){
+  try{
+    const r=await fetch('https://latest.currency-api.pages.dev/v1/currencies/krw.json');
+    if(!r.ok)throw new Error();
+    const d=await r.json();const kk=d.krw;const now=new Date().toISOString();
+    ['JPY','CNY','USD','TWD'].forEach(c=>{
+      if(!S.rates[c].manual){
+        // API gives: 1 KRW = X foreign → so 1 foreign = 1/X KRW
+        S.rates[c].rate=parseFloat((1/kk[c.toLowerCase()]).toFixed(4));
+        S.rates[c].updAt=now;
+      }
+    });
+    S.ratesAt=now;save();render();toast('✓ 환율 업데이트');
+  }catch(e){
+    try{
+      const r2=await fetch('https://open.er-api.com/v6/latest/KRW');
+      if(!r2.ok)throw new Error();
+      const d2=await r2.json();const now=new Date().toISOString();
+      ['JPY','CNY','USD','TWD'].forEach(c=>{
+        if(!S.rates[c].manual&&d2.rates[c]){
+          S.rates[c].rate=parseFloat((1/d2.rates[c]).toFixed(4));
+          S.rates[c].updAt=now;
+        }
+      });
+      S.ratesAt=now;save();render();toast('✓ 환율 업데이트');
+    }catch(e2){toast('⚠ 환율 자동조회 실패 — 수동입력 이용','warn');}
+  }
+}
+function renderRateRow(){
+  const el=document.getElementById('rate-row');if(!el)return;
+  el.innerHTML=['JPY','CNY','USD','TWD'].map(c=>{
+    const r=S.rates[c];
+    return `<div class="rate-chip">${c} <b>${Math.round(r.rate).toLocaleString()}원</b>${r.manual?'<span style="color:var(--warn);font-size:10px"> 수동</span>':''}</div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════
+function renderDash(){
+  const mc=document.getElementById('main');
+  const storeWithPurch=new Set(S.purchases.map(p=>p.storeId));
+
+  // ── Spend ──
+  const confirmedSpend=S.purchases.filter(p=>(p.status||'waiting')!=='waiting').reduce((s,p)=>s+calcTotal(p),0);
+  const waitingSpend  =S.purchases.filter(p=>(p.status||'waiting')==='waiting').reduce((s,p)=>s+calcTotal(p),0);
+
+  // ── Status counts ──
+  const bySt={none:0,waiting:0,ordered:0,shipwait:0,shipping:0,delivered:0};
+  S.stores.forEach(s=>{if(!storeWithPurch.has(s.id))bySt.none++;});
+  S.purchases.forEach(p=>{const k=p.status||'waiting';bySt[k]=(bySt[k]||0)+1;});
+  const totalPurchasable=S.stores.length;
+  const doneCount =bySt.delivered;
+  const activeCount=bySt.ordered+bySt.shipwait+bySt.shipping;
+  const waitCount =bySt.waiting;
+  const noneCount =bySt.none;
+
+  // ── Per-store spend ──
+  const byStor={};
+  S.purchases.forEach(p=>{byStor[p.storeId]=(byStor[p.storeId]||0)+calcTotal(p);});
+
+  // ── Album totals ──
+  const byAlb={};ALBUMS.forEach(a=>byAlb[a.k]=0);
+  S.purchases.forEach(p=>{(p.items||[]).forEach(it=>{byAlb[it.type]=(byAlb[it.type]||0)+(it.qty||0);});});
+
+  // ── Deadlines ──
+  const deadlines=S.stores
+    .filter(s=>s.purchaseEnd)
+    .map(s=>({s,d:dDays(s.purchaseEnd),hasPurch:storeWithPurch.has(s.id)}))
+    .filter(x=>S.hideExpired?x.d>=0:true)
+    .sort((a,b)=>{if(a.d<0&&b.d>=0)return 1;if(a.d>=0&&b.d<0)return -1;return a.d-b.d;});
+
+  // ── Store spend sorted ──
+  const storeSorted=Object.entries(byStor).sort((a,b)=>b[1]-a[1]);
+
+  mc.innerHTML=`
+  <!-- ① STAT CARDS: 2×2 grid, compact -->
+  <div class="stat-row">
+    <div class="stat-sm" style="grid-column:span 2">
+      <div class="stat-sm-lb">💰 구매비 (확정)</div>
+      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+        <span class="stat-sm-v mono" style="color:var(--ac);font-size:24px">${fKRW(confirmedSpend)}</span>
+        ${waitingSpend>0?`<span style="font-size:13px;color:var(--warn)">+ 대기 ${fKRW(waitingSpend)}</span>`:''}
+      </div>
+      <div class="stat-sm-sub">${S.purchases.length}건 구매 기록</div>
+    </div>
+  </div>
+  <div class="stat-row">
+    <div class="stat-sm ok">
+      <div class="stat-sm-lb">✅ 배송완료</div>
+      <div class="stat-sm-v" style="color:var(--ok)">${doneCount}</div>
+      <div class="stat-sm-sub">🚚 진행중 ${activeCount}</div>
+    </div>
+    <div class="stat-sm info">
+      <div class="stat-sm-lb">📋 미구매 / 대기</div>
+      <div class="stat-sm-v" style="color:var(--info)">${noneCount} <span style="font-size:14px;color:var(--warn)">/ ${waitCount}</span></div>
+      <div class="stat-sm-sub">미구매 ${noneCount}곳 · 대기 ${waitCount}건</div>
+    </div>
+  </div>
+
+  <!-- ② STATUS STRIP: clickable badges in one row -->
+  <div class="status-strip">
+    ${STATUSES.map(s=>{
+      const cnt=bySt[s.k]||0;
+      return `<span class="bx ${s.cls}" style="cursor:${cnt>0?'pointer':'default'};opacity:${cnt>0?1:0.4}"
+        onclick="${cnt>0?`showStatusDetail('${s.k}')`:''}">${s.lb} <b>${cnt}</b></span>`;
+    }).join('')}
+    <div style="flex:1;display:flex;height:6px;border-radius:3px;overflow:hidden;gap:1px;min-width:60px">
+      ${[{k:'none',c:'var(--tx3)'},{k:'waiting',c:'var(--warn)'},{k:'ordered',c:'var(--ac)'},{k:'shipwait',c:'var(--info)'},{k:'shipping',c:'var(--info)'},{k:'delivered',c:'var(--ok)'}]
+        .map(x=>{const cnt=bySt[x.k]||0;const w=Math.round(cnt/Math.max(totalPurchasable,1)*100);return cnt>0?`<div style="width:${w}%;background:${x.c}"></div>`:'';}).join('')}
+    </div>
+  </div>
+
+  <!-- ③ STORE SPEND: prominent card list -->
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-hdr" style="margin-bottom:10px">
+      <div class="card-ttl">🏪 판매처별 지출</div>
+      <span style="font-size:11px;color:var(--tx2)">탭 → 상세</span>
+    </div>
+    ${storeSorted.length===0?
+      `<div style="color:var(--tx3);font-size:13px;padding:12px 0;text-align:center">구매 기록 없음</div>`:
+      `<div class="spend-cards">
+        ${storeSorted.map(([sid,amt])=>{
+          const store=S.stores.find(x=>x.id===sid);
+          const cnt=S.purchases.filter(p=>p.storeId===sid).length;
+          const dist=distName(store?.distId);
+          const ctry=COUNTRIES[store?.country]?.lb||'';
+          const isOvs_=isOvs(store);
+          const sName=(store?.name||sid).replace('[음총]','').trim();
+          const isEum=(store?.name||'').includes('[음총]');
+          const waiting=S.purchases.filter(p=>p.storeId===sid&&(p.status||'waiting')==='waiting').reduce((s,p)=>s+calcTotal(p),0);
+          return `<div class="spend-card" id="sc-${sid}" onclick="toggleSpendCard('${sid}')">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="flex:1;min-width:0">
+                <div class="spend-card-name">
+                  <span>${sName}</span>
+                  ${isEum?`<span class="bx bx-plt2" style="font-size:10px">🎵 음총</span>`:''}
+                  <span class="bx ${isOvs_?'bx-ovs':'bx-dom'}" style="font-size:10px">${isOvs_?'해외':'국내'}</span>
+                </div>
+                <div class="spend-card-meta">
+                  ${dist?`<span class="bx bx-plt" style="font-size:10px">🏷 ${dist}</span>`:''}
+                  <span>${ctry}</span>
+                  <span>${cnt}건</span>
+                  ${waiting>0?`<span style="color:var(--warn)">대기 ${fKRW(waiting)}</span>`:''}
+                </div>
+              </div>
+              <div style="text-align:right">
+                <div class="spend-card-amt">${fKRW(amt)}</div>
+                <div style="font-size:10px;color:var(--tx3);margin-top:2px">탭 ▸</div>
+              </div>
+            </div>
+            <div class="spend-card-detail" id="scd-${sid}">
+              ${buildStoreDet(sid)}
+            </div>
+          </div>`;
+        }).join('')}
+        <div class="spend-total">
+          <span class="spend-total-lb">💰 확정 합계</span>
+          <span class="spend-total-v">${fKRW(confirmedSpend)}</span>
+        </div>
+        ${waitingSpend>0?`<div style="display:flex;justify-content:space-between;padding:6px 2px;font-size:12px;color:var(--warn)">
+          <span>⏳ 구매대기 포함 합계</span>
+          <span class="mono" style="font-weight:700">${fKRW(confirmedSpend+waitingSpend)}</span>
+        </div>`:''}
+      </div>`
+    }
+  </div>
+
+  <!-- ④ DEADLINE + ALBUMS: side by side on tablet, stacked on mobile -->
+  <div class="grid g2" style="margin-bottom:12px">
+    <div class="card">
+      <div class="card-hdr">
+        <div class="card-ttl">⏰ 구매 마감일</div>
+        <button class="btn btn-s btn-xs" onclick="S.hideExpired=!S.hideExpired;renderDash()" style="font-size:10px">${S.hideExpired?'✓ 만료 숨김':'만료 숨기기'}</button>
+      </div>
+      ${deadlines.length===0?'<div style="color:var(--tx3);font-size:12px">마감일 없음</div>':
+      `<div>${deadlines.map(({s,d,hasPurch})=>{
+        const color=d<0?'var(--tx3)':d<=2?'var(--err)':d<=7?'var(--warn)':'var(--ok)';
+        const dd=d<0?`${Math.abs(d)}일전`:d===0?'오늘!':'D-'+d;
+        const sName=s.name.replace('[음총]','').trim();
+        const psCnt=S.purchases.filter(p=>p.storeId===s.id).length;
+        return `<div class="dl-compact" onclick="toggleSpendCard('${s.id}');document.getElementById('sc-${s.id}')?.scrollIntoView({behavior:'smooth',block:'center'})" style="cursor:pointer">
+          <div style="flex:1;min-width:0;overflow:hidden;cursor:pointer" onclick="event.stopPropagation();showStoreInfoPopup('${s.id}')">
+            <div class="dl-compact-name" title="${sName}" style="text-decoration:underline dotted;text-underline-offset:3px">${sName}</div>
+            ${distName(s.distId)?`<span class="bx bx-plt" style="font-size:9px;margin-top:1px">🏷 ${distName(s.distId)}</span>`:''}
+          </div>
+          <div class="dl-compact-date">${s.purchaseEndTxt||(s.purchaseEnd?s.purchaseEnd.slice(5,10):'')}</div>
+          ${hasPurch?`<span class="bx bx-ord" style="font-size:10px;flex-shrink:0">✓${psCnt}</span>`:'<span class="bx bx-none" style="font-size:10px;flex-shrink:0">미구매</span>'}
+          <div class="dl-compact-d" style="color:${color}">${dd}</div>
+        </div>`;
+      }).join('')}</div>`}
+    </div>
+
+    <div class="card">
+      <div class="card-hdr"><div class="card-ttl">💿 앨범별 수량</div><span style="font-size:11px;color:var(--tx2)">탭 → 조회</span></div>
+      ${ALBUMS.map(a=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--bd);cursor:${byAlb[a.k]>0?'pointer':'default'}"
+          onclick="${byAlb[a.k]>0?`showAlbumDetail('${a.k}')`:''}" >
+          <span style="font-size:13px">${a.lb}</span>
+          <span class="mono" style="font-weight:700;font-size:15px;color:${byAlb[a.k]>0?'var(--ac)':'var(--tx3)'}">
+            ${byAlb[a.k]}장${byAlb[a.k]>0?' ›':''}
+          </span>
+        </div>`).join('')}
+      <div style="display:flex;justify-content:space-between;padding-top:8px;font-weight:700;font-size:14px">
+        <span>총계</span>
+        <span class="mono" style="color:var(--ok)">${Object.values(byAlb).reduce((a,b)=>a+b,0)}장</span>
+      </div>
+      ${S.purchases.filter(p=>p.owner?.trim()).length>0?`
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bd)">
+        <div style="font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:5px">🎁 사다준 목록</div>
+        ${[...new Set(S.purchases.filter(p=>p.owner).map(p=>p.owner))].map(ow=>{
+          const t=S.purchases.filter(p=>p.owner===ow).reduce((s,p)=>s+calcTotal(p),0);
+          return `<div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px">
+            <span class="bx bx-prx">👤 ${ow}</span><span class="mono">${fKRW(t)}</span>
+          </div>`;
+        }).join('')}
+      </div>`:''
+      }
+    </div>
+  </div>`;
+}
+
+function toggleSpendCard(sid){
+  const detail=document.getElementById('scd-'+sid);
+  const card=document.getElementById('sc-'+sid);
+  if(!detail||!card)return;
+  const isOpen=detail.classList.contains('open');
+  // Close all others
+  document.querySelectorAll('.spend-card-detail.open').forEach(el=>{
+    el.classList.remove('open');
+    const c=el.closest('.spend-card');
+    if(c){c.style.borderColor='';c.querySelector('.spend-card-amt+div').textContent='탭 ▸';}
+  });
+  if(!isOpen){
+    detail.classList.add('open');
+    card.style.borderColor='var(--ac)';
+    const tapEl=card.querySelector('.spend-card-amt+div');
+    if(tapEl)tapEl.textContent='닫기 ▾';
+  }
+}
+
+
+function showAlbumDetail(albumKey){
+  const a=ALBUMS.find(x=>x.k===albumKey);
+  const rows=S.purchases.filter(p=>(p.items||[]).some(i=>i.type===albumKey&&i.qty>0));
+  if(!rows.length)return;
+  const html=rows.map(p=>{
+    const store=S.stores.find(s=>s.id===p.storeId);
+    const it=p.items.find(i=>i.type===albumKey);
+    const si=STATUSES.find(s=>s.k===(p.status||'waiting'));
+    const dist=distName(store?.distId);
+    return `<div style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap">
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:13px">${(store?.name||'?').replace('[음총]','').trim()}</div>
+        ${dist?`<div style="font-size:11px;color:var(--tx2)">${dist} · ${COUNTRIES[store?.country]?.lb||''}</div>`:''}
+      </div>
+      <span class="mono" style="font-weight:700">${it?.qty||0}장</span>
+      <span class="bx ${si?.cls||''}">${si?.lb||'?'}</span>
+      ${p.owner?`<span class="bx bx-prx">→ ${p.owner}</span>`:''}
+      <button class="btn btn-s btn-xs" onclick="closeM();editP('${p.id}')">수정</button>
+    </div>`;
+  }).join('');
+  const total=rows.reduce((s,p)=>{const it=p.items.find(i=>i.type===albumKey);return s+(it?.qty||0);},0);
+  openM(`${a?.lb} — 총 ${total}장`,html);
+  document.getElementById('m-foot').innerHTML=`<button class="btn btn-s" onclick="closeM()">닫기</button>`;
+}
+
+function toggleStoreDet(sid){
+  const row=document.getElementById(`sdet-${sid}`);
+  const arr=document.getElementById(`arr-${sid}`);
+  if(!row)return;
+  const was=row.style.display!=='none';
+  document.querySelectorAll('[id^="sdet-"]').forEach(r=>r.style.display='none');
+  document.querySelectorAll('[id^="arr-"]').forEach(a=>{if(a)a.textContent='▸';});
+  if(!was){row.style.display='';if(arr)arr.textContent='▾';}
+}
+function buildStoreDet(sid){
+  const store=S.stores.find(s=>s.id===sid);
+  const ps=S.purchases.filter(p=>p.storeId===sid);
+  if(!ps.length)return '<div style="color:var(--tx3)">구매 기록 없음</div>';
+  return ps.map(p=>{
+    const t=calcTotal(p);const si=STATUSES.find(s=>s.k===(p.status||'waiting'));
+    const items=(p.items||[]).filter(i=>i.qty>0).map(i=>ALBUMS.find(a=>a.k===i.type)?.lb+' ×'+i.qty).join(', ')||'—';
+    return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap">
+      <span class="bx ${si?.cls||''}">${si?.lb||'?'}</span>
+      <span style="flex:1;color:var(--tx2);font-size:13px">${items}</span>
+      ${p.owner?`<span class="bx bx-prx">👤 ${p.owner}</span>`:''}
+      <span class="mono" style="font-weight:700;color:var(--ac)">${fKRW(t)}</span>
+      <button class="btn btn-s btn-xs" onclick="editP('${p.id}')">수정</button>
+    </div>`;
+  }).join('');
+}
+function showStatusDetail(stKey){
+  const st=STATUSES.find(x=>x.k===stKey);
+  let ps;
+  if(stKey==='none'){
+    const withPurch=new Set(S.purchases.map(p=>p.storeId));
+    ps=S.stores.filter(s=>!withPurch.has(s.id)).map(s=>({_isStore:true,store:s}));
+  } else {
+    ps=S.purchases.filter(p=>(p.status||'waiting')===stKey);
+  }
+  if(!ps.length)return;
+  const html=ps.map(p=>{
+    if(p._isStore){
+      const dist=distName(p.store.distId);
+      return `<div style="padding:10px 0;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px">
+        <div style="flex:1"><div style="font-weight:600">${p.store.name.replace("[음총]","").trim()}</div>${dist?`<div style="display:inline-flex"><span class="bx bx-plt" style="font-size:10px;margin-top:2px">🏷 ${dist}</span></div>`:''}</div>
+        <button class="btn btn-p btn-xs" onclick="closeM();addP('${p.store.id}')">+ 추가</button>
+      </div>`;
+    }
+    const store=S.stores.find(x=>x.id===p.storeId);
+    const t=calcTotal(p);
+    const items=(p.items||[]).filter(i=>i.qty>0).map(i=>ALBUMS.find(a=>a.k===i.type)?.lb+' ×'+i.qty).join(', ')||'—';
+    return `<div style="display:flex;align-items:flex-start;gap:8px;padding:10px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap">
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:13px">${(store?.name||'?').replace('[음총]','').trim()}<span style="font-size:11px;color:var(--tx2);margin-left:6px">${distName(store?.distId)||''}</span></div>
+        <div style="font-size:13px;color:var(--tx2)">${items}</div>
+        ${p.owner?`<span class="bx bx-prx" style="margin-top:4px">👤 ${p.owner}</span>`:''}
+      </div>
+      <div style="text-align:right"><div class="mono" style="font-weight:700;color:var(--ac)">${fKRW(t)}</div>${p.purchaseDate?`<div style="font-size:11px;color:var(--tx3)">${fDate(p.purchaseDate)}</div>`:''}</div>
+      <button class="btn btn-s btn-xs" onclick="closeM();editP('${p.id}')">수정</button>
+    </div>`;
+  }).join('');
+  openM(st.lb+' ('+ps.length+'건)',html);
+  document.getElementById('m-foot').innerHTML=`<button class="btn btn-s" onclick="closeM()">닫기</button>`;
+}
+
+function toggleStoreDet(sid){
+  const row=document.getElementById(`sdet-${sid}`);
+  const arr=document.getElementById(`arr-${sid}`);
+  if(!row)return;
+  const was=row.style.display!=='none';
+  document.querySelectorAll('[id^="sdet-"]').forEach(r=>r.style.display='none');
+  document.querySelectorAll('[id^="arr-"]').forEach(a=>{if(a)a.textContent='▸';});
+  if(!was){row.style.display='';if(arr)arr.textContent='▾';}
+}
+function buildStoreDet(sid){
+  const store=S.stores.find(s=>s.id===sid);
+  const ps=S.purchases.filter(p=>p.storeId===sid);
+  if(!ps.length)return '<div style="color:var(--tx3)">구매 기록 없음</div>';
+  return ps.map(p=>{
+    const t=calcTotal(p);const si=STATUSES.find(s=>s.k===(p.status||'waiting'));
+    const items=(p.items||[]).filter(i=>i.qty>0).map(i=>ALBUMS.find(a=>a.k===i.type)?.lb+' ×'+i.qty).join(', ')||'—';
+    return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap">
+      <span class="bx ${si?.cls||''}">${si?.lb||'?'}</span>
+      <span style="flex:1;color:var(--tx2);font-size:13px">${items}</span>
+      ${p.owner?`<span class="bx bx-prx">👤 ${p.owner}</span>`:''}
+      <span class="mono" style="font-weight:700;color:var(--ac)">${fKRW(t)}</span>
+      <button class="btn btn-s btn-xs" onclick="editP('${p.id}')">수정</button>
+    </div>`;
+  }).join('');
+}
+function showStatusDetail(stKey){
+  const st=STATUSES.find(x=>x.k===stKey);
+  let ps;
+  if(stKey==='none'){
+    const withPurch=new Set(S.purchases.map(p=>p.storeId));
+    ps=S.stores.filter(s=>!withPurch.has(s.id)).map(s=>({_isStore:true,store:s}));
+  } else {
+    ps=S.purchases.filter(p=>(p.status||'waiting')===stKey);
+  }
+  if(!ps.length)return;
+  const html=ps.map(p=>{
+    if(p._isStore){
+      return `<div style="padding:10px 0;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px">
+        <span class="bx ${isOvs(p.store)?'bx-ovs':'bx-dom'}">${p.store.name}</span>
+        <span style="flex:1;font-size:13px;color:var(--tx2)">구매 기록 없음</span>
+        <button class="btn btn-p btn-xs" onclick="closeM();addP('${p.store.id}')">+ 추가</button>
+      </div>`;
+    }
+    const store=S.stores.find(x=>x.id===p.storeId);
+    const t=calcTotal(p);
+    const items=(p.items||[]).filter(i=>i.qty>0).map(i=>ALBUMS.find(a=>a.k===i.type)?.lb+' ×'+i.qty).join(', ')||'—';
+    return `<div style="display:flex;align-items:flex-start;gap:8px;padding:10px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap">
+      <span class="bx ${isOvs(store)?'bx-ovs':'bx-dom'}">${store?.name||'?'}</span>
+      <div style="flex:1"><div style="font-size:13px">${items}</div>${p.owner?`<span class="bx bx-prx" style="margin-top:4px">👤 ${p.owner}</span>`:''}</div>
+      <div style="text-align:right"><div class="mono" style="font-weight:700;color:var(--ac)">${fKRW(t)}</div>${p.purchaseDate?`<div style="font-size:11px;color:var(--tx3)">${fDate(p.purchaseDate)}</div>`:''}</div>
+      <button class="btn btn-s btn-xs" onclick="closeM();editP('${p.id}')">수정</button>
+    </div>`;
+  }).join('');
+  openM(st.lb+' ('+ps.length+'건)',html);
+  document.getElementById('m-foot').innerHTML=`<button class="btn btn-s" onclick="closeM()">닫기</button>`;
+}
+
+// ═══════════════════════════════════════════
+// PURCHASES
+// ═══════════════════════════════════════════
+function renderPurch(){
+  const mc=document.getElementById('main');
+  const fs=S.filterStatus||'';
+  const hz=S.hideZero||false;
+  const sb=S.sortBy||'date';
+  const sd=S.sortDir||'desc';
+  const ss=S.sortStore||'';
+
+  let filtered=S.purchases.filter(p=>!fs||(p.status||'waiting')===fs);
+  if(ss) filtered=filtered.filter(p=>p.storeId===ss);
+  filtered=[...filtered].sort((a,b)=>{
+    let av,bv;
+    if(sb==='date'){av=a.purchaseDate||'';bv=b.purchaseDate||'';}
+    else if(sb==='store'){av=(S.stores.find(s=>s.id===a.storeId)?.name||'');bv=(S.stores.find(s=>s.id===b.storeId)?.name||'');}
+    else if(sb==='amount'){av=calcTotal(a);bv=calcTotal(b);}
+    else if(sb==='status'){av=STATUSES.findIndex(s=>s.k===(a.status||'waiting'));bv=STATUSES.findIndex(s=>s.k===(b.status||'waiting'));}
+    else {av=a.purchaseDate||'';bv=b.purchaseDate||'';}
+    if(av<bv)return sd==='asc'?-1:1;
+    if(av>bv)return sd==='asc'?1:-1;
+    return 0;
+  });
+
+  const storeOpts=`<option value="">전체 판매처</option>`+
+    [...new Set(S.purchases.map(p=>p.storeId))].map(sid=>S.stores.find(x=>x.id===sid)).filter(Boolean).sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(store=>{ const sid=store.id;
+      const s=S.stores.find(x=>x.id===sid);
+      return `<option value="${sid}" ${ss===sid?'selected':''}>${store.name}</option>`;
+    }).join('');
+
+  mc.innerHTML=`
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+    <div style="font-size:15px;font-weight:700">🛒 구매기록 (${S.purchases.length}건)</div>
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+      <div class="toggle-pill">
+        <button class="${!hz?'on':''}" onclick="S.hideZero=false;renderPurch()">전체</button>
+        <button class="${hz?'on':''}" onclick="S.hideZero=true;renderPurch()">구매만</button>
+      </div>
+      <button class="btn btn-p btn-sm" onclick="addP()">+ 추가</button>
+    </div>
+  </div>
+
+  <!-- FILTER CHIPS -->
+  <div class="chip-row" style="margin-bottom:8px">
+    <span class="chip sm ${!fs?'on':''}" onclick="S.filterStatus='';renderPurch()">전체</span>
+    ${STATUSES.filter(s=>s.k!=='none').map(s=>`<span class="chip sm ${fs===s.k?'on':''}" onclick="S.filterStatus='${s.k}';renderPurch()">${s.lb}</span>`).join('')}
+  </div>
+
+  <!-- SORT BAR -->
+  <div class="sort-bar">
+    <span class="sort-lbl">정렬:</span>
+    ${[['date','날짜'],['store','판매처'],['amount','금액'],['status','상태']].map(([k,lb])=>
+      `<span class="chip sm ${sb===k?'on':''}" onclick="S.sortBy='${k}';if(S.sortBy==='${k}')S.sortDir=S.sortDir==='asc'?'desc':'asc';renderPurch()">${lb}${sb===k?(sd==='asc'?' ↑':' ↓'):''}</span>`
+    ).join('')}
+    <select onchange="S.sortStore=this.value;renderPurch()" style="flex:1;max-width:160px;padding:4px 8px;font-size:12px">${storeOpts}</select>
+  </div>
+
+  ${filtered.length===0?`<div class="empty"><div class="empty-ico">🛒</div>구매 기록이 없습니다<br><button class="btn btn-p" style="margin-top:12px" onclick="addP()">+ 첫 구매 추가</button></div>`
+  :filtered.map(p=>pCard(p,hz)).join('')}`;
+}
+
+function pCard(p,hz){
+  const store=S.stores.find(s=>s.id===p.storeId);if(!store)return '';
+  const t=calcTotal(p);const ovs=isOvs(store);const cur=getStoreCur(store);
+  const dist=distName(store.distId);const ctry=COUNTRIES[store.country]?.lb||store.country;
+  let items=p.items||[];if(hz)items=items.filter(i=>i.qty>0);
+  const itemsSummary=items.filter(i=>i.qty>0).map(i=>{
+    const a=ALBUMS.find(a=>a.k===i.type);const isPerk=i.type===store.unpoPerk;
+    return `<span class="${isPerk?'bx bx-pk':'tag'}" style="margin-right:3px">${isPerk?'⭐ ':''}`+a?.lb+` ×${i.qty}</span>`;
+  }).join('');
+  return `<div class="pcard">
+    <div class="pcard-hdr">
+      <div style="display:flex;flex-direction:column;min-width:0">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <span class="bx ${ovs?'bx-ovs':'bx-dom'}" style="font-size:10px">${ovs?'해외':'국내'}</span>
+          <span class="pcard-store">${store.name.replace("[음총]","").trim()}</span>
+          ${store.name.includes("[음총]")?`<span class="bx bx-plt2" style="font-size:10px">🎵 음총</span>`:''}
+          ${dist?`<span class="bx bx-plt" style="font-size:10px">🏷 플랫폼: ${dist}</span>`:''}
+          <span class="tag" style="font-size:10px">${ctry}</span>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:3px">
+          ${p.owner?`<span class="bx bx-prx" style="font-size:10px">→ ${p.owner}</span>`:''}
+          ${p.buyer?`<span class="bx" style="font-size:10px;background:rgba(34,197,94,.1);color:var(--ok);border:1px solid var(--ok)">↑ ${p.buyer}</span>`:''}
+        </div>
+      </div>
+      <div style="flex:1"></div>
+      ${stBadge(p.status||'waiting')}
+      <span class="mono" style="font-weight:700;color:${(p.status||'waiting')==='waiting'?'var(--warn)':'var(--ac)'}">${fKRW(t)}</span>
+      <button class="iBtn" onclick="editP('${p.id}')">✏️</button>
+      <button class="iBtn" onclick="delP('${p.id}')" style="color:var(--err)">🗑</button>
+    </div>
+    <div class="pcard-body">
+      ${itemsSummary?`<div style="margin-bottom:6px;display:flex;flex-wrap:wrap;gap:4px">${itemsSummary}</div>`:''}
+      ${ovs?renderOvsCost(p,store,cur):''}
+      ${!ovs&&p.domShip?`<div style="font-size:12px;color:var(--tx2)">🚚 국내배송비 ${fKRW(p.domShip)}</div>`:''}
+      ${p.discount?`<div style="font-size:12px;color:var(--ok)">🏷 할인 − ${fKRW(p.discount)}</div>`:''}
+      ${p.notes?`<div style="margin-top:6px;font-size:12px;color:var(--tx2)">📝 ${p.notes}</div>`:''}
+      ${p.purchaseDate?`<div style="margin-top:3px;font-size:11px;color:var(--tx3)">${fDate(p.purchaseDate)}</div>`:''}
+    </div>
+  </div>`;
+}
+
+function renderOvsCost(p,store,cur){
+  const r=rate(cur);
+  let fAmt=p.foreignTotal||0;
+  if(!fAmt) fAmt=(p.items||[]).reduce((s,it)=>{const pr=it.unitPrice>0?it.unitPrice:(storePrice(store,it.type)||0);return s+pr*(it.qty||0);},0);
+  const base=p.directKrw>0?p.directKrw:Math.round(fAmt*r);
+  const parts=[];
+  if(fAmt>0)parts.push(`${fFor(fAmt,cur)}${p.directKrw>0?' ⚡직접입력':' × '+Math.round(r).toLocaleString()+'원'}`);
+  if(p.intlShip)parts.push(`해외배송 ${fKRW(p.intlShip)}`);
+  if(p.fwdFee)parts.push(`배송대행 ${fKRW(p.fwdFee)}`);
+  if(p.customs)parts.push(`관세 ${fKRW(p.customs)}`);
+  if(p.domShip)parts.push(`국내배송 ${fKRW(p.domShip)}`);
+  return parts.length?`<div style="font-size:12px;color:var(--tx2);display:flex;flex-wrap:wrap;gap:6px">${parts.map(x=>`<span class="tag">${x}</span>`).join('')}</div>`:'';
+}
+
+// ═══════════════════════════════════════════
+// CALENDAR
+// ═══════════════════════════════════════════
+function renderCal(){
+  const mc=document.getElementById('main');
+  const y=S.calYear,m=S.calMonth;
+  const showOnline=S.calShowOnline!==false;
+  const showOffline=S.calShowOffline!==false;
+  const MN=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+  const DOW=['일','월','화','수','목','금','토'];
+  const first=new Date(y,m,1).getDay();
+  const last=new Date(y,m+1,0).getDate();
+  const today=new Date();
+
+  // Build event map per day
+  const evMap={}; // key=yyyy-mm-dd → [{type,store,purchaseId,label}]
+  const storeWithPurch=new Set(S.purchases.map(p=>p.storeId));
+
+  function addEv(ds,ev){
+    if(!ds)return;
+    const k=ds.slice(0,10);
+    if(!evMap[k])evMap[k]=[];
+    evMap[k].push(ev);
+  }
+
+  S.stores.forEach(s=>{
+    if(showOnline && s.purchaseEnd) addEv(s.purchaseEnd,{type:'dl',store:s,label:s.name});
+    if(showOffline && s.offlineStart){
+      const st=new Date(s.offlineStart),en=s.offlineEnd?new Date(s.offlineEnd):new Date(s.offlineStart);
+      for(let d=new Date(st);d<=en;d.setDate(d.getDate()+1)){
+        addEv(d.toISOString().slice(0,10),{type:'off',store:s,label:s.name});
+      }
+    }
+  });
+
+  S.purchases.forEach(p=>{
+    if(p.purchaseDate){
+      const store=S.stores.find(s=>s.id===p.storeId);
+      addEv(p.purchaseDate.slice(0,10),{type:'pur',store,purchaseId:p.id,label:store?.name||'?'});
+    }
+  });
+  // Fixed release dates (always shown)
+  addEv('2026-04-13',{type:'release',label:'DIGITAL RELEASE',color:'var(--ac2)',store:null,fixed:true});
+  addEv('2026-04-14',{type:'release',label:'ALBUM RELEASE',color:'var(--ok)',store:null,fixed:true});
+
+  // Build cells
+  let cells='';
+  const totalCells=Math.ceil((first+last)/7)*7;
+  for(let i=0;i<totalCells;i++){
+    const dayNum=i-first+1;
+    const valid=dayNum>=1&&dayNum<=last;
+    const d=valid?new Date(y,m,dayNum):null;
+    const ds=valid?`${y}-${String(m+1).padStart(2,'0')}-${String(dayNum).padStart(2,'0')}`:'';
+    const isTd=d&&d.toDateString()===today.toDateString();
+    const isSel=ds&&ds===S.calDay;
+    const evs=valid&&evMap[ds]||[];
+    const types=new Set(evs.map(e=>e.type));
+    const hasPurch=types.has('pur');
+
+    // Check if any STORE has a purchase (for deadline cells)
+    const storeEvs=evs.filter(e=>e.type==='dl'||e.type==='off');
+    const anyStorePurch=storeEvs.some(e=>e.store&&storeWithPurch.has(e.store.id));
+
+    // 초동 D-day: Apr 13~20 2026
+    const ddayRef=new Date('2026-04-20');
+    let ddayLabel='';
+    if(valid){
+      const cellDate=new Date(y,m,dayNum);
+      const diffDays=Math.round((ddayRef-cellDate)/(1000*60*60*24));
+      if(diffDays>=0&&diffDays<=7){
+        ddayLabel=diffDays===0?'D-Day':`D-${diffDays}`;
+      }
+    }
+
+    // Show max 2 event strips in cell
+    const releaseEvs=evs.filter(e=>e.type==='release');
+    const otherEvs=evs.filter(e=>e.type!=='release');
+    const displayEvs=[...releaseEvs,...otherEvs].slice(0,2);
+    const strips=displayEvs.map(ev=>{
+      const shortName=ev.label.length>7?ev.label.slice(0,7)+'…':ev.label;
+      const pfx=ev.type==='dl'?'⏰':ev.type==='off'?'📍':ev.type==='release'?'🎵':'✓';
+      return `<div class="cal-ev-strip ${ev.type}">${pfx} ${shortName}</div>`;
+    }).join('');
+    const more=evs.length>2?`<div style="font-size:8px;color:var(--tx3)">+${evs.length-2}</div>`:'';
+
+    cells+=`<div class="cal-day${!valid?' other-month':''}${isTd?' today':''}${isSel?' selected':''}${evs.length||ddayLabel?' has-ev':''}" onclick="${valid?`selCalDay('${ds}')`:''}" style="${!valid?'pointer-events:none':''}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1px">
+        <div class="cal-dn" style="${isTd?'color:var(--ac);font-weight:700':''}">${valid?dayNum:''}</div>
+        <div style="display:flex;gap:2px;align-items:center">
+          ${ddayLabel?`<span style="font-size:8px;color:var(--err);font-weight:800;line-height:1">${ddayLabel}</span>`:''}
+          ${anyStorePurch?`<span style="font-size:8px;color:var(--ok);font-weight:700">✓</span>`:''}
+        </div>
+      </div>
+      ${strips}${more}
+    </div>`;
+  }
+
+  // Day detail
+  const dayEvs=S.calDay&&evMap[S.calDay];
+  let detailHtml='';
+  if(dayEvs){
+    const grouped={dl:[],off:[],pur:[],release:[]};
+    dayEvs.forEach(ev=>{const k=ev.type;if(grouped[k])grouped[k].push(ev);});
+
+    detailHtml=`<div class="cal-detail">
+      <div style="font-weight:700;font-size:14px;margin-bottom:10px">📅 ${S.calDay}</div>`;
+
+    // Release events (fixed)
+    grouped.release.forEach(ev=>{
+      detailHtml+=`<div class="cal-detail-ev">
+        <div class="cal-detail-head">
+          <div class="cal-ev-dot" style="width:8px;height:8px;border-radius:50%;background:var(--ac2);flex-shrink:0"></div>
+          <div style="font-weight:700;font-size:15px;color:var(--ac2)">${ev.label} 🎵</div>
+        </div>
+        <div class="cal-info-row"><span>📅</span><span>PLAVE 4th Mini Album Caligo Pt.2</span></div>
+      </div>`;
+    });
+
+    // Deadlines
+    grouped.dl.forEach(ev=>{
+      const s=ev.store;
+      const hasPu=storeWithPurch.has(s.id);
+      const ps=S.purchases.filter(p=>p.storeId===s.id);
+      detailHtml+=`<div class="cal-detail-ev">
+        <div class="cal-detail-head">
+          <div class="cal-ev-dot" style="width:8px;height:8px;border-radius:50%;background:var(--err);flex-shrink:0"></div>
+          <div style="font-weight:600">⏰ 구매 마감 — ${s.name}</div>
+          ${hasPu?`<span class="bx bx-ord" style="font-size:10px">구매완료</span>`:'<span class="bx bx-none" style="font-size:10px">미구매</span>'}
+        </div>
+        ${s.purchaseEndTxt?`<div class="cal-info-row"><span>📋</span><span>${s.purchaseEndTxt}</span></div>`:''}
+        ${s.url?`<div class="cal-info-row"><span>🔗</span><a href="${s.url}" target="_blank">구매 링크</a></div>`:''}
+        ${ps.length?`<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">${ps.map(p=>{
+          const si=STATUSES.find(x=>x.k===(p.status||'waiting'));
+          const items=(p.items||[]).filter(i=>i.qty>0).map(i=>ALBUMS.find(a=>a.k===i.type)?.lb+' ×'+i.qty).join(', ');
+          return `<div style="background:var(--sur2);border-radius:4px;padding:4px 8px;font-size:11px">
+            <span class="bx ${si?.cls||''}" style="font-size:10px">${si?.lb}</span> ${items}
+            <button class="btn btn-s btn-xs" onclick="editP('${p.id}')" style="margin-left:4px">수정</button>
+          </div>`;
+        }).join('')}</div>`:''}
+        ${!hasPu?`<button class="btn btn-p btn-xs" style="margin-top:6px" onclick="addP('${s.id}')">+ 구매 추가</button>`:''}
+      </div>`;
+    });
+
+    // Offline events
+    grouped.off.forEach(ev=>{
+      const s=ev.store;
+      const range=s.offlineStart&&s.offlineEnd&&s.offlineStart!==s.offlineEnd?`${s.offlineStart} ~ ${s.offlineEnd}`:s.offlineStart||'';
+      detailHtml+=`<div class="cal-detail-ev">
+        <div class="cal-detail-head">
+          <div class="cal-ev-dot" style="width:8px;height:8px;border-radius:50%;background:var(--pk);flex-shrink:0"></div>
+          <div style="font-weight:600">📍 오프라인 이벤트 — ${s.name}</div>
+          ${s.offlineLuckyDraw?`<span class="bx bx-pk" style="font-size:10px">🎰 럭드</span>`:''}
+        </div>
+        ${range?`<div class="cal-info-row"><span>📅</span><span>${range}</span></div>`:''}
+        ${s.offlineHours?`<div class="cal-info-row"><span>⏰</span><span>${s.offlineHours}</span></div>`:''}
+        ${s.offlineAddress?`<div class="cal-info-row"><span>📍</span><span>${s.offlineAddress}</span></div>`:''}
+        ${s.offlineNote?`<div class="cal-info-row"><span>📝</span><span style="white-space:pre-line">${s.offlineNote}</span></div>`:''}
+        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+          ${s.url?`<a href="${s.url}" target="_blank" class="btn btn-s btn-xs">🔗 링크</a>`:''}
+          <button class="btn btn-s btn-xs" onclick="editStore('${s.id}')">✏️ 정보수정</button>
+        </div>
+      </div>`;
+    });
+
+    // Purchase records
+    if(grouped.pur.length){
+      detailHtml+=`<div class="cal-detail-ev">
+        <div class="cal-detail-head">
+          <div class="cal-ev-dot" style="width:8px;height:8px;border-radius:50%;background:var(--ac);flex-shrink:0"></div>
+          <div style="font-weight:600">🛒 구매 기록 (${grouped.pur.length}건)</div>
+        </div>
+        ${grouped.pur.map(ev=>{
+          const p=S.purchases.find(x=>x.id===ev.purchaseId);if(!p)return '';
+          const t=calcTotal(p);
+          const si=STATUSES.find(s=>s.k===(p.status||'waiting'));
+          const items=(p.items||[]).filter(i=>i.qty>0).map(i=>ALBUMS.find(a=>a.k===i.type)?.lb+' ×'+i.qty).join(', ')||'—';
+          return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;flex-wrap:wrap;font-size:13px">
+            <span style="flex:1">${ev.store?.name||'?'} · ${items}</span>
+            <span class="bx ${si?.cls||''}" style="font-size:10px">${si?.lb}</span>
+            <span class="mono">${fKRW(t)}</span>
+            <button class="btn btn-s btn-xs" onclick="editP('${p.id}')">수정</button>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }
+
+    detailHtml+=`</div>`;
+  }
+
+  mc.innerHTML=`<div class="cal-wrap">
+    <div class="cal-nav">
+      <button class="btn btn-s btn-sm" onclick="calMove(-1)">‹</button>
+      <div class="cal-nav-title">${y}년 ${MN[m]}</div>
+      <button class="btn btn-s btn-sm" onclick="calMove(1)">›</button>
+    </div>
+    <div class="cal-toggle-row">
+      <span class="chip sm ${showOnline?'on':''}" onclick="S.calShowOnline=!S.calShowOnline;renderCal()">🛍 온라인판매</span>
+      <span class="chip sm ${showOffline?'on':''}" onclick="S.calShowOffline=!S.calShowOffline;renderCal()">📍 오프라인</span>
+      <span style="display:flex;align-items:center;gap:3px;font-size:11px;color:var(--tx2)">
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--ac2);display:inline-block"></span>디지털/앨범발매
+      </span>
+      <span style="font-size:11px;color:var(--ok)">✓ 구매완료</span>
+      <span style="font-size:11px;color:var(--err);font-weight:700">D-X 초동마감</span>
+    </div>
+    <div class="cal-grid">
+      ${DOW.map((d,i)=>`<div class="cal-dow" style="${i===0?'color:var(--err)':i===6?'color:var(--ac)':''}">${d}</div>`).join('')}
+      ${cells}
+    </div>
+    ${detailHtml}
+  </div>`;
+}
+function calMove(d){
+  S.calMonth+=d;
+  if(S.calMonth>11){S.calMonth=0;S.calYear++;}
+  if(S.calMonth<0){S.calMonth=11;S.calYear--;}
+  S.calDay=null;render();
+}
+function selCalDay(ds){S.calDay=S.calDay===ds?null:ds;render();}
+
+// ═══════════════════════════════════════════
+// MANAGE
+// ═══════════════════════════════════════════
+function renderMgr(){
+  const mc=document.getElementById('main');
+  const sub=S.mgrSub||'stores';
+  // Ensure admin unlock for non-stores subs
+
+  mc.innerHTML=`
+  <div class="sub-tabs">
+    <div class="sub-tab ${sub==='stores'?'on':''}" onclick="S.mgrSub='stores';renderMgr()">🏪 판매처 / 플랫폼</div>
+    <div class="sub-tab ${sub==='prices'?'on':''}" onclick="S.mgrSub='prices';renderMgr()">💰 단가 관리</div>
+    <div class="sub-tab ${sub==='rates'?'on':''}" onclick="S.mgrSub='rates';renderMgr()">💱 환율</div>
+  </div>
+  <div id="mgr-sub"></div>`;
+  if(sub==='stores') renderMgrStores();
+  else if(sub==='prices') renderMgrAdmin('prices');
+  else renderMgrAdmin('rates');
+}
+
+const ADMIN_PW = '1234'; // Change this password
+function renderMgrAdmin(mode){
+  const el=document.getElementById('mgr-sub');
+  if(S.adminUnlocked){
+    if(mode==='prices') renderMgrPrices();
+    else renderMgrRates();
+    el.insertAdjacentHTML('afterbegin',`<div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+      <button class="btn btn-s btn-sm" onclick="S.adminUnlocked=false;renderMgr()">🔒 잠금</button>
+    </div>`);
+  } else {
+    el.innerHTML=`<div style="display:flex;justify-content:center;padding:40px 20px">
+      <div class="lock-box">
+        <div style="font-size:36px;margin-bottom:12px">🔒</div>
+        <div style="font-weight:700;margin-bottom:6px">관리자 전용</div>
+        <div style="font-size:12px;color:var(--tx2);margin-bottom:16px">${mode==='prices'?'단가 관리':'환율 설정'}는 비밀번호가 필요합니다</div>
+        <input type="password" id="admin-pw" placeholder="비밀번호 입력" style="margin-bottom:10px;text-align:center" onkeydown="if(event.key==='Enter')checkAdminPw('${mode}')">
+        <button class="btn btn-p" style="width:100%" onclick="checkAdminPw('${mode}')">확인</button>
+      </div>
+    </div>`;
+    setTimeout(()=>document.getElementById('admin-pw')?.focus(),100);
+  }
+}
+function checkAdminPw(mode){
+  const pw=document.getElementById('admin-pw')?.value;
+  if(pw===ADMIN_PW){S.adminUnlocked=true;renderMgr();}
+  else{
+    const inp=document.getElementById('admin-pw');
+    if(inp){inp.style.borderColor='var(--err)';inp.value='';inp.placeholder='비밀번호가 틀렸습니다';}
+  }
+}
+
+function renderMgrStores(){
+  const el=document.getElementById('mgr-sub');
+  el.innerHTML=`
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div style="font-weight:600">판매처 목록 (${S.stores.length}곳) <span style='font-size:11px;color:var(--tx2)'>— ⚙ 관리자 전용</span></div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-s btn-sm" onclick="openDistMgr()">플랫폼 관리</button>
+      <button class="btn btn-p btn-sm" onclick="addStore()">+ 판매처 추가</button>
+    </div>
+  </div>
+  ${[...S.stores].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(s=>storeCard(s)).join('')}`;
+}
+
+function storeCard(s){
+  const ovs=isOvs(s);const cur=getStoreCur(s);
+  const days=s.purchaseEnd?dDays(s.purchaseEnd):null;
+  const deadline=s.purchaseEndTxt||(s.purchaseEnd?fDate(s.purchaseEnd):'');
+  const dcolor=days===null?'var(--tx2)':days<0?'var(--tx3)':days<=2?'var(--err)':days<=7?'var(--warn)':'var(--ok)';
+  const activePrices=ALBUMS.filter(a=>storePrice(s,a.k)!=null);
+  return `<div class="scard">
+    <div style="display:flex;align-items:flex-start;gap:8px">
+      <div style="flex:1">
+        <div class="scard-name">${s.name.replace("[음총]","").trim()} ${s.name.includes("[음총]")?'<span class="bx bx-plt2" style="font-size:10px">🎵 음총</span>':''}</div>
+        <div class="scard-dist">${distName(s.distId)||''}</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px">
+          <span class="bx ${ovs?'bx-ovs':'bx-dom'}">${COUNTRIES[s.country]?.lb||s.country}</span>
+          ${s.custom?`<span class="bx" style="background:rgba(34,197,94,.1);color:var(--ok)">커스텀</span>`:''}
+          ${s.unpoPerk?`<span class="bx bx-pk">⭐ ${ALBUMS.find(a=>a.k===s.unpoPerk)?.lb||s.unpoPerk} 미공포</span>`:''}
+          ${s.priceMode==='custom'?`<span class="tag">단가직접입력</span>`:''}
+        </div>
+      </div>
+      <div style="display:flex;gap:4px">
+        <button class="btn btn-s btn-xs" onclick="editStore('${s.id}')">✏️</button>
+        ${s.custom?`<button class="btn btn-d btn-xs" onclick="delStore('${s.id}')">🗑</button>`:''}
+      </div>
+    </div>
+    ${(s.purchaseStart||deadline)?`
+    <div style="background:var(--sur2);border-radius:4px;padding:7px 10px;margin-top:8px;font-size:12px">
+      <span style="color:var(--tx2)">🛍 구매기간 </span>
+      ${s.purchaseStart?`<span style="color:var(--tx2)">${fDate(s.purchaseStart)} ~</span>`:''}
+      ${deadline?`<span style="font-weight:600;color:${dcolor}"> ${deadline}${days>=0?' (D-'+days+')':days<0?' (종료)':''}</span>`:''}
+    </div>`:''}
+    ${s.offlineNote?`
+    <div style="background:var(--pk-g);border:1px solid rgba(168,85,247,.2);border-radius:4px;padding:7px 10px;margin-top:6px;font-size:12px">
+      <div style="color:var(--pk);font-weight:600;margin-bottom:6px">📍 오프라인${s.offlineLuckyDraw?' 🎰 럭드':''} ${s.offlineStart?`(${s.offlineStart}${s.offlineEnd&&s.offlineEnd!==s.offlineStart?'~'+s.offlineEnd:''})`:''}</div>
+      ${s.offlineHours?`<div style="font-size:11px;color:var(--tx2)">⏰ ${s.offlineHours}</div>`:''}
+      ${s.offlineAddress?`<div style="font-size:11px;color:var(--tx2)">📍 ${s.offlineAddress}</div>`:''}
+      ${s.offlineNote?`<div style="white-space:pre-line;color:var(--tx2);margin-top:3px">${s.offlineNote}</div>`:''}
+    </div>`:''}
+    ${activePrices.length?`
+    <div class="store-prices" style="margin-top:8px">
+      ${activePrices.map(a=>{
+        const p=storePrice(s,a.k);const isPerk=a.k===s.unpoPerk;
+        return `<div class="sp-item ${isPerk?'perk':''}">
+          <div class="sp-lb">${a.lb}${isPerk?' ⭐':''}</div>
+          <div class="sp-v">${cur==='KRW'?fKRW(p):fFor(p,cur)}</div>
+        </div>`;
+      }).join('')}
+    </div>`:''}
+    ${s.url?`<div style="margin-top:8px"><a href="${s.url}" target="_blank" class="btn btn-s btn-xs">🔗 구매 링크</a></div>`:''}
+    ${s.memo?`<div style="margin-top:6px;font-size:12px;color:var(--tx2);padding:6px 8px;background:var(--sur2);border-radius:4px">📝 ${s.memo}</div>`:''}
+  </div>`;
+}
+
+function renderMgrPrices(){
+  const el=document.getElementById('mgr-sub');
+  let html=`<div class="alert-info">각 국가·통화별 기준 단가입니다. 판매처에서 "단가 직접입력"을 선택하면 해당 판매처만 다른 단가를 적용합니다.</div>`;
+  Object.entries(COUNTRIES).forEach(([code,info])=>{
+    const prices=S.countryPrices[code]||{};
+    html+=`<div class="card" style="margin-bottom:12px">
+      <div class="card-hdr"><div class="card-ttl">${info.lb} (${info.cur})</div></div>
+      <div class="grid g4">
+        ${ALBUMS.map(a=>`<div>
+          <div class="fl">${a.lb}</div>
+          <input type="number" step="0.01" value="${prices[a.k]??''}" placeholder="없음"
+            onchange="S.countryPrices['${code}']['${a.k}']=this.value===''?null:parseFloat(this.value);save();renderMgrPrices()">
+        </div>`).join('')}
+      </div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+function renderMgrRates(){
+  const el=document.getElementById('mgr-sub');
+  const upd=S.ratesAt?new Date(S.ratesAt).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}):'미조회';
+  el.innerHTML=`
+  <div class="alert-info">마지막 업데이트: ${upd}</div>
+  <button class="btn btn-p" style="margin-bottom:14px" onclick="fetchRates()">↻ 실시간 환율 조회</button>
+  <div class="grid g2">
+    ${['JPY','CNY','USD','TWD','OTHER'].map(c=>{
+      const r=S.rates[c];
+      const lbs={JPY:'🇯🇵 JPY',CNY:'🇨🇳 CNY',USD:'🇺🇸 USD',TWD:'🇹🇼 TWD',OTHER:'🌐 기타'};
+      return `<div class="card">
+        <div class="card-hdr">
+          <div class="card-ttl">${lbs[c]}</div>
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+            <input type="checkbox" ${r.manual?'checked':''} onchange="S.rates['${c}'].manual=this.checked;save();renderMgrRates()" style="width:auto"> 수동
+          </label>
+        </div>
+        ${c==='OTHER'?`<div class="fg"><div class="fl">통화명</div><input type="text" value="${r.name||''}" onchange="S.rates['${c}'].name=this.value;save()"></div>`:''}
+        <div class="fg">
+          <div class="fl">1 ${c==='OTHER'?r.name||'기타':c} = __ 원</div>
+          <input type="number" step="0.01" value="${r.rate}" onchange="S.rates['${c}'].rate=parseFloat(this.value)||0;save()" ${!r.manual?'readonly style="background:var(--sur3);color:var(--tx2)"':''}>
+          ${!r.manual?`<div class="fn">${r.updAt?'✓ '+new Date(r.updAt).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})+' 업데이트':'자동조회 대기'}</div>`:`<div class="fn" style="color:var(--warn)">수동입력 (자동조회 제외)</div>`}
+        </div>
+        <div style="font-size:12px;color:var(--tx2)">예시: 1,000 = ${fKRW(1000*r.rate)}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════
+// PURCHASE MODAL
+// ═══════════════════════════════════════════
+function addP(preStoreId){
+  const p={id:null,storeId:preStoreId||S.stores[0]?.id||'',items:[],status:'waiting',
+    domShip:0,foreignTotal:0,directKrw:0,intlShip:0,fwdFee:0,customs:0,
+    buyer:'',owner:'',notes:'',purchaseDate:''};
+  showPModal(p,false);
+}
+function editP(id){
+  const p=S.purchases.find(x=>x.id===id);
+  if(!p)return;
+  showPModal(JSON.parse(JSON.stringify(p)),true);
+}
+
+function showPModal(p,isEdit){
+  window._ep=p;
+
+  const stOpts2=STATUSES.filter(s=>s.k!=='none').map(s=>`<option value="${s.k}" ${(p.status||'waiting')===s.k?'selected':''}>${s.lb}</option>`).join('');
+
+  openM(isEdit?'구매 기록 수정':'구매 기록 추가',`
+  <!-- Store picker: grouped by base name -->
+  <div class="fg" style="margin-bottom:10px">
+    <div class="fl">🏪 판매처 선택 <span class="req">*</span></div>
+    <div style="position:relative;margin-bottom:6px">
+      <input type="text" id="pf-search" placeholder="판매처 검색..." oninput="_filterStoreList(this.value)"
+        style="padding-left:28px;padding-right:8px;border-radius:var(--r-sm)">
+      <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none">🔍</span>
+    </div>
+    <div id="pf-store-list" style="max-height:240px;overflow-y:auto;border:1px solid var(--bd);border-radius:var(--r-sm);background:var(--sur2)"></div>
+  </div>
+
+  <!-- Status -->
+  <div class="fg">
+    <div class="fl">구매 상태</div>
+    <select id="pf-st">${stOpts2}</select>
+  </div>
+
+  <div id="pf-dyn"></div>
+  <div class="divider"></div>
+  <div class="fr2 fg">
+    <div><div class="fl">사다줄 경우 — 받는 사람</div>
+      <input type="text" id="pf-own" value="${p.owner||''}" placeholder="본인 구매시 비워두세요"></div>
+    <div><div class="fl">대리구매 받은 경우 — 사준 사람</div>
+      <input type="text" id="pf-buy" value="${p.buyer||''}" placeholder="직접 구매시 비워두세요"></div>
+  </div>
+  <div class="fr2 fg">
+    <div><div class="fl">구매일</div><input type="datetime-local" id="pf-dt" value="${p.purchaseDate||''}"></div>
+    <div><div class="fl">메모</div><input type="text" id="pf-nt" value="${p.notes||''}" placeholder="주문번호 등"></div>
+  </div>`);
+
+  document.getElementById('m-foot').innerHTML=`
+    <button class="btn btn-s" onclick="closeM()">취소</button>
+    <button class="btn btn-p" onclick="_saveP()">저장</button>`;
+
+  _buildStoreList('', p.storeId);
+  if(p.storeId) _updPForm();
+}
+
+function _getBaseName(name){
+  const clean=name.replace('[음총]','').trim();
+  return clean.replace(/\s*\([^)]*\)\s*$/, '').trim() || clean;
+}
+
+function _buildStoreList(filter, selStoreId){
+  const el=document.getElementById('pf-store-list');
+  if(!el)return;
+  const q=(filter||'').toLowerCase();
+
+  // Group stores by base name
+  const groups={};
+  const allStores=[...S.stores].sort((a,b)=>{
+    const ba=_getBaseName(a.name), bb=_getBaseName(b.name);
+    const na=a.name.replace('[음총]','').trim(), nb=b.name.replace('[음총]','').trim();
+    const cmp=ba.localeCompare(bb,'ko');
+    return cmp!==0?cmp:na.localeCompare(nb,'ko');
+  });
+
+  allStores.forEach(s=>{
+    const base=_getBaseName(s.name);
+    const sName=s.name.replace('[음총]','').trim();
+    const distN=distName(s.distId);
+    const ctry=COUNTRIES[s.country]?.lb||s.country;
+    const searchStr=(sName+' '+distN+' '+ctry+' '+base).toLowerCase();
+    if(q && !searchStr.includes(q)) return;
+    if(!groups[base])groups[base]=[];
+    groups[base].push(s);
+  });
+
+  const baseKeys=Object.keys(groups);
+  if(!baseKeys.length){
+    el.innerHTML='<div style="padding:14px;text-align:center;color:var(--tx3);font-size:13px">검색 결과 없음</div>';
+    return;
+  }
+
+  let out='';
+  baseKeys.forEach(base=>{
+    const ss=groups[base];
+    const isSingle=ss.length===1&&_getBaseName(ss[0].name)===ss[0].name.replace('[음총]','').trim();
+    const isEumBase=ss.some(s=>s.name.includes('[음총]'));
+
+    if(ss.length===1){
+      // Single store: show as one row
+      const s=ss[0];
+      const sName=s.name.replace('[음총]','').trim();
+      const dist=distName(s.distId);
+      const ctry=COUNTRIES[s.country]?.lb||s.country;
+      const isOvs_=isOvs(s);
+      const isEum=s.name.includes('[음총]');
+      const sel=s.id===selStoreId;
+      out+=`<div class="store-list-item ${sel?'sel':''}" id="sli-${s.id}" onclick="_selPStore('${s.id}')" style="cursor:pointer;padding:9px 12px;border-bottom:1px solid var(--bd);transition:background .1s;${sel?'background:var(--ac-g);border-left:3px solid var(--ac)':''}">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="flex:1;font-size:13px;font-weight:${sel?700:500}">${sName}${isEum?' <span style="font-size:10px;color:var(--info)">🎵</span>':''}</span>
+          <span class="bx ${isOvs_?'bx-ovs':'bx-dom'}" style="font-size:10px">${ctry}</span>
+          ${dist?`<span class="bx bx-plt" style="font-size:10px">🏷 ${dist}</span>`:''}
+        </div>
+      </div>`;
+    } else {
+      // Group header + sub-items
+      out+=`<div style="padding:7px 12px 3px;background:var(--sur3);font-size:11px;font-weight:700;color:var(--tx2);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:5px">
+        ${isEumBase?'<span style="font-size:10px;color:var(--info)">🎵</span>':'🏪'} ${base}
+      </div>`;
+      ss.forEach(s=>{
+        const sName=s.name.replace('[음총]','').trim();
+        const subLabel=sName.replace(base,'').replace(/^\s*\(|\)\s*$/g,'').trim()||sName;
+        const dist=distName(s.distId);
+        const ctry=COUNTRIES[s.country]?.lb||s.country;
+        const isOvs_=isOvs(s);
+        const sel=s.id===selStoreId;
+        out+=`<div class="store-list-item ${sel?'sel':''}" id="sli-${s.id}" onclick="_selPStore('${s.id}')" style="cursor:pointer;padding:8px 12px 8px 20px;border-bottom:1px solid var(--bd);transition:background .1s;${sel?'background:var(--ac-g);border-left:3px solid var(--ac)':''}">
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="flex:1;font-size:12px;font-weight:${sel?700:400};color:${sel?'var(--tx)':'var(--tx2)'}">↳ ${subLabel||sName}</span>
+            <span class="bx ${isOvs_?'bx-ovs':'bx-dom'}" style="font-size:10px">${ctry}</span>
+            ${dist?`<span class="bx bx-plt" style="font-size:10px">🏷 ${dist}</span>`:''}
+          </div>
+        </div>`;
+      });
+    }
+  });
+
+  el.innerHTML=out;
+
+  // Scroll selected item into view
+  if(selStoreId){
+    setTimeout(()=>{
+      const selEl=document.getElementById('sli-'+selStoreId);
+      if(selEl)selEl.scrollIntoView({block:'nearest'});
+    },50);
+  }
+}
+
+function _filterStoreList(q){
+  const selStoreId=window._ep?.storeId||'';
+  _buildStoreList(q, selStoreId);
+}
+
+function _selPStore(sid){
+  if(!window._ep)return;
+  window._ep.storeId=sid;
+  // Update visual selection
+  document.querySelectorAll('.store-list-item').forEach(el=>{
+    const isSel=el.id==='sli-'+sid;
+    el.style.background=isSel?'var(--ac-g)':'';
+    el.style.borderLeft=isSel?'3px solid var(--ac)':'';
+    const txt=el.querySelector('span[style*="font-weight"]');
+    if(txt)txt.style.fontWeight=isSel?700:txt.id?.includes('sub')?400:500;
+  });
+  const store=S.stores.find(s=>s.id===sid);
+  if(store) _showPlatRow(store);
+  _updPForm();
+}
+
+
+function _showPlatRow(store){
+  const platRow=document.getElementById('pf-plat-row');
+  const platInfo=document.getElementById('pf-plat-info');
+  if(!platRow||!platInfo)return;
+  const dist=distName(store.distId);
+  if(dist){
+    platRow.style.display='';
+    platInfo.innerHTML=`<span class="bx bx-plt">🏷 ${dist}</span>`;
+  } else {
+    platRow.style.display='none';
+  }
+}
+
+function _updPForm(){
+  const p=window._ep;if(!p)return;
+  const sid=p.storeId;if(!sid)return;
+  const store=S.stores.find(s=>s.id===sid);if(!store)return;
+  const ovs=isOvs(store);const cur=getStoreCur(store);const r=rate(cur);
+  const el=document.getElementById('pf-dyn');if(!el)return;
+
+  // Ensure items array
+  if(!p.items||p.items.length===0) p.items=ALBUMS.map(a=>({type:a.k,qty:0,unitPrice:0}));
+  ALBUMS.forEach(a=>{if(!p.items.find(i=>i.type===a.k))p.items.push({type:a.k,qty:0,unitPrice:0});});
+
+  const albRows=ALBUMS.map(a=>{
+    const isPerk=a.k===store.unpoPerk;
+    const sp=storePrice(store,a.k);
+    const item=p.items.find(i=>i.type===a.k)||{qty:0,unitPrice:0};
+    const disabled=sp==null;
+    const priceStr=disabled?'취급없음':ovs?fFor(sp,cur)+` ≈ ${fKRW(Math.round(sp*r))}`:fKRW(sp);
+    return `<div class="alb-row ${isPerk?'perk':''}" style="${disabled?'opacity:.4':''}">
+      <div class="alb-info">
+        <div class="alb-name">${a.lb}${isPerk?` <span class="bx bx-pk" style="font-size:10px">미공포</span>`:''}</div>
+        <div class="alb-price">${priceStr}</div>
+      </div>
+      <div class="qty-ctrl">
+        <button type="button" class="qty-btn" onclick="_stepQ('${a.k}',-1)" ${disabled?'disabled':''}>−</button>
+        <input type="number" class="qty-in" id="qi-${a.k}" min="0" max="99" value="${item.qty||0}" ${disabled?'disabled':''} oninput="_updQ('${a.k}',this.value)">
+        <button type="button" class="qty-btn" onclick="_stepQ('${a.k}',1)" ${disabled?'disabled':''}>+</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  const ovsSection=ovs?`
+  <div style="padding:12px;background:var(--sur3);border-top:1px solid var(--bd)">
+    <div class="section-ttl">🌏 해외 비용 (원화 환산)</div>
+    <div class="alert-info" style="margin-bottom:10px">💱 1 ${cur} = ${Math.round(r).toLocaleString()}원 · 수량×단가 자동계산, 직접입력 시 우선적용</div>
+    <div class="fr2 fg">
+      <div><div class="fl">직접 결제금액 (${cur})</div>
+        <input type="number" step="0.01" id="pf-ft" value="${p.foreignTotal||''}" placeholder="수량 자동계산" oninput="_ep.foreignTotal=parseFloat(this.value)||0;_updOC()"></div>
+      <div><div class="fl">실제 원화 <span style="color:var(--warn);font-size:10px">⚡ 최우선</span></div>
+        <input type="number" id="pf-dk" value="${p.directKrw||''}" placeholder="환율 무시" oninput="_ep.directKrw=parseFloat(this.value)||0;_updOC()"></div>
+    </div>
+    <div class="fr3 fg">
+      <div><div class="fl">해외내배송 (원화)</div>
+        <input type="number" id="pf-is" value="${p.intlShip||''}" placeholder="0" oninput="_ep.intlShip=parseFloat(this.value)||0;_updOC()">
+        ${store.defOvsShip?`<div class="fn">기본 ${fFor(store.defOvsShip,cur)} ≈ ${fKRW(Math.round(store.defOvsShip*r))}</div>`:''}</div>
+      <div><div class="fl">배송대행비 (원화)</div>
+        <input type="number" id="pf-ff" value="${p.fwdFee||''}" placeholder="0" oninput="_ep.fwdFee=parseFloat(this.value)||0;_updOC()"></div>
+      <div><div class="fl">관세 (원화)</div>
+        <input type="number" id="pf-cx" value="${p.customs||''}" placeholder="0" oninput="_ep.customs=parseFloat(this.value)||0;_updOC()"></div>
+    </div>
+    <div class="fr2" style="gap:10px" class="fg">
+      <div><div class="fl">국내배송비 (원화)</div>
+        <input type="number" id="pf-ds" value="${p.domShip||''}" placeholder="0" oninput="_ep.domShip=parseFloat(this.value)||0;_updOC()"></div>
+      <div><div class="fl">🏷 할인금액 (원화)</div>
+        <input type="number" id="pf-disc" value="${p.discount||''}" placeholder="0" oninput="_ep.discount=parseFloat(this.value)||0;_updOC()" style="border-color:var(--ok)"></div>
+    </div>
+    <div id="oc-prev"></div>
+  </div>`:
+  `<div style="padding:12px;border-top:1px solid var(--bd)">
+    <div class="fr2" style="gap:10px">
+      <div><div class="fl">국내배송비 (원화)</div>
+        <input type="number" id="pf-ds" value="${p.domShip!=null?p.domShip:store.defDomShip||0}" placeholder="0" oninput="_ep.domShip=parseFloat(this.value)||0"></div>
+      <div><div class="fl">🏷 할인금액 (원화)</div>
+        <input type="number" id="pf-disc" value="${p.discount||''}" placeholder="0" oninput="_ep.discount=parseFloat(this.value)||0" style="border-color:var(--ok)"></div>
+    </div>
+  </div>`;
+
+  el.innerHTML=`<div style="border:1px solid var(--bd);border-radius:var(--r-sm);overflow:hidden;margin-bottom:4px">
+    <div style="padding:8px 12px;background:var(--sur2);font-size:12px;font-weight:600;color:var(--tx2)">💿 앨범 수량 (0 = 미구매)</div>
+    ${albRows}
+    ${ovsSection}
+  </div>`;
+  if(ovs)_updOC();
+}
+
+function _stepQ(type,d){
+  const inp=document.getElementById(`qi-${type}`);if(!inp||inp.disabled)return;
+  inp.value=Math.max(0,(parseInt(inp.value)||0)+d);
+  _updQ(type,inp.value);
+}
+function _updQ(type,val){
+  const p=window._ep;if(!p)return;
+  let it=p.items.find(i=>i.type===type);
+  if(!it){it={type,qty:0,unitPrice:0};p.items.push(it);}
+  it.qty=parseInt(val)||0;
+  _updOC();
+}
+function _updOC(){
+  const el=document.getElementById('oc-prev');if(!el)return;
+  const p=window._ep;if(!p)return;
+  const store=S.stores.find(s=>s.id===p.storeId);if(!store)return;
+  const cur=getStoreCur(store);const r=rate(cur);
+  let fAmt=p.foreignTotal||0;
+  if(!fAmt) fAmt=(p.items||[]).reduce((s,it)=>{
+    const pr=it.unitPrice>0?it.unitPrice:(storePrice(store,it.type)||0);
+    return s+pr*(it.qty||0);},0);
+  const base=p.directKrw>0?p.directKrw:Math.round(fAmt*r);
+  const total=base+(p.intlShip||0)+(p.fwdFee||0)+(p.customs||0)+(p.domShip||0);
+  if(!total){el.innerHTML='';return;}
+  el.innerHTML=`<div class="cost-box">
+    ${fAmt>0&&!p.directKrw?`<div class="cost-row"><span style="color:var(--tx2)">${fFor(fAmt,cur)} × ${Math.round(r).toLocaleString()}</span><span class="mono">${fKRW(Math.round(fAmt*r))}</span></div>`:''}
+    ${p.directKrw>0?`<div class="cost-row"><span style="color:var(--warn)">⚡ 직접입력</span><span class="mono">${fKRW(p.directKrw)}</span></div>`:''}
+    ${p.intlShip?`<div class="cost-row"><span style="color:var(--tx2)">해외내배송</span><span class="mono">${fKRW(p.intlShip)}</span></div>`:''}
+    ${p.fwdFee?`<div class="cost-row"><span style="color:var(--tx2)">배송대행</span><span class="mono">${fKRW(p.fwdFee)}</span></div>`:''}
+    ${p.customs?`<div class="cost-row"><span style="color:var(--tx2)">관세</span><span class="mono">${fKRW(p.customs)}</span></div>`:''}
+    ${p.domShip?`<div class="cost-row"><span style="color:var(--tx2)">국내배송</span><span class="mono">${fKRW(p.domShip)}</span></div>`:''}
+    ${p.discount>0?`<div class="cost-row" style="color:var(--ok)"><span>🏷 할인</span><span class="mono">− ${fKRW(p.discount)}</span></div>`:''}
+    <div class="cost-row total"><span>예상 합계</span><span class="mono" style="color:var(--ac)">${fKRW(total)}</span></div>
+  </div>`;
+}
+function _saveP(){
+  const p=window._ep;if(!p)return;
+  const sid=p.storeId;
+  if(!sid){toast('판매처를 선택해주세요','warn');return;}
+  p.status=document.getElementById('pf-st')?.value||'waiting';
+  p.owner=document.getElementById('pf-own')?.value||'';
+  p.buyer=document.getElementById('pf-buy')?.value||'';
+  p.notes=document.getElementById('pf-nt')?.value||'';
+  p.purchaseDate=document.getElementById('pf-dt')?.value||'';
+  p.domShip=parseFloat(document.getElementById('pf-ds')?.value)||0;
+  p.discount=parseFloat(document.getElementById('pf-disc')?.value)||0;
+  const store=S.stores.find(s=>s.id===sid);
+  if(isOvs(store)){
+    p.foreignTotal=parseFloat(document.getElementById('pf-ft')?.value)||0;
+    p.directKrw=parseFloat(document.getElementById('pf-dk')?.value)||0;
+    p.intlShip=parseFloat(document.getElementById('pf-is')?.value)||0;
+    p.fwdFee=parseFloat(document.getElementById('pf-ff')?.value)||0;
+    p.customs=parseFloat(document.getElementById('pf-cx')?.value)||0;
+  }
+  p.items=(p.items||[]).filter(i=>(i.qty||0)>0);
+  if(!p.id){p.id='p'+Date.now();S.purchases.unshift(p);}
+  else{const idx=S.purchases.findIndex(x=>x.id===p.id);if(idx>=0)S.purchases[idx]=p;}
+  save();closeM();render();toast('저장 완료!');
+}
+function delP(id){
+  if(!confirm('삭제할까요?'))return;
+  S.purchases=S.purchases.filter(p=>p.id!==id);save();render();toast('삭제됨');
+}
+
+// ═══════════════════════════════════════════
+// STORE MODAL
+// ═══════════════════════════════════════════
+function addStore(){showStoreM({},false);}
+function editStore(id){const s=S.stores.find(x=>x.id===id);if(!s)return;showStoreM(JSON.parse(JSON.stringify(s)),true);}
+function delStore(id){
+  if(!confirm('판매처를 삭제할까요?'))return;
+  S.stores=S.stores.filter(s=>s.id!==id);save();renderMgr();
+}
+function showStoreM(s,isEdit){
+  window._es=s;
+  const distOpts=[...S.distributors].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(d=>`<option value="${d.id}" ${s.distId===d.id?'selected':''}>${d.name}</option>`).join('');
+  const cntOpts=Object.entries(COUNTRIES).map(([k,v])=>`<option value="${k}" ${(s.country||'KR')===k?'selected':''}>${v.lb}</option>`).join('');
+  const perkOpts=ALBUMS.map(a=>`<option value="${a.k}" ${s.unpoPerk===a.k?'selected':''}>${a.lb}</option>`).join('');
+  openM(isEdit?'판매처 수정':'판매처 추가',`
+  <div class="fr2 fg">
+    <div><div class="fl">판매처명 <span class="req">*</span></div>
+      <input type="text" id="sf-n" value="${s.name||''}" placeholder="예: VLAST SHOP"></div>
+    <div><div class="fl">🏷 플랫폼 <span style="font-size:10px;color:var(--tx2)">(판매 유통 경로)</span></div>
+      <select id="sf-d"><option value="">선택안함</option>${distOpts}</select></div>
+  </div>
+  <div class="fr2 fg">
+    <div><div class="fl">국가 / 통화</div>
+      <select id="sf-c" onchange="_updSF()">${cntOpts}</select></div>
+    <div><div class="fl">미공포 지급 앨범</div>
+      <select id="sf-pk"><option value="">없음</option>${perkOpts}</select></div>
+  </div>
+  <div class="fg">
+    <div class="fl">단가 설정</div>
+    <div style="display:flex;gap:8px">
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer;padding:7px 12px;border:1px solid var(--bd);border-radius:var(--r-sm)">
+        <input type="radio" name="pm" value="country" ${(s.priceMode||'country')==='country'?'checked':''} onchange="_updSF()"> 국가 기준 단가
+      </label>
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer;padding:7px 12px;border:1px solid var(--bd);border-radius:var(--r-sm)">
+        <input type="radio" name="pm" value="custom" ${s.priceMode==='custom'?'checked':''} onchange="_updSF()"> 직접 입력
+      </label>
+    </div>
+  </div>
+  <div id="sf-cp"></div>
+  <div class="fr2 fg">
+    <div><div class="fl">구매 시작일</div><input type="datetime-local" id="sf-s" value="${s.purchaseStart||''}"></div>
+    <div><div class="fl">구매 마감일</div><input type="datetime-local" id="sf-e" value="${s.purchaseEnd||''}"></div>
+  </div>
+  <div class="fg"><div class="fl">마감일 텍스트 (날짜 대신 표시)</div>
+    <input type="text" id="sf-et" value="${s.purchaseEndTxt||''}" placeholder="예: 특전 소진시까지"></div>
+  <div style="background:var(--pk-g);border:1px solid rgba(168,85,247,.2);border-radius:var(--r-sm);padding:12px;margin-bottom:10px">
+    <div style="font-weight:600;color:var(--pk);margin-bottom:8px;font-size:13px">📍 오프라인 이벤트</div>
+    <div class="fr2 fg">
+      <div><div class="fl">시작일</div><input type="date" id="sf-os" value="${s.offlineStart||''}"></div>
+      <div><div class="fl">종료일</div><input type="date" id="sf-oe" value="${s.offlineEnd||''}"></div>
+    </div>
+    <div class="fg"><div class="fl">운영시간</div>
+      <input type="text" id="sf-oh" value="${s.offlineHours||''}" placeholder="예: 11:00~20:00 (KST)"></div>
+    <div class="fg"><div class="fl">장소 / 주소</div>
+      <input type="text" id="sf-oa" value="${s.offlineAddress||''}" placeholder="예: 서울시 성동구 연무장7길 13"></div>
+    <div class="fg"><div class="fl">추가 안내 (메모)</div>
+      <textarea id="sf-on" rows="2" placeholder="기타 안내사항">${s.offlineNote||''}</textarea></div>
+    <div class="fg">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
+        <input type="checkbox" id="sf-ld" ${s.offlineLuckyDraw?'checked':''} style="width:auto">
+        🎰 럭키드로우 진행
+      </label>
+    </div>
+  </div>
+  <div class="fr2 fg">
+    <div><div class="fl">기본 배송비 (국내, 원화)</div><input type="number" id="sf-ds" value="${s.defDomShip||0}"></div>
+    <div><div class="fl">기본 해외내배송 (현지통화)</div><input type="number" id="sf-os2" value="${s.defOvsShip||0}"></div>
+  </div>
+  <div class="fg"><div class="fl">구매 URL</div><input type="url" id="sf-u" value="${s.url||''}" placeholder="https://..."></div>
+  <div class="fg"><div class="fl">📝 메모 (판매처 관련 참고사항)</div>
+    <textarea id="sf-memo" rows="2" placeholder="특이사항, 참고링크 등">${s.memo||''}</textarea></div>`);
+  document.getElementById('m-foot').innerHTML=`
+    <button class="btn btn-s" onclick="closeM()">취소</button>
+    <button class="btn btn-p" onclick="_saveStore(${isEdit})">저장</button>`;
+  _updSF();
+}
+function _updSF(){
+  const pm=document.querySelector('input[name="pm"]:checked')?.value||'country';
+  const country=document.getElementById('sf-c')?.value||'KR';
+  const cur=COUNTRIES[country]?.cur||'KRW';
+  const el=document.getElementById('sf-cp');if(!el)return;
+  const s=window._es||{};
+  if(pm==='custom'){
+    el.innerHTML=`<div class="card" style="margin-bottom:12px">
+      <div style="font-size:12px;font-weight:600;color:var(--tx2);margin-bottom:8px">직접 입력 단가 (${cur})</div>
+      <div class="g4 grid">${ALBUMS.map(a=>`<div><div class="fl">${a.lb}</div>
+        <input type="number" step="0.01" id="sc-${a.k}" value="${s.customPrices?.[a.k]??''}" placeholder="국가기준"></div>`).join('')}
+      </div>
+    </div>`;
+  } else { el.innerHTML=''; }
+}
+function _saveStore(isEdit){
+  const s=window._es;
+  s.name=document.getElementById('sf-n')?.value?.trim();
+  if(!s.name){toast('판매처명 입력 필요','warn');return;}
+  s.distId=document.getElementById('sf-d')?.value||'';
+  s.country=document.getElementById('sf-c')?.value||'KR';
+  s.unpoPerk=document.getElementById('sf-pk')?.value||'';
+  s.priceMode=document.querySelector('input[name="pm"]:checked')?.value||'country';
+  s.customPrices={};
+  if(s.priceMode==='custom'){
+    ALBUMS.forEach(a=>{const v=parseFloat(document.getElementById(`sc-${a.k}`)?.value);s.customPrices[a.k]=isNaN(v)?null:v;});
+  }
+  s.purchaseStart=document.getElementById('sf-s')?.value||'';
+  s.purchaseEnd=document.getElementById('sf-e')?.value||'';
+  s.purchaseEndTxt=document.getElementById('sf-et')?.value||'';
+  s.offlineStart=document.getElementById('sf-os')?.value||'';
+  s.offlineEnd=document.getElementById('sf-oe')?.value||'';
+  s.offlineHours=document.getElementById('sf-oh')?.value||'';
+  s.offlineAddress=document.getElementById('sf-oa')?.value||'';
+  s.offlineNote=document.getElementById('sf-on')?.value||'';
+  s.offlineLuckyDraw=document.getElementById('sf-ld')?.checked||false;
+  s.defDomShip=parseFloat(document.getElementById('sf-ds')?.value)||0;
+  s.defOvsShip=parseFloat(document.getElementById('sf-os2')?.value)||0;
+  s.url=document.getElementById('sf-u')?.value||'';
+  s.memo=document.getElementById('sf-memo')?.value||'';
+  s.custom=true;
+  if(!isEdit){s.id='cs'+Date.now();S.stores.push(s);}
+  else{const idx=S.stores.findIndex(x=>x.id===s.id);if(idx>=0)S.stores[idx]=s;}
+  save();closeM();renderMgr();toast('저장 완료!');
+}
+
+// DISTRIBUTOR MANAGER
+function openDistMgr(){
+  const html=`
+  <div style="margin-bottom:12px;display:flex;gap:8px">
+    <input type="text" id="dist-n" placeholder="플랫폼명" style="flex:1">
+    <button class="btn btn-p btn-sm" onclick="_addDist()">+ 추가</button>
+  </div>
+  <div id="dist-list">
+    ${[...S.distributors].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(d=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd)">
+      <span style="flex:1">${d.name}</span>
+      <button class="btn btn-d btn-xs" onclick="_delDist('${d.id}')">삭제</button>
+    </div>`).join('')}
+  </div>`;
+  openM('플랫폼 관리',html);
+  document.getElementById('m-foot').innerHTML=`<button class="btn btn-s" onclick="closeM();renderMgr()">닫기</button>`;
+}
+function _addDist(){
+  const n=document.getElementById('dist-n')?.value?.trim();
+  if(!n)return;
+  const d={id:'dcs'+Date.now(),name:n};
+  S.distributors.push(d);save();
+  document.getElementById('dist-n').value='';
+  document.getElementById('dist-list').innerHTML+=`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd)"><span style="flex:1">${n}</span><button class="btn btn-d btn-xs" onclick="_delDist('${d.id}')">삭제</button></div>`;
+}
+function _delDist(id){
+  if(!confirm('삭제? (이미 연결된 판매처에서 제거됩니다)'))return;
+  S.distributors=S.distributors.filter(d=>d.id!==id);
+  S.stores.forEach(s=>{if(s.distId===id)s.distId='';});
+  save();openDistMgr();
+}
+
+// ═══════════════════════════════════════════
+// MODAL UTILS
+// ═══════════════════════════════════════════
+function openM(ttl,body){
+  document.getElementById('m-ttl').textContent=ttl;
+  document.getElementById('m-body').innerHTML=body;
+  document.getElementById('m-foot').innerHTML='';
+  document.getElementById('ov').classList.add('open');
+  document.getElementById('modal').scrollTop=0;
+}
+function closeM(){document.getElementById('ov').classList.remove('open');window._ep=null;window._es=null;}
+function ovClick(e){if(e.target===document.getElementById('ov'))closeM();}
+document.addEventListener('click',function(e){const p=document.getElementById('rate-popup');if(p&&p.classList.contains('open')&&!p.contains(e.target)&&e.target.id!=='rate-icon-btn')p.classList.remove('open');});
+
+// ═══════════════════════════════════════════
+// EXPORT / IMPORT
+// ═══════════════════════════════════════════
+function exportData(){
+  const blob=new Blob([JSON.stringify({v:2,at:new Date().toISOString(),distributors:S.distributors,stores:S.stores,purchases:S.purchases,rates:S.rates,countryPrices:S.countryPrices},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`PLAVE_Caligo2_${new Date().toISOString().slice(0,10)}.json`;a.click();
+  toast('✓ 내보내기 완료');
+}
+function importData(inp){
+  const f=inp.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const d=JSON.parse(e.target.result);
+      if(d.stores) S.stores=d.stores;
+      if(d.purchases) S.purchases=d.purchases;
+      if(d.distributors) S.distributors=d.distributors;
+      if(d.rates) S.rates={...S.rates,...d.rates};
+      if(d.countryPrices) S.countryPrices=d.countryPrices;
+      save();render();toast(`✓ 불러오기 완료 (${S.purchases.length}건)`);
+    }catch(e2){toast('⚠ 파일 오류','err');}
+    inp.value='';
+  };r.readAsText(f);
+}
+
+
+// ── SECRET ADMIN ACCESS ──
+let _adminTaps=0,_adminTimer=null;
+function secretAdminTap(){
+  // Also show admin tab if desktop
+  const adminBtn=document.getElementById('admin-secret-btn');
+
+  _adminTaps++;
+  clearTimeout(_adminTimer);
+  if(_adminTaps>=5){_adminTaps=0;S.adminUnlocked=true;S.mgrSub='stores';go('mgr');
+    if(adminBtn)adminBtn.style.opacity='1';
+    const ba=document.getElementById('bot-admin');if(ba)ba.style.display='';
+  }
+  else _adminTimer=setTimeout(()=>_adminTaps=0,1500);
+}
+
+// ── RATE POPUP ──
+function toggleRatePopup(){
+  const p=document.getElementById('rate-popup');
+  if(!p)return;
+  p.classList.toggle('open');
+  if(p.classList.contains('open')) renderRatePopup();
+}
+function renderRatePopup(){
+  const p=document.getElementById('rate-popup');
+  if(!p)return;
+  const upd=S.ratesAt?new Date(S.ratesAt).toLocaleDateString('ko-KR',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'미조회';
+  p.innerHTML=`<div style="font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+    <span>💱 환율</span>
+    <button class="btn btn-p btn-xs" onclick="fetchRates().then(()=>renderRatePopup())">↻ 갱신</button>
+  </div>
+  ${['JPY','CNY','USD','TWD'].map(c=>{
+    const r=S.rates[c];
+    const lbs={JPY:'🇯🇵 JPY',CNY:'🇨🇳 CNY',USD:'🇺🇸 USD',TWD:'🇹🇼 TWD'};
+    return `<div class="rate-row-item"><span>${lbs[c]}</span><b>${Math.round(r.rate).toLocaleString()}원</b></div>`;
+  }).join('')}
+  <div style="font-size:10px;color:var(--tx3);margin-top:6px">업데이트: ${upd}</div>`;
+}
+function renderRateRow(){} // no-op, popup used instead
+
+// ── DATA MANAGER ──
+function openDataMgr(){
+  openM('💾 데이터 관리',`
+  <div class="data-section">
+    <div class="data-section-ttl">⬇ 내보내기 <span style="font-size:11px;color:var(--ok)">→ 파일로 저장</span></div>
+    <p>현재 앱의 <b>구매기록 전체</b>를 JSON 파일로 저장합니다.<br>
+    저장된 파일은 다른 기기(폰↔컴퓨터)에서 불러올 수 있고, 백업 용도로도 쓸 수 있어요.</p>
+    <button class="btn btn-p" onclick="exportData()">⬇ 내보내기 (파일 저장)</button>
+  </div>
+  <div class="data-section">
+    <div class="data-section-ttl">⬆ 불러오기 <span style="font-size:11px;color:var(--warn)">← 파일에서 복원</span></div>
+    <p>이전에 내보낸 JSON 파일을 선택하면 구매기록이 복원됩니다.<br>
+    ⚠️ <b>현재 기록이 덮어씌워지므로</b> 먼저 내보내기를 해두세요!</p>
+    <button class="btn btn-s" onclick="document.getElementById('imp').click()">⬆ 불러오기 (파일 선택)</button>
+  </div>
+  <div class="data-section" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2)">
+    <div class="data-section-ttl" style="color:var(--err)">💡 크로스 기기 사용 방법</div>
+    <p>📱 폰에서 작성 → ⬇ 내보내기 → 파일 공유(카카오톡/이메일 등)<br>
+    💻 컴퓨터에서 파일 받은 후 → ⬆ 불러오기<br>
+    ✅ 각 기기의 브라우저에 자동 저장되므로 매번 할 필요는 없어요.</p>
+  </div>`);
+  document.getElementById('m-foot').innerHTML=`<button class="btn btn-s" onclick="closeM()">닫기</button>`;
+}
+
+
+
+// ── UPDATE LOG ──
+const UPDATE_LOG = [
+  { date:'2026-03-27', title:'v1.3', items:[
+    '판매처 선택: 국가 → 플랫폼별 그룹 → 판매처 순서로 개편',
+    '구매기록에 할인금액 입력 기능 추가',
+    '구매 마감일 판매처명 클릭 시 상세정보 팝업',
+    '캘린더: 초동 D-Day 카운트다운 (4/20 기준)',
+    '캘린더: 구매완료 표시를 날짜 기반이 아닌 판매처 기준으로 변경',
+    '대시보드 만료 숨기기 버튼 텍스트 수정',
+  ]},
+  { date:'2026-03-27', title:'v1.2', items:[
+    '24개 판매처 / 18개 플랫폼 데이터 업데이트',
+    '모바일 스크롤 오류 수정 (100svh 적용)',
+    '판매처별 지출을 카드 형태로 개편 — 탭으로 상세 펼침',
+    '구매현황 통계 간소화',
+  ]},
+  { date:'2026-03-26', title:'v1.1', items:[
+    '관리탭 비밀번호 보호 (⚙ 5번 탭 → 비밀번호 1234)',
+    '캘린더에 온라인/오프라인 토글 추가',
+    '4월 13일 디지털 발매 / 4월 14일 앨범 발매 고정 이벤트',
+    '유통사 → 플랫폼 명칭 변경, 배지 색 구분',
+    '[음총] 아이콘 표기 추가',
+    '가나다순 자동 정렬',
+    '💾 데이터 관리 팝업 (설명 포함)',
+    '🔒 관리자 전용 탭 숨김',
+  ]},
+  { date:'2026-03-25', title:'v1.0', items:[
+    '초기 출시',
+    '14개 판매처 / 4개국 환율 자동',
+    '대시보드, 구매기록, 캘린더, 관리 4탭 구성',
+    '내보내기 / 불러오기 (JSON)',
+  ]},
+];
+function showUpdateLog(){
+  const body=`
+  <div style="font-size:13px;color:var(--tx2);margin-bottom:14px">
+    제작: <b style="color:var(--tx)">@plli_ze</b> &nbsp;·&nbsp; PLAVE Caligo Pt.2 구매 관리기
+  </div>
+  ${UPDATE_LOG.map(v=>`
+    <div style="margin-bottom:18px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span style="font-weight:700;font-size:14px">${v.title}</span>
+        <span style="font-size:11px;color:var(--tx3)">${v.date}</span>
+      </div>
+      <ul style="padding-left:16px">
+        ${v.items.map(i=>`<li style="font-size:13px;color:var(--tx2);margin-bottom:3px">${i}</li>`).join('')}
+      </ul>
+    </div>
+  `).join('')}`;
+  openM('📋 업데이트 로그', body);
+  document.getElementById('m-foot').innerHTML=`<button class="btn btn-s" onclick="closeM()">닫기</button>`;
+}
+
+// ── STORE INFO POPUP ──
+function showStoreInfoPopup(sid){
+  const s=S.stores.find(x=>x.id===sid);
+  if(!s)return;
+  const dist=distName(s.distId);
+  const ctry=COUNTRIES[s.country]?.lb||s.country;
+  const cur=getStoreCur(s);
+  const days=s.purchaseEnd?dDays(s.purchaseEnd):null;
+  const deadlineStr=s.purchaseEndTxt||(s.purchaseEnd?fDate(s.purchaseEnd):'');
+  const activePrices=ALBUMS.filter(a=>storePrice(s,a.k)!=null);
+  const ps=S.purchases.filter(p=>p.storeId===sid);
+  const sName=s.name.replace('[음총]','').trim();
+  const isEum=s.name.includes('[음총]');
+
+  const body=`
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
+    <span class="bx ${isOvs(s)?'bx-ovs':'bx-dom'}">${ctry}</span>
+    ${dist?`<span class="bx bx-plt">🏷 ${dist}</span>`:''}
+    ${isEum?`<span class="bx bx-plt2">🎵 음총</span>`:''}
+    ${s.unpoPerk?`<span class="bx bx-pk">⭐ ${ALBUMS.find(a=>a.k===s.unpoPerk)?.lb} 미공포</span>`:''}
+    ${s.priceMode==='custom'?`<span class="tag">단가직접입력</span>`:''}
+  </div>
+
+  ${(s.purchaseStart||deadlineStr)?`
+  <div style="background:var(--sur2);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:12px;font-size:13px">
+    <div style="font-weight:600;margin-bottom:4px">🛍 구매 기간</div>
+    ${s.purchaseStart?`<div style="color:var(--tx2)">시작: ${fDate(s.purchaseStart)}</div>`:''}
+    ${deadlineStr?`<div style="font-weight:600;color:${days!==null&&days<=2?'var(--err)':days!==null&&days<=7?'var(--warn)':'var(--tx)'}">
+      마감: ${deadlineStr} ${days!==null?(days<0?`(${Math.abs(days)}일 경과)`:days===0?'(오늘!)':`(D-${days})`):''}</div>`:''}
+  </div>`:'' }
+
+  ${activePrices.length?`
+  <div style="margin-bottom:12px">
+    <div style="font-size:12px;font-weight:600;color:var(--tx2);margin-bottom:6px">💰 단가</div>
+    <div class="store-prices">
+      ${activePrices.map(a=>{
+        const p=storePrice(s,a.k);const isPerk=a.k===s.unpoPerk;
+        return `<div class="sp-item ${isPerk?'perk':''}">
+          <div class="sp-lb">${a.lb}</div>
+          <div class="sp-v">${cur==='KRW'?fKRW(p):fFor(p,cur)+' ≈ '+fKRW(Math.round(p*rate(cur)))}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`:'' }
+
+  ${s.offlineNote||s.offlineStart?`
+  <div style="background:var(--pk-g);border:1px solid rgba(168,85,247,.2);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:12px;font-size:13px">
+    <div style="color:var(--pk);font-weight:600;margin-bottom:4px">📍 오프라인${s.offlineLuckyDraw?' 🎰 럭드':''}</div>
+    ${s.offlineStart?`<div style="color:var(--tx2)">${s.offlineStart}${s.offlineEnd&&s.offlineEnd!==s.offlineStart?' ~ '+s.offlineEnd:''}</div>`:''}
+    ${s.offlineHours?`<div style="color:var(--tx2)">⏰ ${s.offlineHours}</div>`:''}
+    ${s.offlineAddress?`<div style="color:var(--tx2)">📍 ${s.offlineAddress}</div>`:''}
+    ${s.offlineNote?`<div style="color:var(--tx2);white-space:pre-line;margin-top:4px">${s.offlineNote}</div>`:''}
+  </div>`:'' }
+
+  ${s.memo?`<div style="background:var(--sur2);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:12px;font-size:13px;color:var(--tx2)">📝 ${s.memo}</div>`:''}
+
+  ${ps.length?`
+  <div>
+    <div style="font-size:12px;font-weight:600;color:var(--tx2);margin-bottom:6px">🛒 내 구매 기록 (${ps.length}건)</div>
+    ${ps.map(p=>{
+      const t=calcTotal(p);const si=STATUSES.find(x=>x.k===(p.status||'waiting'));
+      const items=(p.items||[]).filter(i=>i.qty>0).map(i=>ALBUMS.find(a=>a.k===i.type)?.lb+' ×'+i.qty).join(', ')||'—';
+      return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd);font-size:13px;flex-wrap:wrap">
+        <span class="bx ${si?.cls||''}" style="font-size:10px">${si?.lb||'?'}</span>
+        <span style="flex:1;color:var(--tx2)">${items}</span>
+        <span class="mono" style="font-weight:700;color:var(--ac)">${fKRW(t)}</span>
+        <button class="btn btn-s btn-xs" onclick="closeM();editP('${p.id}')">수정</button>
+      </div>`;
+    }).join('')}
+  </div>`:'' }
+  `;
+
+  openM(sName, body);
+  document.getElementById('m-foot').innerHTML=`
+    ${s.url?`<a href="${s.url}" target="_blank" class="btn btn-p">🔗 구매 링크</a>`:''}
+    <button class="btn btn-s" onclick="closeM();addP('${s.id}')">+ 구매추가</button>
+    <button class="btn btn-s" onclick="closeM()">닫기</button>`;
+}
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+function init(){
+  load();render();
+  const stale=!S.ratesAt||(Date.now()-new Date(S.ratesAt).getTime())>3600000;
+  if(stale) fetchRates();
+}
+init();
+</script>
+</body>
+</html>
