@@ -14,6 +14,8 @@
   --have:#3b82f6;--have-g:rgba(59,130,246,.12);--have-bd:rgba(59,130,246,.3);
   --ok:#22c55e;--warn:#f59e0b;
   --r:12px;--r-sm:8px;
+  /* card width that makes the strip text fit on one line */
+  --card-w:72px;
 }
 [data-theme="dark"]{
   --bg:#08090f;--s1:#0e1018;--s2:#13161f;--s3:#191d28;
@@ -27,7 +29,7 @@ input,textarea{font-family:inherit;color:var(--tx);background:var(--s2);border:1
 input:focus,textarea:focus{border-color:var(--blue)}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
 
-/* ─── LAYOUT ─── */
+/* ── LAYOUT ── */
 .app{display:flex;flex-direction:column;height:100svh}
 .hdr{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 12px;height:48px;display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:50}
 .logo-main{font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -35,37 +37,34 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .hdr-r{display:flex;gap:4px;margin-left:auto}
 .abtn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm);background:var(--s2);border:1px solid var(--bd);font-size:14px;flex-shrink:0}
 .dtabs{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 12px;display:none;flex-shrink:0;overflow-x:auto}
-.dtab{padding:9px 14px;font-size:12px;font-weight:700;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;font-family:'Outfit',sans-serif}
+.dtab{padding:9px 14px;font-size:12px;font-weight:700;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;font-family:'Outfit',sans-serif}
 .dtab.on{color:var(--blue);border-bottom-color:var(--blue)}
 .bnav{position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--bd);z-index:100;padding-bottom:env(safe-area-inset-bottom,0px)}
 .bnav-inner{display:flex;height:52px}
-.btab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:9px;font-weight:700;color:var(--tx2);cursor:pointer;font-family:'Outfit',sans-serif;transition:color .15s}
+.btab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:9px;font-weight:700;color:var(--tx2);cursor:pointer;font-family:'Outfit',sans-serif}
 .btab.on{color:var(--blue)}
 .btab-ico{font-size:18px;line-height:1}
 .main{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px 10px calc(60px + env(safe-area-inset-bottom,0px));-webkit-overflow-scrolling:touch}
 @media(min-width:641px){.dtabs{display:flex}.bnav{display:none!important}.main{padding:12px}}
 @media(max-width:640px){.dtabs{display:none}.bnav{display:block}}
 
-/* ─── FILTER ROW ─── */
-.frow{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:8px 10px;margin-bottom:8px}
-.frow-top{display:flex;align-items:flex-start;gap:6px}
-.frow-lines{display:flex;flex-direction:column;gap:5px;flex:1}
-.frow-line{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.fp{padding:4px 10px;border-radius:14px;font-size:11px;font-weight:700;background:var(--s2);border:1.5px solid var(--bd);color:var(--tx2);cursor:pointer;transition:all .14s;white-space:nowrap;font-family:'Outfit',sans-serif}
+/* ── FILTER ROW (inline, original style) ── */
+.frow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:6px}
+.fp{padding:4px 11px;border-radius:16px;font-size:11px;font-weight:700;background:var(--s2);border:1.5px solid var(--bd);color:var(--tx2);cursor:pointer;transition:all .14s;white-space:nowrap;font-family:'Outfit',sans-serif}
 .fp.on-all{background:linear-gradient(135deg,var(--blue),var(--purple));border-color:transparent;color:#fff}
 .fp.on-alb{color:#fff;border-color:transparent}
 .fp.on-m{background:var(--s3);border-color:var(--blue);color:var(--blue)}
 .fsep{width:1px;height:16px;background:var(--bd);flex-shrink:0;margin:0 2px}
 .ftog{display:inline-flex;background:var(--s2);border:1px solid var(--bd);border-radius:20px;overflow:hidden;flex-shrink:0}
-.ftog-btn{padding:4px 10px;font-size:11px;font-weight:700;color:var(--tx2);cursor:pointer;white-space:nowrap;font-family:'Outfit',sans-serif}
+.ftog-btn{padding:4px 11px;font-size:11px;font-weight:700;color:var(--tx2);cursor:pointer;white-space:nowrap;font-family:'Outfit',sans-serif}
 .ftog-btn.on{background:var(--blue);color:#fff}
-.coltog{display:inline-flex;background:var(--s2);border:1px solid var(--bd);border-radius:10px;overflow:hidden}
-.coltog-btn{padding:4px 9px;font-size:10px;font-weight:700;color:var(--tx2);cursor:pointer;white-space:nowrap;border-right:1px solid var(--bd)}
+.coltog{display:inline-flex;background:var(--s2);border:1px solid var(--bd);border-radius:10px;overflow:hidden;flex-shrink:0}
+.coltog-btn{padding:4px 10px;font-size:10px;font-weight:700;color:var(--tx2);cursor:pointer;white-space:nowrap;border-right:1px solid var(--bd)}
 .coltog-btn:last-child{border-right:none}
 .coltog-btn:hover{background:var(--s3)}
-.shot-btn{padding:4px 9px;font-size:10px;font-weight:700;background:var(--s2);border:1px solid var(--bd);border-radius:8px;color:var(--tx2);cursor:pointer;white-space:nowrap;margin-top:3px}
+.shot-btn{padding:4px 10px;font-size:10px;font-weight:700;background:var(--s2);border:1px solid var(--bd);border-radius:8px;color:var(--tx2);cursor:pointer;white-space:nowrap}
 
-/* ─── SECTION ─── */
+/* ── SECTIONS ── */
 .sets-wrap{display:grid;gap:6px;align-items:start}
 .sec-block{border-radius:var(--r);background:var(--s1);border:1px solid var(--bd);overflow:hidden}
 .sec-hdr{display:flex;align-items:center;gap:6px;padding:8px 10px;cursor:pointer;user-select:none;transition:background .12s}
@@ -80,37 +79,54 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .chev.open{transform:rotate(180deg)}
 .sec-body{padding:6px 7px 8px}
 
-/* ─── CARD TILE ─── */
+/* ── CARD GRID
+   Key rule: cards wrap into multiple rows if more than max per row.
+   Max cards per row = 5. If set has ≤5 visible cards → 1 row at equal widths.
+   If set has >5 → auto-fill with min card width so they wrap naturally.
+── */
 .pcg{display:grid;gap:4px}
-.pct{border-radius:7px;overflow:hidden;background:var(--s2);border:1px solid var(--bd);transition:border-color .2s,box-shadow .2s;user-select:none;position:relative;display:flex;flex-direction:column}
+/* For ≤5 cards: explicit equal columns */
+/* For >5 cards: use repeat(auto-fill, minmax(var(--card-w), 1fr)) set in JS */
+
+/* ── CARD TILE ── */
+.pct{border-radius:7px;overflow:hidden;background:var(--s2);border:1px solid var(--bd);transition:border-color .2s,box-shadow .2s;user-select:none;display:flex;flex-direction:column}
 .pct.sc{border-color:rgba(244,63,94,.5)}
 .pct.sm{border-color:rgba(34,197,94,.6);box-shadow:0 0 6px rgba(34,197,94,.15)}
 .pct.sh{border-color:rgba(59,130,246,.6);box-shadow:0 0 6px rgba(59,130,246,.15)}
 .pct.ng{opacity:.5}
 .pci{aspect-ratio:5/7;position:relative;overflow:hidden;cursor:pointer;background:var(--s3)}
 .pci img{width:100%;height:100%;object-fit:cover;display:block}
-/* placeholder: bigger, bolder */
-.pcph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--tx2);text-align:center;padding:4px;line-height:1.4;background:linear-gradient(160deg,var(--s3),var(--s2))}
-/* image overlay badges */
+.pcph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--tx2);text-align:center;padding:4px;line-height:1.4;background:linear-gradient(160deg,var(--s3),var(--s2))}
 .pbdg{position:absolute;top:3px;right:3px;border-radius:4px;font-size:7px;font-weight:800;padding:1px 4px;line-height:1.4;font-family:'Outfit',monospace}
 .pbdg.w{background:rgba(244,63,94,.88);color:#fff}
 .pbdg.h{background:rgba(59,130,246,.88);color:#fff}
 .pbdg.m{background:rgba(34,197,94,.88);color:#fff}
 .mdot{position:absolute;bottom:3px;left:3px;width:6px;height:6px;border-radius:50%;background:var(--warn)}
-/* +/- row overlaid on bottom of image */
+/* +/- overlay */
 .pc-ctrl{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;background:rgba(0,0,0,.55);padding:2px 3px;gap:1px}
 .pcbtn{width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:13px;font-weight:800;color:#fff;background:rgba(255,255,255,.18);flex-shrink:0;line-height:1}
 .pcbtn:active{transform:scale(.88)}
 .pc-cnt{font-family:'Outfit',sans-serif;font-weight:800;font-size:12px;color:#fff;flex:1;text-align:center}
-/* status strip below image */
-.pc-strip{padding:3px 4px;font-size:9px;font-weight:700;text-align:center;font-family:'Outfit',sans-serif;min-height:17px;line-height:1.4;flex-shrink:0}
-/* goal number row */
-.pc-goal-row{display:flex;align-items:center;justify-content:center;gap:2px;padding:3px 4px;background:var(--s2);border-top:1px solid var(--bd);flex-shrink:0}
+/* status strip — fixed height so it doesn't squish */
+.pc-strip{padding:3px 4px;font-size:9px;font-weight:700;text-align:center;font-family:'Outfit',sans-serif;height:18px;line-height:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
+/* goal row */
+.pc-goal-row{display:flex;align-items:center;justify-content:center;padding:3px 4px;background:var(--s2);border-top:1px solid var(--bd);flex-shrink:0}
 .gadj{display:inline-flex;align-items:center;background:var(--s3);border:1px solid var(--bd);border-radius:9px;overflow:hidden}
 .gadj button{padding:2px 9px;font-size:13px;font-weight:800;color:var(--tx);font-family:'Outfit',sans-serif}
 .gadj-num{font-family:'Outfit',sans-serif;font-weight:800;font-size:12px;min-width:22px;text-align:center;color:var(--tx)}
 
-/* ─── FULLSCREEN ─── */
+/* ── TRADE GRID: auto-fill so cards wrap, max width constrained ── */
+.trade-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-w),1fr));gap:4px}
+.trade-wrap{display:flex;flex-direction:column;gap:12px}
+@media(min-width:768px){
+  .trade-wrap{flex-direction:row;align-items:flex-start}
+  .trade-col{flex:1;min-width:0}
+}
+.trade-col{flex:1;min-width:0}
+.trade-ttl-bar{padding:8px 10px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r) var(--r) 0 0}
+.trade-body{background:var(--s1);border:1px solid var(--bd);border-top:none;border-radius:0 0 var(--r) var(--r);padding:8px}
+
+/* ── FULLSCREEN ── */
 .fs-ov{position:fixed;inset:0;z-index:400;background:rgba(8,9,15,.94);display:flex;flex-direction:column;align-items:center;padding:16px 16px 24px;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .2s}
 .fs-ov.open{opacity:1;pointer-events:auto}
 .fs-img-wrap{width:min(150px,42vw);flex-shrink:0}
@@ -119,7 +135,6 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .fs-name{font-family:'Outfit',sans-serif;font-weight:800;font-size:16px;text-align:center;color:#fff;margin-top:10px}
 .fs-meta{font-size:11px;color:rgba(255,255,255,.5);text-align:center;margin-bottom:8px}
 .fs-chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;min-height:22px}
-/* side-by-side controls */
 .fs-controls{display:flex;gap:10px;justify-content:center;width:100%;max-width:340px;margin-bottom:10px}
 .fs-box{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:10px;padding:9px 6px}
 .fs-box-lbl{font-size:10px;color:rgba(255,255,255,.5);font-weight:700;font-family:'Outfit',sans-serif}
@@ -133,7 +148,7 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .fs-hide-btn{width:100%;padding:8px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;border:1px solid;font-family:'Outfit',sans-serif;margin-bottom:7px;display:none}
 .fs-close{width:100%;padding:11px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--r-sm);font-size:13px;font-weight:700;color:rgba(255,255,255,.75);cursor:pointer;font-family:'Outfit',sans-serif;text-align:center}
 
-/* ─── OVERLAYS ─── */
+/* ── OVERLAYS ── */
 .ov{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s}
 .ov.open{opacity:1;pointer-events:auto}
 .ov-bg{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
@@ -143,40 +158,30 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .shdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .sttl{font-family:'Outfit',sans-serif;font-weight:800;font-size:15px}
 
-/* ─── SETTINGS ─── */
+/* ── SETTINGS ── */
 .btn{padding:9px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .14s;display:inline-block}
 .btn-p{background:var(--blue);color:#fff;border:none}
 .btn-s{background:var(--s2);color:var(--tx2);border:1px solid var(--bd)}
+.btn-d{background:rgba(244,63,94,.12);color:var(--want);border:1px solid rgba(244,63,94,.3)}
 .btn-sm{padding:7px 12px;font-size:11px}
 .btn-full{width:100%;margin-bottom:6px;text-align:center}
 .btn-warn{background:rgba(244,63,94,.12);color:var(--want);border:1px solid rgba(244,63,94,.3);width:100%;padding:9px;border-radius:var(--r-sm);font-size:12px;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer;text-align:center}
 .desc{font-size:11px;color:var(--tx2);line-height:1.6;padding:8px;background:var(--s2);border-radius:var(--r-sm);border:1px solid var(--bd);margin-bottom:8px}
 
-/* ─── TRADE ─── */
-.trade-wrap{display:flex;flex-direction:column;gap:12px}
-/* landscape tablet: side by side */
-@media(min-width:768px) and (orientation:landscape),(min-width:1024px){
-  .trade-wrap{flex-direction:row;align-items:flex-start}
-  .trade-col{flex:1;min-width:0}
-}
-.trade-col{flex:1;min-width:0}
-.trade-ttl-bar{padding:8px 10px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r) var(--r) 0 0}
-.trade-body{background:var(--s1);border:1px solid var(--bd);border-top:none;border-radius:0 0 var(--r) var(--r);padding:8px}
-
-/* ─── STATS ─── */
-.stats-bar{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+/* ── STATS ── */
+.stats-bar{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap}
 .stat-chip{padding:4px 10px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);font-family:'Outfit',sans-serif;font-weight:700;font-size:11px}
 .stat-chip span{color:var(--blue)}
 
-/* ─── WIZARD ─── */
+/* ── WIZARD ── */
 .wiz-chip{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;border:1.5px solid var(--bd);color:var(--tx2);background:var(--s2);cursor:pointer;font-family:'Outfit',sans-serif}
 
-/* ─── USAGE ─── */
+/* ── USAGE ── */
 .use-sec{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px}
 .use-sec h3{font-family:'Outfit',sans-serif;font-weight:700;font-size:13px;margin-bottom:8px;color:var(--blue)}
 .use-sec ul{padding-left:14px;font-size:12px;line-height:2;color:var(--tx2)}
 
-/* ─── MISC ─── */
+/* ── MISC ── */
 .tw{position:fixed;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 8px);left:50%;transform:translateX(-50%);z-index:500;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:5px}
 .toast{background:var(--tx);color:var(--bg);padding:7px 16px;border-radius:20px;font-size:12px;font-weight:700;animation:tin .2s,tout .3s 1.8s forwards;white-space:nowrap}
 @keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -202,7 +207,7 @@ input:focus,textarea:focus{border-color:var(--blue)}
 
 <button class="scroll-top-btn" id="scroll-top-btn" onclick="document.getElementById('main').scrollTo({top:0,behavior:'smooth'})">↑</button>
 
-<!-- FULLSCREEN -->
+<!-- FULLSCREEN CARD -->
 <div class="fs-ov" id="fsov">
   <div class="fs-img-wrap"><div id="fs-img"></div></div>
   <div class="fs-name" id="fs-name"></div>
@@ -267,20 +272,21 @@ input:focus,textarea:focus{border-color:var(--blue)}
 <div id="shot-area"></div>
 
 <script>
-/* ════════════════════════════════════
+/* ════════════════════════════════
    CONSTANTS
-════════════════════════════════════ */
-const DB_KEY='plave_poca_db_v3', ST_KEY='plave_poca_st_v2', UI_KEY='plave_poca_ui_v5';
+════════════════════════════════ */
+const DB_KEY='plave_poca_db_v3', ST_KEY='plave_poca_st_v2', UI_KEY='plave_poca_ui_v6';
 const MEMBERS = ['예준','노아','밤비','은호','하민'];
-const MMMS    = ['몌무','뫄','미므','므모','먀미'];
-// member → units they appear in
+
+// CORRECTED member → unit mapping
 const MU = {
-  '예준':['맛탕즈','예라인','야타즈','댄라즈'],
-  '노아': ['베리즈','노라인','야타즈','쁜라인'],
-  '밤비': ['댕댕즈','쁜라인','댄라즈','냥냥즈','댕냥즈'],
-  '은호': ['맛탕즈','댕댕즈','노라인','댕냥즈'],
-  '하민': ['베리즈','예라인','냥냥즈'],
+  '예준': ['맛탕즈','베리즈','댕댕즈','예라인'],
+  '노아':  ['맛탕즈','쁜라인','노라인','냥냥즈'],
+  '밤비':  ['베리즈','쁜라인','야타즈','댄라즈'],
+  '은호':  ['댕댕즈','노라인','야타즈','댕냥즈'],
+  '하민':  ['예라인','냥냥즈','댄라즈','댕냥즈'],
 };
+
 const TABS=[
   {id:'collect',label:'수집',ico:'📦'},
   {id:'trade',  label:'교환',ico:'🔄'},
@@ -288,9 +294,15 @@ const TABS=[
   {id:'usage',  label:'사용법',ico:'📖'},
 ];
 
-/* ════════════════════════════════════
+// Card width that makes "✨ 있어요 +N" or "🔍 없어요 −N" fit on one line
+// at font-size 9px with padding. ~72px works well.
+const CARD_MIN_W = 72;
+// Max cards in one row before wrapping
+const MAX_PER_ROW = 5;
+
+/* ════════════════════════════════
    STATE
-════════════════════════════════════ */
+════════════════════════════════ */
 let DB=null;
 let ST={goals:{},collected:{},memos:{},hidden:{}};
 let UI={
@@ -301,9 +313,9 @@ let UI={
 };
 let curTab='collect', fsId=null, wiz={};
 
-/* ════════════════════════════════════
+/* ════════════════════════════════
    STORAGE
-════════════════════════════════════ */
+════════════════════════════════ */
 function loadDB(){const s=localStorage.getItem(DB_KEY);if(s)try{DB=JSON.parse(s);}catch(e){}}
 function saveDB(){if(DB)try{localStorage.setItem(DB_KEY,JSON.stringify(DB));}catch(e){}}
 function loadST(){const s=localStorage.getItem(ST_KEY);if(s)try{ST=JSON.parse(s);}catch(e){}ST.goals=ST.goals||{};ST.collected=ST.collected||{};ST.memos=ST.memos||{};ST.hidden=ST.hidden||{};}
@@ -317,9 +329,9 @@ function loadUI(){
 }
 function saveUI(){try{localStorage.setItem(UI_KEY,JSON.stringify(UI));}catch(e){}}
 
-/* ════════════════════════════════════
+/* ════════════════════════════════
    HELPERS
-════════════════════════════════════ */
+════════════════════════════════ */
 const g  = id => ST.goals[id]||0;
 const c  = id => ST.collected[id]||0;
 const mo = id => ST.memos[id]||'';
@@ -332,7 +344,7 @@ function sts(id){
   if(!gv&&cv>0)return'h';
   if(cv<gv)return'c';
   if(cv===gv)return'm';
-  return'h'; // cv>gv
+  return'h';
 }
 function allCards(){
   if(!DB)return[];
@@ -353,15 +365,29 @@ function findCard(id){
 }
 function isLS(){return window.innerWidth>window.innerHeight;}
 
-/* ════════════════════════════════════
+// does a card match the visible member filter?
+function cardMatchesMems(card, mems){
+  if(!mems.length)return true;
+  if(card.cardType==='Individual'){
+    return mems.includes(card.member)||mems.includes(card.name);
+  }
+  if(card.cardType==='Unit'&&card.unit){
+    for(const m of mems)if(MU[m]&&MU[m].includes(card.unit))return true;
+    return false;
+  }
+  // All / MMMM: always show (not member-specific)
+  return true;
+}
+
+/* ════════════════════════════════
    STATUS / STRIP
-════════════════════════════════════ */
+════════════════════════════════ */
 function stripHtml(id){
   const cv=c(id),gv=g(id),s_=sp(id),w_=wt(id),st=sts(id);
-  if(st==='m')return`✓ 달성 (${cv}/${gv})`;
-  if(st==='h')return`✨ 있어요 +${s_}`;
+  if(st==='m')return`✓ 달성(${cv}/${gv})`;
+  if(st==='h'&&gv>0)return`✨ 있어요 +${s_}`;
+  if(st==='h'&&!gv)return`✨ ${cv}장`;
   if(st==='c')return`🔍 없어요 −${w_}`;
-  if(cv>0&&!gv)return`✨ ${cv}장`;
   return'';
 }
 function stripStyle(id){
@@ -369,13 +395,22 @@ function stripStyle(id){
   if(st==='m')return'color:var(--ok);background:rgba(34,197,94,.1)';
   if(st==='h')return'color:var(--have);background:var(--have-g)';
   if(st==='c')return'color:var(--want);background:var(--want-g)';
-  if(cv>0)return'color:var(--have);background:var(--have-g)';
   return'color:var(--tx3);background:transparent';
 }
 
-/* ════════════════════════════════════
+/* ════════════════════════════════
+   CARD GRID COLUMNS
+   ≤5 cards → exactly N equal columns
+   >5 cards → auto-fill with CARD_MIN_W so they wrap at most MAX_PER_ROW wide
+════════════════════════════════ */
+function gridCols(n){
+  if(n<=MAX_PER_ROW)return`repeat(${n},1fr)`;
+  return`repeat(auto-fill,minmax(${CARD_MIN_W}px,1fr))`;
+}
+
+/* ════════════════════════════════
    CARD TILE HTML
-════════════════════════════════════ */
+════════════════════════════════ */
 function cardTileHTML(card, showGoalRow){
   const cv=c(card.id),gv=g(card.id),s_=sp(card.id),w_=wt(card.id),st=sts(card.id);
   const hasMemo=mo(card.id).trim().length>0;
@@ -385,9 +420,10 @@ function cardTileHTML(card, showGoalRow){
   else if(st==='h')cls+=' sh';
   else if(st==='n')cls+=' ng';
   let bdg='';
-  if(s_>0)bdg=`<div class="pbdg h">+${s_}</div>`;
+  if(s_>0&&gv>0)bdg=`<div class="pbdg h">+${s_}</div>`;
   else if(w_>0)bdg=`<div class="pbdg w">−${w_}</div>`;
   else if(st==='m')bdg=`<div class="pbdg m">✓</div>`;
+  else if(cv>0&&!gv)bdg=`<div class="pbdg h">${cv}</div>`;
   return `<div class="${cls}" data-id="${card.id}">
     <div class="pci" onclick="openFull('${card.id}')">
       ${card.img
@@ -409,7 +445,7 @@ function cardTileHTML(card, showGoalRow){
   </div>`;
 }
 
-/* patch tile without re-render */
+/* patch single tile */
 function patchTile(id){
   const tile=document.querySelector(`.pct[data-id="${id}"]`);
   if(!tile)return;
@@ -422,20 +458,19 @@ function patchTile(id){
   const cnt=tile.querySelector('.pc-cnt');if(cnt)cnt.textContent=cv;
   const strip=tile.querySelector('.pc-strip');
   if(strip){strip.innerHTML=stripHtml(id);strip.setAttribute('style',stripStyle(id));}
-  // badge
   const oldBdg=tile.querySelector('.pbdg');if(oldBdg)oldBdg.remove();
   let bdgHtml='';
-  if(s_>0)bdgHtml=`<div class="pbdg h">+${s_}</div>`;
+  if(s_>0&&gv>0)bdgHtml=`<div class="pbdg h">+${s_}</div>`;
   else if(w_>0)bdgHtml=`<div class="pbdg w">−${w_}</div>`;
   else if(st==='m')bdgHtml=`<div class="pbdg m">✓</div>`;
+  else if(cv>0&&!gv)bdgHtml=`<div class="pbdg h">${cv}</div>`;
   if(bdgHtml){const pci=tile.querySelector('.pci');if(pci)pci.insertAdjacentHTML('beforeend',bdgHtml);}
-  // goal num
   const gn=tile.querySelector(`[data-gid="${id}"]`);if(gn)gn.textContent=gv;
 }
 
-/* ════════════════════════════════════
+/* ════════════════════════════════
    ACTIONS
-════════════════════════════════════ */
+════════════════════════════════ */
 function addC(id,e){
   if(e)e.stopPropagation();
   ST.collected[id]=(ST.collected[id]||0)+1;saveST();patchTile(id);
@@ -452,13 +487,6 @@ function setGoalById(id,n){
 function goalAdj(id,d){
   setGoalById(id,g(id)+d);patchTile(id);
   const gn=document.querySelector(`[data-gid="${id}"]`);if(gn)gn.textContent=g(id);
-}
-function addSetGoal(sid,d){
-  if(!DB)return;
-  for(const a of DB.albumTypes)for(const s of a.sets)if(s.id===sid){
-    for(const card of s.cards)ST.goals[card.id]=Math.max(0,(ST.goals[card.id]||0)+d);break;
-  }
-  saveST();renderGoals();toast(d>0?'전체+1 ✓':'전체−1');
 }
 function toggleHide(){
   if(!fsId)return;
@@ -480,18 +508,22 @@ function colAllGoals(){if(!DB)return;for(const a of DB.albumTypes)for(const s of
 function expAllGoals(){UI.mgl={};saveUI();renderGoals();}
 function resetAllGoals(){if(!confirm('모든 목표를 0으로 초기화할까요?'))return;ST.goals={};saveST();renderGoals();toast('목표 초기화 완료');}
 
-/* ════════════════════════════════════
-   FILTER ROW
-════════════════════════════════════ */
-function filterRowHTML(cAlbs, cMems, flt, fnAlb, fnMem, fnFlt, rightCtrl=''){
-  return `<div class="frow"><div class="frow-top">
-    <div class="frow-lines">
-      <div class="frow-line">
+/* ════════════════════════════════
+   FILTER ROW HTML
+   (original inline style — chips directly in the page)
+════════════════════════════════ */
+function filterRowHTML(cAlbs, cMems, flt, fnAlb, fnMem, fnFlt, rightCtrl){
+  const albumChips=DB.albumTypes.map(a=>`<button class="fp${cAlbs.includes(a.id)?' on-alb':''}" onclick="${fnAlb}('${a.id}')" style="${cAlbs.includes(a.id)?`background:${a.color};border-color:transparent;color:#fff`:`border-color:${a.color}55;color:${a.color}`}">${a.shortName}</button>`).join('');
+  const memChips=MEMBERS.map(m=>`<button class="fp${cMems.includes(m)?' on-m':''}" onclick="${fnMem}('${m}')">${m}</button>`).join('');
+  return `
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:8px">
+    <div style="display:flex;flex-direction:column;gap:5px;flex:1">
+      <div class="frow" style="margin-bottom:0">
         <button class="fp${!cAlbs.length?' on-all':''}" onclick="${fnAlb}(null)">전체</button>
-        ${DB.albumTypes.map(a=>`<button class="fp${cAlbs.includes(a.id)?' on-alb':''}" onclick="${fnAlb}('${a.id}')" style="${cAlbs.includes(a.id)?`background:${a.color};border-color:transparent;color:#fff`:`border-color:${a.color}55;color:${a.color}`}">${a.shortName}</button>`).join('')}
+        ${albumChips}
       </div>
-      <div class="frow-line">
-        ${MEMBERS.map(m=>`<button class="fp${cMems.includes(m)?' on-m':''}" onclick="${fnMem}('${m}')">${m}</button>`).join('')}
+      <div class="frow" style="margin-bottom:0">
+        ${memChips}
         <div class="fsep"></div>
         <div class="ftog">
           <span class="ftog-btn${flt==='all'?' on':''}" onclick="${fnFlt}('all')">모두</span>
@@ -500,22 +532,13 @@ function filterRowHTML(cAlbs, cMems, flt, fnAlb, fnMem, fnFlt, rightCtrl=''){
         </div>
       </div>
     </div>
-    ${rightCtrl}
-  </div></div>`;
+    ${rightCtrl||''}
+  </div>`;
 }
 
-/* filter helper: does a card match the current member list? */
-function cardMatchesMems(card, mems){
-  if(!mems.length)return true;
-  if(mems.includes(card.name))return true; // Individual / MMMM
-  if(card.member&&mems.includes(card.member))return true;
-  if(card.unit){for(const m of mems)if(MU[m]&&MU[m].includes(card.unit))return true;}
-  return false;
-}
-
-/* ════════════════════════════════════
+/* ════════════════════════════════
    NAVIGATION
-════════════════════════════════════ */
+════════════════════════════════ */
 function renderNav(){
   document.getElementById('dtabs').innerHTML=TABS.map(t=>`<div class="dtab${curTab===t.id?' on':''}" data-v="${t.id}" onclick="goTab('${t.id}')">${t.label}</div>`).join('');
   document.getElementById('bnav').innerHTML=TABS.map(t=>`<div class="btab${curTab===t.id?' on':''}" data-v="${t.id}" onclick="goTab('${t.id}')"><div class="btab-ico">${t.ico}</div>${t.label}</div>`).join('');
@@ -533,15 +556,16 @@ function renderCur(){
   else renderUsage();
 }
 
-/* ════════════════════════════════════
+/* ════════════════════════════════
    COLLECT TAB
-════════════════════════════════════ */
+════════════════════════════════ */
 function renderCollect(){
   const el=document.getElementById('page-content');
+  // section grid: auto-fill with min width that fits a reasonable number of sections
   const nMem=UI.cMembers.length||5;
-  const minW=Math.max(nMem*54+28, 120);
+  const secMinW=Math.max(nMem*CARD_MIN_W+20, 130);
 
-  const colCtrl=`<div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end;flex-shrink:0;margin-left:6px">
+  const colCtrl=`<div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end;flex-shrink:0">
     <div class="coltog"><span class="coltog-btn" onclick="collapseAll()">접기</span><span class="coltog-btn" onclick="expandAll()">펼치기</span></div>
     <button class="shot-btn" onclick="exportCollectScreenshot()">📸</button>
   </div>`;
@@ -570,7 +594,7 @@ function renderCollect(){
           ${t2>0?`<div class="sec-pw"><span class="sec-pct">${m2}/${t2}</span><div class="sec-pb"><div class="sec-pbf" style="width:${pct}%;background:${alb.color}"></div></div></div>`:''}
           <span class="chev${isC?'':' open'}">▼</span>
         </div>
-        ${isC?'':`<div class="sec-body"><div class="pcg" style="grid-template-columns:repeat(${cards.length},1fr)">
+        ${isC?'':`<div class="sec-body"><div class="pcg" style="grid-template-columns:${gridCols(cards.length)}">
           ${cards.map(card=>cardTileHTML(card,false)).join('')}
         </div></div>`}
       </div>`;
@@ -584,15 +608,15 @@ function renderCollect(){
       <div class="stat-chip">목표달성 <span>${metC}/${goalC}</span></div>
     </div>`+
     filterRowHTML(UI.cAlbs,UI.cMembers,UI.flt,'setCAl','setCM','setFlt',colCtrl)+
-    `<div class="sets-wrap" style="grid-template-columns:repeat(auto-fill,minmax(${minW}px,1fr))">${secs}</div>`;
+    `<div class="sets-wrap" style="grid-template-columns:repeat(auto-fill,minmax(${secMinW}px,1fr))">${secs}</div>`;
 }
 function setCAl(id){if(id===null)UI.cAlbs=[];else{const i=UI.cAlbs.indexOf(id);if(i>=0)UI.cAlbs.splice(i,1);else UI.cAlbs.push(id);}saveUI();renderCollect();}
 function setCM(m){if(!m)return;const i=UI.cMembers.indexOf(m);if(i>=0)UI.cMembers.splice(i,1);else UI.cMembers.push(m);saveUI();renderCollect();}
 function setFlt(f){UI.flt=f;saveUI();renderCollect();}
 
-/* ════════════════════════════════════
+/* ════════════════════════════════
    TRADE TAB
-════════════════════════════════════ */
+════════════════════════════════ */
 function renderTrade(){
   const el=document.getElementById('page-content');
   const all=allCards();
@@ -630,6 +654,7 @@ function renderTrade(){
   cols+='</div>';
   el.innerHTML=shotBtn+cols;
 }
+
 function tradeBodyHTML(cards, mode){
   if(!DB||!cards.length)return'';
   let h='<div class="sets-wrap">';
@@ -642,23 +667,24 @@ function tradeBodyHTML(cards, mode){
       const bdCol=mode==='want'?'rgba(244,63,94,.45)':'rgba(59,130,246,.45)';
       const txCol=mode==='want'?'var(--want)':'var(--have)';
       const bg=mode==='want'?'var(--want-g)':'var(--have-g)';
-      const nc=Math.min(sc.length,5);
       h+=`<div class="sec-block">
         <div class="sec-hdr" style="cursor:default;padding:6px 10px">
           <span class="sec-atag" style="background:${alb.color}">${alb.shortName}</span>
           <span class="sec-name">${set.name}</span>
         </div>
-        <div class="sec-body"><div class="pcg" style="grid-template-columns:repeat(${nc},1fr)">
-          ${sc.map(card=>{
-            const cnt=mode==='want'?wt(card.id):sp(card.id);
-            return `<div class="pct" style="border-color:${bdCol}" data-id="${card.id}">
-              <div class="pci" onclick="openFull('${card.id}')">
-                ${card.img?`<img src="${card.img}" alt="${card.name}" loading="lazy">`:`<div class="pcph">${card.name}</div>`}
-              </div>
-              <div class="pc-strip" style="color:${txCol};background:${bg}">${mode==='want'?'−':'+'} ${cnt}장</div>
-            </div>`;
-          }).join('')}
-        </div></div>
+        <div class="sec-body">
+          <div class="trade-grid">
+            ${sc.map(card=>{
+              const cnt=mode==='want'?wt(card.id):sp(card.id);
+              return `<div class="pct" style="border-color:${bdCol}" data-id="${card.id}">
+                <div class="pci" onclick="openFull('${card.id}')">
+                  ${card.img?`<img src="${card.img}" alt="${card.name}" loading="lazy">`:`<div class="pcph">${card.name}</div>`}
+                </div>
+                <div class="pc-strip" style="color:${txCol};background:${bg}">${mode==='want'?'−':'+'} ${cnt}장</div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
       </div>`;
     }
   }
@@ -666,18 +692,18 @@ function tradeBodyHTML(cards, mode){
   return h;
 }
 
-/* ════════════════════════════════════
+/* ════════════════════════════════
    GOALS TAB
-════════════════════════════════════ */
+════════════════════════════════ */
 function renderGoals(){
   const el=document.getElementById('page-content');
   const mAlbs=UI.mAlbs, mMems=UI.mMembers, mflt=UI.mflt;
   const nMem=mMems.length||5;
-  const minW=Math.max(nMem*54+28, 120);
+  const secMinW=Math.max(nMem*CARD_MIN_W+20, 130);
 
-  const colCtrl=`<div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end;flex-shrink:0;margin-left:6px">
+  const colCtrl=`<div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end;flex-shrink:0">
     <div class="coltog"><span class="coltog-btn" onclick="colAllGoals()">접기</span><span class="coltog-btn" onclick="expAllGoals()">펼치기</span></div>
-    <button class="shot-btn" onclick="resetAllGoals()">🗑</button>
+    <button class="shot-btn" style="color:var(--want);border-color:rgba(244,63,94,.3)" onclick="resetAllGoals()">🗑 초기화</button>
   </div>`;
 
   const albums=mAlbs.length?DB.albumTypes.filter(a=>mAlbs.includes(a.id)):DB.albumTypes;
@@ -699,7 +725,7 @@ function renderGoals(){
           <div class="sec-pw"><span class="sec-pct">${m2}/${t2}</span><div class="sec-pb"><div class="sec-pbf" style="width:${pct}%;background:${alb.color}"></div></div></div>
           <span class="chev${isC?'':' open'}">▼</span>
         </div>
-        ${isC?'':`<div class="sec-body"><div class="pcg" style="grid-template-columns:repeat(${cards.length},1fr)">
+        ${isC?'':`<div class="sec-body"><div class="pcg" style="grid-template-columns:${gridCols(cards.length)}">
           ${cards.map(card=>cardTileHTML(card,true)).join('')}
         </div></div>`}
       </div>`;
@@ -709,15 +735,15 @@ function renderGoals(){
   el.innerHTML=
     `<div style="margin-bottom:8px"><button class="btn btn-p btn-sm" onclick="showWizard()">🎯 마법사로 일괄 설정</button></div>`+
     filterRowHTML(mAlbs,mMems,mflt,'setMAl','setMM','setMFlt',colCtrl)+
-    `<div class="sets-wrap" style="grid-template-columns:repeat(auto-fill,minmax(${minW}px,1fr))">${secs}</div>`;
+    `<div class="sets-wrap" style="grid-template-columns:repeat(auto-fill,minmax(${secMinW}px,1fr))">${secs}</div>`;
 }
 function setMAl(id){if(id===null)UI.mAlbs=[];else{const i=UI.mAlbs.indexOf(id);if(i>=0)UI.mAlbs.splice(i,1);else UI.mAlbs.push(id);}saveUI();renderGoals();}
 function setMM(m){if(!m)return;const i=UI.mMembers.indexOf(m);if(i>=0)UI.mMembers.splice(i,1);else UI.mMembers.push(m);saveUI();renderGoals();}
 function setMFlt(f){UI.mflt=f;saveUI();renderGoals();}
 
-/* ════════════════════════════════════
+/* ════════════════════════════════
    FULLSCREEN
-════════════════════════════════════ */
+════════════════════════════════ */
 function openFull(id){
   const r=findCard(id);if(!r)return;
   fsId=id;const{card,alb,set}=r;
@@ -763,9 +789,9 @@ function fsGoal(d){
   setGoalById(fsId,g(fsId)+d);updFull();patchTile(fsId);
 }
 
-/* ════════════════════════════════════
+/* ════════════════════════════════
    WIZARD
-════════════════════════════════════ */
+════════════════════════════════ */
 function showWizard(){
   wiz={step:1,albums:['poca','photobook','inventory','idpass'],inclUnpo:false,members:[...MEMBERS],inclAll:false,inclMmmm:false,count:1};
   renderWizStep();
@@ -781,26 +807,32 @@ function renderWizStep(){
       </div>
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)">
         <input type="checkbox" ${wiz.inclUnpo?'checked':''} onchange="wiz.inclUnpo=this.checked" style="width:15px;height:15px">
-        <span style="font-size:12px;font-weight:600">미공포 포함 <span style="font-size:11px;font-weight:400;color:var(--tx2)">(메이크스타, 무신사, HMV 등)</span></span>
+        <span style="font-size:12px;font-weight:600">미공포 포함 <span style="font-weight:400;color:var(--tx2)">(메이크스타, 무신사, HMV 등)</span></span>
       </label>`;
     foot.innerHTML=`<button class="btn btn-s btn-sm" onclick="closeSheet('wiz-ov')" style="flex:1">나중에</button><button class="btn btn-p btn-sm" onclick="wizNext()" style="flex:2">다음 →</button>`;
   }else{
-    body.innerHTML=`<p style="font-size:12px;color:var(--tx2);margin-bottom:10px">멤버를 선택하면 해당 멤버의 <b>유닛 카드도 함께 자동 포함</b>돼요.</p>
+    body.innerHTML=`<p style="font-size:12px;color:var(--tx2);margin-bottom:10px">멤버를 선택하면 <b>해당 멤버의 유닛 카드도 자동 포함</b>돼요.</p>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-        ${MEMBERS.map(m=>`<button class="wiz-chip" onclick="wizToggleMember('${m}');renderWizStep()" style="${wiz.members.includes(m)?'background:var(--blue);border-color:var(--blue);color:#fff':'background:none'}">${m}</button>`).join('')}
+        ${MEMBERS.map(m=>{
+          const units=(MU[m]||[]).join(', ');
+          return`<button class="wiz-chip" onclick="wizToggleMember('${m}');renderWizStep()" title="${units}" style="${wiz.members.includes(m)?'background:var(--blue);border-color:var(--blue);color:#fff':'background:none'}">${m}</button>`;
+        }).join('')}
       </div>
+      ${wiz.members.length>0?`<div style="font-size:10px;color:var(--tx2);margin-bottom:10px;padding:6px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)">
+        자동 포함 유닛: ${[...new Set(wiz.members.flatMap(m=>MU[m]||[]))].join(' · ')||'없음'}
+      </div>`:''}
       <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px">
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)">
-          <input type="checkbox" id="wiz-all" ${wiz.inclAll?'checked':''} onchange="wiz.inclAll=this.checked" style="width:15px;height:15px">
+          <input type="checkbox" ${wiz.inclAll?'checked':''} onchange="wiz.inclAll=this.checked" style="width:15px;height:15px">
           <span style="font-size:12px;font-weight:600">단체(All) 카드 포함</span>
         </label>
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)">
-          <input type="checkbox" id="wiz-mmmm" ${wiz.inclMmmm?'checked':''} onchange="wiz.inclMmmm=this.checked" style="width:15px;height:15px">
+          <input type="checkbox" ${wiz.inclMmmm?'checked':''} onchange="wiz.inclMmmm=this.checked" style="width:15px;height:15px">
           <span style="font-size:12px;font-weight:600">MMMM 카드 포함 <span style="font-weight:400;color:var(--tx2)">(몌무·뫄·미므·므모·먀미)</span></span>
         </label>
       </div>
       <div style="text-align:center">
-        <p style="font-size:11px;color:var(--tx2);margin-bottom:10px">선택한 카드 전체에 적용할 수량</p>
+        <p style="font-size:11px;color:var(--tx2);margin-bottom:10px">수량</p>
         <div style="display:inline-flex;align-items:center;background:var(--s2);border:1px solid var(--bd);border-radius:14px;overflow:hidden">
           <button onclick="if(wiz.count>0)wiz.count--;renderWizStep()" style="padding:10px 20px;font-size:20px;font-weight:800;border-right:1px solid var(--bd);color:var(--tx)">−</button>
           <span style="font-family:'Outfit',sans-serif;font-weight:800;font-size:28px;min-width:52px;text-align:center">${wiz.count}</span>
@@ -818,8 +850,7 @@ function wizPrev(){wiz.step=1;renderWizStep();}
 function wizApply(){
   if(!wiz.members.length&&!wiz.inclAll&&!wiz.inclMmmm){toast('멤버 또는 카드 종류를 선택해주세요');return;}
   const albs=[...wiz.albums,...(wiz.inclUnpo?['unpo']:[])];
-  const relevantUnits=new Set();
-  for(const m of wiz.members)if(MU[m])MU[m].forEach(u=>relevantUnits.add(u));
+  const relevantUnits=new Set(wiz.members.flatMap(m=>MU[m]||[]));
   let count=0;
   for(const alb of DB.albumTypes){
     if(!albs.includes(alb.id))continue;
@@ -836,39 +867,39 @@ function wizApply(){
     const unitList=[...relevantUnits].join(', ');
     const lines=[
       `✅ 목표 설정 완료!`,``,
-      `적용 카드 수: ${count}장`,
+      `적용된 카드: ${count}장`,
       `멤버: ${wiz.members.length?wiz.members.join(', '):'없음'}`,
       unitList?`유닛 (자동포함): ${unitList}`:'',
       wiz.inclAll?'단체 카드 포함':'',
       wiz.inclMmmm?'MMMM 카드 포함':'',
-      ``,`목표 탭에서 개별 조정할 수 있어요.`,`목표 탭으로 이동할까요?`
-    ].filter(Boolean);
+      ``,`목표 탭에서 개별 조정 가능해요.`,``,`목표 탭으로 이동할까요?`
+    ].filter(l=>l!==undefined&&(l.length===0||l));
     if(confirm(lines.join('\n')))goTab('goals');
   },150);
 }
 
-/* ════════════════════════════════════
+/* ════════════════════════════════
    USAGE TAB
-════════════════════════════════════ */
+════════════════════════════════ */
 function renderUsage(){
   document.getElementById('page-content').innerHTML=`
   <div class="use-sec"><h3>📦 수집 탭</h3><ul>
-    <li><b>카드 이미지 클릭</b>: 상세 보기 — 수집/목표 나란히 조정, 메모</li>
+    <li><b>카드 이미지 클릭</b>: 상세 보기 — 수집/목표 나란히, 메모</li>
     <li><b>카드 하단 − / + 버튼</b>: 카드에서 바로 수집 수 조정</li>
-    <li><b>카드 아래 상태 표시줄</b>: ✓달성 / ✨있어요 / 🔍없어요 자동 표시</li>
-    <li><b>앨범·멤버 필터</b>: 원하는 앨범/멤버만 보기 (유닛 카드도 멤버 필터 적용)</li>
+    <li><b>상태 표시줄</b>: ✓달성 / ✨있어요 / 🔍없어요 자동 표시</li>
+    <li><b>앨범·멤버 필터</b>: 멤버 필터 시 해당 유닛 카드도 함께 필터</li>
+    <li><b>있는것만/없는것만</b>: 수집 현황으로 필터링</li>
     <li><b>접기/펼치기</b>: 전체 섹션 일괄 토글</li>
   </ul></div>
   <div class="use-sec"><h3>🔄 교환 탭</h3><ul>
     <li><b>🔍 구해요</b>: 목표보다 수집 부족 카드 자동 표시</li>
     <li><b>✨ 있어요</b>: 목표보다 더 많이 보유한 카드 자동 표시</li>
-    <li>태블릿 가로모드에서 구해요 / 있어요 나란히 표시</li>
+    <li>카드가 많으면 자동으로 여러 줄로 배열, 태블릿 가로모드에서 나란히 표시</li>
   </ul></div>
   <div class="use-sec"><h3>🎯 목표 탭</h3><ul>
-    <li>수집창과 동일한 필터 사용, 카드 그리드 뷰</li>
-    <li>각 카드 하단에서 목표 수량 조정</li>
-    <li><b>마법사</b>: 멤버 선택 시 해당 유닛 카드도 자동 포함, 단체/MMMM 선택 가능</li>
-    <li>설정 완료 후 확인 창에서 적용 내역 확인 가능</li>
+    <li>수집창과 동일한 필터, 카드 그리드 뷰, 목표 +/− 조정</li>
+    <li><b>🗑 초기화</b>: 목표 전체 초기화</li>
+    <li><b>마법사</b>: 멤버 → 유닛 자동 포함, 단체/MMMM 선택, 설정 후 확인 창 표시</li>
   </ul></div>
   <div class="use-sec"><h3>⚙️ 설정</h3><ul>
     <li><b>백업/복원</b>: JSON 파일로 데이터 관리</li>
@@ -877,9 +908,9 @@ function renderUsage(){
   <div style="text-align:center;padding:16px;font-size:11px;color:var(--tx3)">Made with 💙 for PLLIs &nbsp;|&nbsp; @plli_ze</div>`;
 }
 
-/* ════════════════════════════════════
+/* ════════════════════════════════
    SCREENSHOT
-════════════════════════════════════ */
+════════════════════════════════ */
 async function loadH2C(){
   if(window.html2canvas)return;
   return new Promise((res,rej)=>{
@@ -910,7 +941,7 @@ async function exportScreenshot(){
       const sids=[...new Set(ac.map(x=>x.sId))];
       for(const sid of sids){
         const sc=ac.filter(x=>x.sId===sid);
-        h+=`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-bottom:4px">`;
+        h+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:3px;margin-bottom:4px">`;
         for(const card of sc){
           const cnt=mode==='w'?wt(card.id):sp(card.id);
           h+=`<div style="border-radius:5px;overflow:hidden;border:1px solid ${mode==='w'?'rgba(244,63,94,.4)':'rgba(59,130,246,.4)'}">
@@ -958,7 +989,7 @@ async function exportCollectScreenshot(){
     else if(UI.flt==='n')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
     if(!cards.length)continue;
     secH+=`<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;margin-bottom:3px"><span style="background:${alb.color};color:#fff;padding:1px 6px;border-radius:5px;font-size:9px">${alb.shortName}</span> ${set.name}</div>
-      <div style="display:grid;grid-template-columns:repeat(${Math.min(cards.length,5)},1fr);gap:3px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:3px">
         ${cards.map(card=>{const cv=c(card.id),gv=g(card.id),st=sts(card.id);
           const bdr=st==='c'?'rgba(244,63,94,.5)':st==='m'?'rgba(34,197,94,.6)':st==='h'?'rgba(59,130,246,.6)':'rgba(0,0,0,.1)';
           return`<div style="border-radius:5px;overflow:hidden;border:1px solid ${bdr}">
@@ -980,9 +1011,9 @@ async function exportCollectScreenshot(){
   area.innerHTML='';
 }
 
-/* ════════════════════════════════════
+/* ════════════════════════════════
    SETTINGS / THEME
-════════════════════════════════════ */
+════════════════════════════════ */
 function showSettings(){document.getElementById('set-ov').classList.add('open');}
 function closeSheet(id){document.getElementById(id).classList.remove('open');}
 function importState(inp){
@@ -1000,9 +1031,9 @@ function applyTheme(t){document.documentElement.setAttribute('data-theme',t);con
 function toggleTheme(){UI.theme=UI.theme==='dark'?'light':'dark';applyTheme(UI.theme);saveUI();}
 function toast(msg){const w=document.getElementById('tw');const el=document.createElement('div');el.className='toast';el.textContent=msg;w.appendChild(el);setTimeout(()=>el.remove(),2100);}
 
-/* ════════════════════════════════════
+/* ════════════════════════════════
    INIT
-════════════════════════════════════ */
+════════════════════════════════ */
 function init(){
   loadST();loadUI();
   applyTheme(UI.theme||'light');
