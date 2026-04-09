@@ -46,28 +46,19 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .btab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:9px;font-weight:700;color:var(--tx2);cursor:pointer;font-family:'Outfit',sans-serif;transition:color .15s}
 .btab.on{color:var(--blue)}
 .btab-ico{font-size:18px;line-height:1}
-
 .main{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px 10px calc(60px + env(safe-area-inset-bottom,0px));-webkit-overflow-scrolling:touch}
 @media(min-width:641px){.dtabs{display:flex}.bnav{display:none!important}.main{padding:12px}}
 @media(max-width:640px){.dtabs{display:none}.bnav{display:block}}
 
-/* FILTERS */
-.frow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:6px}
-.fp{padding:4px 11px;border-radius:16px;font-size:11px;font-weight:700;background:var(--s2);border:1.5px solid var(--bd);color:var(--tx2);cursor:pointer;transition:all .14s;white-space:nowrap;font-family:'Outfit',sans-serif}
-.fp.on-all{background:linear-gradient(135deg,var(--blue),var(--purple));border-color:transparent;color:#fff}
-.fp.on-alb{color:#fff;border-color:transparent}
-.fp.on-m{background:var(--s3);border-color:var(--blue);color:var(--blue)}
-.fp.on-f{background:var(--s3);border-color:var(--blue);color:var(--blue)}
-.fsep{width:1px;height:16px;background:var(--bd);flex-shrink:0;margin:0 2px}
-/* 3-way toggle */
-.ftog{display:inline-flex;background:var(--s2);border:1px solid var(--bd);border-radius:20px;overflow:hidden;flex-shrink:0}
-.ftog-btn{padding:4px 11px;font-size:11px;font-weight:700;color:var(--tx2);cursor:pointer;white-space:nowrap;transition:all .14s;font-family:'Outfit',sans-serif}
-.ftog-btn.on{background:var(--blue);color:#fff}
-/* collapse toggle */
-.coltog{display:inline-flex;background:var(--s2);border:1px solid var(--bd);border-radius:10px;overflow:hidden;flex-shrink:0}
-.coltog-btn{padding:4px 10px;font-size:10px;font-weight:700;color:var(--tx2);cursor:pointer;white-space:nowrap;border-right:1px solid var(--bd)}
-.coltog-btn:last-child{border-right:none}
-.coltog-btn:hover{background:var(--s3);color:var(--tx)}
+/* TOP TOOLBAR */
+.toolbar{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:8px;padding:6px 8px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r)}
+
+/* TOGGLE BUTTONS — single state cycling */
+.tog-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:700;border:1.5px solid var(--bd);color:var(--tx2);background:var(--s2);cursor:pointer;white-space:nowrap;font-family:'Outfit',sans-serif;transition:all .14s;flex-shrink:0}
+.tog-btn.active{background:var(--s3);border-color:var(--blue);color:var(--blue)}
+.tog-btn.filter-active{background:linear-gradient(135deg,var(--blue)22,var(--purple)22);border-color:var(--blue);color:var(--blue)}
+.tsep{width:1px;height:18px;background:var(--bd);flex-shrink:0;margin:0 2px}
+.tog-spacer{flex:1}
 
 /* SECTION */
 .sets-wrap{display:grid;gap:6px;align-items:start}
@@ -84,7 +75,7 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .chev.open{transform:rotate(180deg)}
 .sec-body{padding:6px 7px 8px}
 
-/* CARD GRID — always N cols, responsive sections */
+/* CARD GRID */
 .pcg{display:grid;gap:4px}
 
 /* CARD TILE */
@@ -98,617 +89,711 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .pcph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--tx3);text-align:center;padding:2px}
 .pbdg{position:absolute;top:3px;right:3px;border-radius:4px;font-size:7px;font-weight:800;padding:1px 3px;line-height:1.4;font-family:'Outfit',monospace}
 .pbdg.w{background:rgba(244,63,94,.85);color:#fff}
-.pbdg.h{background:rgba(59,130,246,.85);color:#fff}
-.pbdg.m{background:rgba(34,197,94,.85);color:#fff}
-.mdot{position:absolute;top:3px;left:3px;width:5px;height:5px;border-radius:50%;background:var(--ok);box-shadow:0 0 3px rgba(34,197,94,.6)}
-/* card bottom — two rows */
-.pcb{flex-shrink:0;display:flex;align-items:center;min-height:32px;background:rgba(0,0,0,.6)}
-[data-theme="light"] .pcb{background:rgba(0,0,0,.1)}
-.pcbtn{width:18px;height:32px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.55);font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;line-height:1}
-[data-theme="light"] .pcbtn{color:rgba(0,0,0,.4)}
-.pcbtn:active{background:rgba(255,255,255,.1)}
-.pcm{flex:1;text-align:left;overflow:hidden;padding:3px 4px}
-.pc-row{display:flex;align-items:center;justify-content:space-between;line-height:1.35}
-.pc-lbl{font-size:7px;color:rgba(255,255,255,.45);font-weight:600;flex-shrink:0;width:18px}
-[data-theme="light"] .pc-lbl{color:rgba(0,0,0,.35)}
-.pc-val{font-size:9px;font-family:'Outfit',monospace;font-weight:700}
+.pcf{padding:4px 5px;display:flex;align-items:center;justify-content:space-between;gap:2px;flex-shrink:0}
+.pclbl{font-size:8px;font-weight:700;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%;flex-shrink:1}
+.pcc{display:flex;align-items:center;gap:2px;flex-shrink:0}
+.pcbtn{width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:5px;font-size:11px;font-weight:700;border:1px solid var(--bd);color:var(--tx2);background:var(--s3);line-height:1}
+.pcbtn:active{transform:scale(.9)}
+.pcnum{min-width:18px;text-align:center;font-size:10px;font-weight:800;color:var(--tx);font-family:'Outfit',sans-serif}
+.pcgoal{font-size:8px;font-weight:700;color:var(--tx3);font-family:'Outfit',sans-serif}
 
-/* GOALS TAB */
-.msec{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:7px;overflow:hidden}
-.mhdr{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--bd);gap:6px;cursor:pointer}
-.mtitle{font-weight:700;font-size:12px;display:flex;align-items:center;gap:5px;flex:1;min-width:0}
-.macts{display:flex;gap:4px;flex-shrink:0}
-.sbtn{padding:3px 9px;border-radius:10px;font-size:11px;font-weight:700;border:1.5px solid;cursor:pointer;font-family:'Outfit',sans-serif}
-.mmems{display:grid;grid-template-columns:repeat(5,1fr)}
-.mmem{padding:6px 3px;text-align:center;border-right:1px solid var(--bd)}
-.mmem:last-child{border-right:none}
-.mmimg{width:32px;height:45px;border-radius:4px;overflow:hidden;margin:0 auto 3px;background:var(--s2);border:1px solid var(--bd)}
-.mmimg img{width:100%;height:100%;object-fit:cover}
-.mmph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--tx3)}
-.mmn{font-size:9px;font-weight:700;margin-bottom:3px}
-.mmctrl{display:flex;align-items:center;justify-content:center;gap:2px}
-.mmbtn{width:18px;height:18px;border-radius:3px;background:var(--s2);border:1px solid var(--bd);color:var(--tx);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1}
-.mmbtn:active{background:var(--s3)}
-.mmval{font-family:'Outfit',sans-serif;font-weight:800;font-size:13px;min-width:14px;text-align:center}
-.mmcol{font-size:8px;color:var(--tx3);margin-top:1px;font-family:'Outfit',monospace}
+/* OVERLAY sheets */
+.ov{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s}
+.ov.open{opacity:1;pointer-events:auto}
+.ov-bg{position:absolute;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px)}
+.sheet{position:relative;width:100%;max-width:520px;margin:0 auto;background:var(--s1);border-radius:20px 20px 0 0;border-top:1px solid var(--bd);padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));max-height:92vh;overflow-y:auto;transform:translateY(100%);transition:transform .25s}
+.ov.open .sheet{transform:translateY(0)}
+.sh-bar{width:40px;height:4px;background:var(--bd2);border-radius:2px;margin:0 auto 14px}
+.sh-ttl{font-family:'Outfit',sans-serif;font-weight:800;font-size:15px;margin-bottom:12px}
 
-/* TRADE */
-.tr-hdr{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:9px;margin-bottom:8px;border:1.5px solid}
-.tr-hdr.wh{background:var(--want-g);border-color:var(--want-bd)}
-.tr-hdr.hh{background:var(--have-g);border-color:var(--have-bd)}
-.tr-title{font-family:'Outfit',sans-serif;font-weight:800;font-size:17px}
-.tr-title.wt{color:var(--want)}.tr-title.ht{color:var(--have)}
-.tr-badge{padding:3px 10px;border-radius:16px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;margin-left:auto}
-.tr-badge.wb{background:var(--want);color:#fff}.tr-badge.hb{background:var(--have);color:#fff}
-.tr-empty{text-align:center;padding:20px;color:var(--tx3);font-size:12px;line-height:1.8}
-.tr-alb-lbl{font-size:10px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:5px}
-.tr-set-lbl{font-size:9px;color:var(--tx3);font-weight:600;margin-bottom:3px}
-.trt{border-radius:7px;overflow:hidden;background:var(--s2);cursor:pointer;display:flex;flex-direction:column;user-select:none;transition:transform .12s}
-.trt:active{transform:scale(.96)}
-.trt.wt{border:1px solid rgba(244,63,94,.35)}
-.trt.ht{border:1px solid rgba(59,130,246,.35)}
-.trb{display:flex;align-items:center;justify-content:space-between;padding:3px 5px;flex-shrink:0}
-.trb.wb{background:var(--want-g)}.trb.hb{background:var(--have-g)}
-.trn{font-size:9px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
-.trcnt{font-size:10px;font-weight:800;font-family:'Outfit',monospace;flex-shrink:0}
-.trcnt.w{color:var(--want)}.trcnt.h{color:var(--have)}
-/* landscape trade */
-.trade-ls{display:flex;height:100%}
-.trade-ls-sb{width:130px;flex-shrink:0;overflow-y:auto;border-right:1px solid var(--bd);padding:6px 5px;transition:width .25s ease;background:var(--s1);display:flex;flex-direction:column;gap:4px}
-.trade-ls-sb.col{width:30px;overflow:hidden;padding:6px 3px}
-.ls-tog{width:22px;height:22px;border-radius:5px;background:var(--s2);border:1px solid var(--bd);color:var(--tx2);font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;align-self:flex-end}
-.ls-fp{padding:4px 8px;border-radius:8px;font-size:11px;font-weight:700;background:var(--s2);border:1.5px solid var(--bd);color:var(--tx2);cursor:pointer;font-family:'Outfit',sans-serif;text-align:left;white-space:nowrap}
-.ls-fp.on{color:#fff;border-color:transparent}
-.trade-ls-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.trade-ls-ch{display:flex;flex-shrink:0;border-bottom:1px solid var(--bd)}
-.trade-ls-ch>div{flex:1;padding:7px 10px;display:flex;align-items:center;gap:6px}
-.trade-ls-ch>div:first-child{border-right:1px solid var(--bd)}
-.trade-ls-cols{flex:1;display:flex;overflow:hidden}
-.trade-ls-col{flex:1;overflow-y:auto;padding:7px 6px}
-.trade-ls-col:first-child{border-right:1px solid var(--bd)}
-.shot-btn{padding:4px 12px;border-radius:14px;font-size:11px;font-weight:700;background:var(--s2);border:1px solid var(--bd);color:var(--tx2);cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:3px;white-space:nowrap}
-.shot-btn:active{background:var(--s3)}
+/* FULLSCREEN OVERLAY */
+.fs-ov{position:fixed;inset:0;z-index:400;background:rgba(8,9,15,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.fs-ov.open{opacity:1;pointer-events:auto}
+.fs-img-wrap{width:min(220px,60vw);flex-shrink:0;margin-bottom:12px}
+.fsimg{width:100%;border-radius:10px;display:block}
+.fsph{width:100%;aspect-ratio:5/7;display:flex;align-items:center;justify-content:center;background:var(--s2);border-radius:10px;font-size:28px}
+.fs-name{font-family:'Outfit',sans-serif;font-weight:800;font-size:16px;text-align:center}
+.fs-meta{font-size:11px;color:var(--tx2);text-align:center;margin-top:2px;margin-bottom:10px}
+.fs-chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;min-height:24px}
+.fs-row{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:8px}
+.fs-lbl{font-size:11px;color:var(--tx2);min-width:60px;text-align:right}
+.fs-val{font-family:'Outfit',sans-serif;font-weight:800;font-size:22px;min-width:40px;text-align:center}
+.fs-adj{display:flex;align-items:center;background:var(--s2);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.fs-adj button{padding:8px 18px;font-size:18px;font-weight:800;color:var(--tx);font-family:'Outfit',sans-serif}
+.fs-close{position:absolute;top:16px;right:16px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--s2);border:1px solid var(--bd);font-size:16px}
 
-/* FULLSCREEN */
-.fsov{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.93);display:none;flex-direction:column;align-items:center;padding:12px 12px calc(14px + env(safe-area-inset-bottom));overflow-y:auto}
-.fsov.open{display:flex}
-.fscl{position:fixed;top:12px;right:12px;background:rgba(255,255,255,.1);border:none;border-radius:50%;width:32px;height:32px;font-size:14px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1}
-.fsimg{max-width:min(88vw,200px);max-height:52vh;border-radius:10px;object-fit:contain;box-shadow:0 12px 48px rgba(0,0,0,.9);margin-top:40px;flex-shrink:0}
-.fsph{width:150px;height:210px;border-radius:10px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--tx3);margin-top:40px;flex-shrink:0}
-.fsi{width:100%;max-width:300px;margin-top:10px}
-.fsname{font-family:'Outfit',sans-serif;font-weight:800;font-size:16px;text-align:center;margin-bottom:2px}
-.fsmeta{font-size:11px;color:var(--tx2);text-align:center;margin-bottom:10px}
-/* status chips */
-.fs-chips{display:flex;gap:6px;justify-content:center;margin-bottom:12px;min-height:22px}
-/* ctrl rows */
-.fs-ctrl{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border-radius:9px;padding:9px 12px;margin-bottom:7px;border:1px solid rgba(255,255,255,.07)}
-[data-theme="light"] .fs-ctrl{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.07)}
-.fs-lbl{font-size:11px;font-weight:700;color:var(--tx2);width:28px;flex-shrink:0}
-.fs-cb{padding:6px 14px;border-radius:7px;font-size:14px;font-weight:800;background:var(--s3);border:1px solid var(--bd);color:var(--tx);cursor:pointer;font-family:'Outfit',sans-serif;flex-shrink:0}
-.fs-cb:active{background:var(--bd2)}
-.fs-cb.p{background:var(--blue);border-color:var(--blue);color:#fff}
-.fs-cb.p:active{background:#3a70f0}
-.fs-cbv{font-family:'Outfit',sans-serif;font-weight:800;font-size:22px;flex:1;text-align:center}
-.fsmemow{width:100%;margin-bottom:10px}
-.fsmeml{font-size:11px;color:var(--tx2);margin-bottom:4px;display:flex;align-items:center;gap:4px}
-.fsmemi{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:9px;color:#fff;font-family:inherit;font-size:12px;padding:8px 10px;resize:none;min-height:48px;line-height:1.5;outline:none}
-[data-theme="light"] .fsmemi{background:rgba(0,0,0,.05);border-color:rgba(0,0,0,.12);color:var(--tx)}
-.fsmemi:focus{border-color:rgba(255,255,255,.28)}
-.fs-hide-btn{width:100%;padding:8px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;border:1px solid;font-family:'Outfit',sans-serif;display:none;margin-top:4px}
+/* FILTER PANEL */
+.filt-section{margin-bottom:12px}
+.filt-label{font-size:10px;font-weight:700;color:var(--tx2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;font-family:'Outfit',sans-serif}
+.filt-chips{display:flex;flex-wrap:wrap;gap:5px}
+.fchip{padding:4px 10px;border-radius:14px;font-size:11px;font-weight:700;background:var(--s2);border:1.5px solid var(--bd);color:var(--tx2);cursor:pointer;transition:all .12s;font-family:'Outfit',sans-serif}
+.fchip.on{background:var(--s3);border-color:var(--blue);color:var(--blue)}
+.fchip.on-all{background:linear-gradient(135deg,var(--blue),var(--purple));border-color:transparent;color:#fff}
 
-/* USAGE TAB */
-.usage-card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px;margin-bottom:10px}
-.usage-h{font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;margin-bottom:8px;display:flex;align-items:center;gap:7px}
-.usage-p{font-size:12px;color:var(--tx2);line-height:1.8}
-.usage-p b{color:var(--tx);font-weight:700}
+/* SETTINGS BUTTONS */
+.btn{padding:9px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .14s}
+.btn-p{background:var(--blue);color:#fff;border:none}
+.btn-s{background:var(--s2);color:var(--tx2);border:1px solid var(--bd)}
+.btn-d{background:rgba(244,63,94,.12);color:var(--want);border:1px solid rgba(244,63,94,.3)}
+.btn-sm{padding:8px 14px;font-size:11px}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.set-item{display:flex;align-items:center;justify-content:space-between;padding:10px;background:var(--s2);border-radius:var(--r-sm);border:1px solid var(--bd);margin-bottom:6px}
+.set-lbl{font-size:12px;font-weight:600}
+.set-sub{font-size:10px;color:var(--tx2);margin-top:1px}
 
-/* SHEET */
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
-.ov.open{opacity:1;pointer-events:all}
-.sheet{background:var(--s1);border:1px solid var(--bd2);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:480px;max-height:85vh;display:flex;flex-direction:column;animation:shup .2s ease}
-@keyframes shup{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
-.shdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bd);flex-shrink:0}
-.sttl{font-weight:800;font-size:14px;font-family:'Outfit',sans-serif}
-.sbdy{overflow-y:auto;padding:16px;flex:1}
-.sfot{display:flex;justify-content:flex-end;gap:8px;padding:10px 16px;border-top:1px solid var(--bd);flex-shrink:0}
-.desc{font-size:11px;color:var(--tx2);line-height:1.7;background:var(--s2);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:10px;border:1px solid var(--bd)}
-.desc b{color:var(--tx)}
+/* TRADE TAB */
+.trade-section{margin-bottom:14px}
+.trade-ttl{font-family:'Outfit',sans-serif;font-weight:800;font-size:13px;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.trade-empty{padding:20px;text-align:center;color:var(--tx2);font-size:12px;background:var(--s2);border-radius:var(--r);border:1px solid var(--bd)}
 
-/* NOTICE POPUP */
-.notice-wrap{background:var(--s1);border:1px solid var(--bd2);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:440px;max-height:80vh;display:flex;flex-direction:column;animation:shup .25s ease}
-.notice-body{overflow-y:auto;padding:20px;flex:1}
-.notice-title{font-family:'Outfit',sans-serif;font-weight:800;font-size:15px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.notice-lang{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:12px;background:var(--s2);border:1px solid var(--bd);font-size:10px;font-weight:700;color:var(--tx2);margin-bottom:10px}
-.notice-text{font-size:12px;color:var(--tx2);line-height:1.9;white-space:pre-line;margin-bottom:14px}
-.notice-text b{color:var(--tx)}
-.notice-sig{text-align:center;font-size:13px;margin-top:6px;padding-top:14px;border-top:1px solid var(--bd);color:var(--tx2)}
+/* GOAL TAB */
+.goal-alb{margin-bottom:14px}
+.goal-alb-hdr{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.goal-alb-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;color:#fff}
+.goal-alb-name{font-weight:700;font-size:13px}
+.goal-set{margin-bottom:10px}
+.goal-set-name{font-size:10px;color:var(--tx2);font-weight:600;margin-bottom:5px}
+.goal-card-row{display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--s2);border-radius:8px;border:1px solid var(--bd);margin-bottom:4px}
+.goal-thumb{width:28px;height:40px;border-radius:5px;overflow:hidden;background:var(--s3);flex-shrink:0}
+.goal-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.goal-name{flex:1;font-size:11px;font-weight:600}
+.goal-adj{display:flex;align-items:center;background:var(--s3);border:1px solid var(--bd);border-radius:10px;overflow:hidden;flex-shrink:0}
+.goal-adj button{padding:4px 12px;font-size:14px;font-weight:800;color:var(--tx);font-family:'Outfit',sans-serif}
+.goal-adj-num{font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;min-width:28px;text-align:center}
 
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:var(--r-sm);font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;border:none;font-family:'Outfit',sans-serif;transition:all .15s}
-.btn-p{background:var(--blue);color:#fff}
-.btn-s{background:var(--s2);color:var(--tx);border:1px solid var(--bd)}
-.btn-sm{padding:5px 10px;font-size:11px}
-.btn-full{width:100%;justify-content:center;margin-bottom:7px}
-.btn-warn{color:var(--want);border:1px solid var(--want-bd);justify-content:center;width:100%}
-.cta-box{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.cta-box p{font-size:11px;color:var(--tx2);flex:1;min-width:120px}
-
-/* WIZARD */
-.wiz-chip{padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;border:2px solid;cursor:pointer;transition:all .14s;font-family:'Outfit',sans-serif}
+/* SUMMARY STATS */
+.stats-bar{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.stat-chip{padding:5px 10px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);font-family:'Outfit',sans-serif;font-weight:700;font-size:11px;flex-shrink:0}
+.stat-chip span{color:var(--blue);font-size:13px}
 
 /* TOAST */
-.tw{position:fixed;bottom:68px;left:50%;transform:translateX(-50%);z-index:500;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:4px}
-.toast{background:var(--s3);border:1px solid var(--bd2);border-radius:20px;padding:7px 16px;font-size:12px;font-weight:700;white-space:nowrap;font-family:'Outfit',sans-serif;animation:tin .2s ease,tout .3s ease 1.7s forwards}
-@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#tw{position:fixed;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 8px);left:50%;transform:translateX(-50%);z-index:500;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:5px}
+.toast{background:var(--tx);color:var(--bg);padding:7px 16px;border-radius:20px;font-size:12px;font-weight:700;animation:tin .2s,tout .3s 1.8s forwards;white-space:nowrap}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes tout{to{opacity:0}}
+
+/* SHOT AREA */
+#shot-area{position:fixed;left:-9999px;top:0;min-width:360px}
+
+/* SCROLL TOP */
+.scroll-top-btn{position:fixed;right:12px;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 12px);width:36px;height:36px;border-radius:50%;background:var(--blue);color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;border:none;opacity:0;pointer-events:none;transition:opacity .2s;z-index:200;box-shadow:0 2px 10px rgba(79,138,255,.3)}
+.scroll-top-btn.vis{opacity:1;pointer-events:auto}
+
+/* USAGE TAB */
+.use-sec{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.use-sec h3{font-family:'Outfit',sans-serif;font-weight:700;font-size:13px;margin-bottom:8px;color:var(--blue)}
+.use-sec p{font-size:12px;line-height:1.7;color:var(--tx2)}
+.use-sec ul{padding-left:14px;font-size:12px;line-height:2;color:var(--tx2)}
+
+/* Wizard chips */
+.wiz-chip{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;border:1.5px solid var(--bd);color:var(--tx2);background:var(--s2);cursor:pointer;transition:all .14s;font-family:'Outfit',sans-serif}
+
+/* Notice */
+.notice-body{font-size:12px;line-height:1.8;color:var(--tx2);white-space:pre-wrap;max-height:300px;overflow-y:auto;padding:10px;background:var(--s2);border-radius:var(--r-sm);border:1px solid var(--bd)}
 </style>
 </head>
 <body>
 <div class="app">
-  <header class="hdr">
+  <!-- HEADER -->
+  <div class="hdr">
     <div class="logo-wrap">
       <span class="logo-main">Caligo Pt.2</span>
       <span class="logo-sub">드볼관리기</span>
     </div>
     <div class="hdr-r">
-      <button class="abtn" onclick="showSettings()">⚙️</button>
-      <button class="abtn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+      <button class="abtn" id="theme-btn" onclick="toggleTheme()" title="테마">🌙</button>
+      <button class="abtn" onclick="showSettings()" title="설정">⚙️</button>
     </div>
-  </header>
-  <div class="dtabs">
-    <div class="dtab on" data-v="collect" onclick="goTab('collect')">수집</div>
-    <div class="dtab" data-v="trade" onclick="goTab('trade')">교환</div>
-    <div class="dtab" data-v="goals" onclick="goTab('goals')">목표</div>
-    <div class="dtab" data-v="usage" onclick="goTab('usage')">사용법</div>
   </div>
-  <main class="main" id="main"></main>
-  <nav class="bnav">
-    <div class="bnav-inner">
-      <div class="btab on" data-v="collect" onclick="goTab('collect')"><span class="btab-ico">🗂</span>수집</div>
-      <div class="btab" data-v="trade" onclick="goTab('trade')"><span class="btab-ico">🔄</span>교환</div>
-      <div class="btab" data-v="goals" onclick="goTab('goals')"><span class="btab-ico">🎯</span>목표</div>
-      <div class="btab" data-v="usage" onclick="goTab('usage')"><span class="btab-ico">📖</span>사용법</div>
-    </div>
-  </nav>
+
+  <!-- DESKTOP TABS -->
+  <div class="dtabs" id="dtabs"></div>
+
+  <!-- MAIN -->
+  <div class="main" id="main">
+    <div id="page-content"></div>
+  </div>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <div class="bnav"><div class="bnav-inner" id="bnav"></div></div>
 </div>
 
-<!-- FULLSCREEN CARD -->
-<div class="fsov" id="fsov" onclick="if(event.target===this)closeFull()">
-  <button class="fscl" onclick="closeFull()">✕</button>
-  <div id="fs-img"></div>
-  <div class="fsi">
-    <div class="fsname" id="fs-name"></div>
-    <div class="fsmeta" id="fs-meta"></div>
-    <div class="fs-chips" id="fs-chips"></div>
-    <div class="fs-ctrl">
-      <span class="fs-lbl">보유</span>
-      <button class="fs-cb" onclick="fsAdj(-1)">−1</button>
-      <span class="fs-cbv" id="fs-coll">0</span>
-      <button class="fs-cb p" onclick="fsAdj(1)">+1</button>
+<!-- SCROLL TOP -->
+<button class="scroll-top-btn" id="scroll-top-btn" onclick="document.getElementById('main').scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- FULLSCREEN OVERLAY -->
+<div class="fs-ov" id="fsov">
+  <button class="fs-close" onclick="closeFull()">✕</button>
+  <div class="fs-img-wrap"><div id="fs-img"></div></div>
+  <div class="fs-name" id="fs-name"></div>
+  <div class="fs-meta" id="fs-meta"></div>
+  <div class="fs-chips" id="fs-chips"></div>
+  <div class="fs-row">
+    <span class="fs-lbl">수집</span>
+    <div class="fs-adj">
+      <button onclick="fsAdj(-1)">−</button>
+      <span class="fs-val" id="fs-coll">0</span>
+      <button onclick="fsAdj(+1)">+</button>
     </div>
-    <div class="fs-ctrl" style="margin-bottom:14px">
-      <span class="fs-lbl">목표</span>
-      <button class="fs-cb" onclick="fsGoal(-1)">−1</button>
-      <span class="fs-cbv" id="fs-goal">0</span>
-      <button class="fs-cb" onclick="fsGoal(1)">+1</button>
+  </div>
+  <div class="fs-row">
+    <span class="fs-lbl">목표</span>
+    <div class="fs-adj">
+      <button onclick="fsGoal(-1)">−</button>
+      <span class="fs-val" id="fs-goal">0</span>
+      <button onclick="fsGoal(+1)">+</button>
     </div>
-    <div class="fsmemow">
-      <div class="fsmeml">📝 메모 <span style="opacity:.6;font-size:10px">교환 조건·연락처 등</span></div>
-      <textarea class="fsmemi" id="fs-memo" placeholder="있어요 교환 가능 / 연락처: @..." rows="3" oninput="saveMemo(this.value)"></textarea>
-    </div>
-    <button class="fs-hide-btn" id="fs-hide-btn" onclick="toggleHide()"></button>
+  </div>
+  <div style="margin-top:8px;padding:0 16px;width:100%;max-width:400px">
+    <button id="fs-hide-btn" onclick="toggleHide()" style="display:none"></button>
+    <textarea id="fs-memo" placeholder="메모..." rows="2" style="width:100%;margin-top:6px;padding:7px;font-size:12px;resize:none;border-radius:var(--r-sm)" oninput="saveMemo()"></textarea>
   </div>
 </div>
 
-<!-- WIZARD -->
-<div class="ov" id="wiz-ov" onclick="if(event.target===this)closeSheet('wiz-ov')">
+<!-- FILTER PANEL OVERLAY -->
+<div class="ov" id="filt-ov">
+  <div class="ov-bg" onclick="closeSheet('filt-ov')"></div>
   <div class="sheet">
-    <div class="shdr"><span class="sttl" id="wiz-ttl">🎯 빠른 목표 설정</span>
-      <button onclick="closeSheet('wiz-ov')" style="font-size:16px;color:var(--tx2)">✕</button></div>
-    <div class="sbdy" id="wiz-body"></div>
-    <div class="sfot" id="wiz-foot"></div>
+    <div class="sh-bar"></div>
+    <div class="sh-ttl">🔍 필터 설정</div>
+    <div id="filt-body"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-s btn-sm" onclick="resetFilters()" style="flex:1">초기화</button>
+      <button class="btn btn-p btn-sm" onclick="applyFilters()" style="flex:2">적용하기</button>
+    </div>
   </div>
 </div>
 
-<!-- SETTINGS -->
-<div class="ov" id="set-ov" onclick="if(event.target===this)closeSheet('set-ov')">
+<!-- SETTINGS OVERLAY -->
+<div class="ov" id="set-ov">
+  <div class="ov-bg" onclick="closeSheet('set-ov')"></div>
   <div class="sheet">
-    <div class="shdr"><span class="sttl">⚙️ 설정</span>
-      <button onclick="closeSheet('set-ov')" style="font-size:16px;color:var(--tx2)">✕</button></div>
-    <div class="sbdy">
-      <div class="desc"><b>💾 데이터 백업이란?</b><br>목표·수집 개수·메모를 파일로 저장해요.<br>폰을 바꾸거나 브라우저 데이터가 지워져도 이 파일로 복원할 수 있어요.<br>가끔 백업해 두는 걸 추천해요 🙂</div>
-      <button class="btn btn-p btn-full" onclick="exportState()">💾 지금 백업하기</button>
-      <button class="btn btn-s btn-full" onclick="document.getElementById('st-inp').click()">📂 백업 파일로 복원하기</button>
-      <input type="file" id="st-inp" accept=".json" style="display:none" onchange="importState(this)">
-      <div class="desc" style="margin-top:8px"><b>⚠️ 주의</b><br>복원하면 현재 데이터가 파일 내용으로 <b>덮어씌워져요</b>.</div>
-      <hr style="border:none;border-top:1px solid var(--bd);margin:8px 0">
-      <button class="btn btn-warn" onclick="resetState()">⚠️ 전체 초기화</button>
+    <div class="sh-bar"></div>
+    <div class="sh-ttl">⚙️ 설정</div>
+    <div class="set-item">
+      <div><div class="set-lbl">백업 내보내기</div><div class="set-sub">수집·목표 데이터를 JSON으로 저장</div></div>
+      <button class="btn btn-s btn-sm" onclick="exportState()">저장</button>
     </div>
-    <div class="sfot"><button class="btn btn-s btn-sm" onclick="closeSheet('set-ov')">닫기</button></div>
+    <div class="set-item">
+      <div><div class="set-lbl">백업 불러오기</div><div class="set-sub">JSON 파일에서 데이터 복원</div></div>
+      <button class="btn btn-s btn-sm" onclick="document.getElementById('import-inp').click()">불러오기</button>
+      <input type="file" id="import-inp" accept=".json" onchange="importState(this)" style="display:none">
+    </div>
+    <div class="set-item">
+      <div><div class="set-lbl">목표 일괄 설정</div><div class="set-sub">마법사로 빠르게 목표 설정</div></div>
+      <button class="btn btn-p btn-sm" onclick="closeSheet('set-ov');showWizard()">마법사</button>
+    </div>
+    <div class="set-item" style="border-color:rgba(244,63,94,.3);background:rgba(244,63,94,.05)">
+      <div><div class="set-lbl" style="color:var(--want)">초기화</div><div class="set-sub">모든 수집·목표·메모 삭제</div></div>
+      <button class="btn btn-d btn-sm" onclick="resetState()">초기화</button>
+    </div>
   </div>
 </div>
 
-<!-- NOTICE -->
-<div class="ov" id="notice-ov">
-  <div class="notice-wrap">
-    <div class="shdr"><span class="sttl">📢 공지사항</span></div>
-    <div class="notice-body">
-      <div class="notice-lang">🇰🇷 한국어</div>
-      <div class="notice-text" id="notice-ko"></div>
-      <div class="notice-lang">🇺🇸 English</div>
-      <div class="notice-text" id="notice-en"></div>
-      <div class="notice-sig">@plli_ze &nbsp; 💙💜💗❤️🖤</div>
-    </div>
-    <div class="sfot"><button class="btn btn-p btn-sm" onclick="closeNotice()">확인했어요 ✓</button></div>
+<!-- WIZARD OVERLAY -->
+<div class="ov" id="wiz-ov">
+  <div class="ov-bg" onclick="closeSheet('wiz-ov')"></div>
+  <div class="sheet">
+    <div class="sh-bar"></div>
+    <div class="sh-ttl" id="wiz-ttl">🎯 목표 설정 마법사</div>
+    <div id="wiz-body"></div>
+    <div id="wiz-foot" style="display:flex;gap:8px;margin-top:14px"></div>
   </div>
 </div>
 
-<div class="tw" id="tw"></div>
-<button id="scroll-top-btn" onclick="document.getElementById('main').scrollTo({top:0,behavior:'smooth'})" style="position:fixed;bottom:70px;right:14px;width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;border:none;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:90;opacity:0;pointer-events:none;transition:opacity .2s;box-shadow:0 2px 10px rgba(79,138,255,.5)">↑</button>
-<div id="shot-area" style="position:fixed;left:-9999px;top:0;font-family:'Noto Sans KR',sans-serif"></div>
+<!-- SCREENSHOT AREA -->
+<div id="shot-area"></div>
+
+<!-- TOAST WRAPPER -->
+<div id="tw"></div>
 
 <script>
-const DB_KEY='plave_poca_db_v2',ST_KEY='plave_poca_st_v2',UI_KEY='plave_poca_ui_v4';
-const MEMBERS=['예준','노아','밤비','은호','하민'];
-const NOTICE_VER=1;
-const NOTICE_KO=`플리들, 반가워요! 🌙\n이 앱은 아직 개발 중이에요.\n원하는 기능이나 개선사항이 있다면 언제든지 건의해주세요!\n여러분의 한 마디가 더 좋은 앱을 만들어요 💙`;
-const NOTICE_EN=`Hey PLLIs! 🌙\nThis app is still a work in progress.\nIf there's a feature you'd love or something to improve, feel free to send suggestions!\nYour feedback makes all the difference 💙`;
+/* ══════════════════════════════════
+   STATE & DB
+══════════════════════════════════ */
+let DB = null;
+let ST = {goals:{},collected:{},memos:{},hidden:{}};
+let UI = {
+  tab:'collect',
+  theme:'dark',
+  col:{},  // collapsed sections: {sectionKey: true}
+  // Filter state
+  flt_cardType:[],  // [] = all
+  flt_member:[],
+  flt_unit:[],
+  flt_mmmm:[],
+  flt_album:[],     // album ids
+  // Card visibility toggle: 'all' | 'have' | 'nothave'
+  cardVis:'all',
+  // Collapse state: 'mixed' | 'expanded' | 'collapsed'
+  collapseAll: false,
+  noticeVer:0
+};
+let fsId = null;
+let wiz = {};
 
-let DB=null,ST={goals:{},collected:{},memos:{},hidden:{}};
-let UI={col:{},mgl:{},cAlbs:[],cMembers:[],flt:'all',mAlbs:[],mMembers:[],mflt:'all',talbArr:[],theme:'dark',lsSidebarOpen:true,noticeVer:0};
-let curTab='collect',fsId=null;
-let wiz={step:1,albums:['poca','photobook','inventory','idpass'],inclUnpo:false,members:[...MEMBERS],count:1};
+const TABS = [
+  {id:'collect',label:'수집',ico:'📦'},
+  {id:'trade',label:'교환',ico:'🔄'},
+  {id:'goals',label:'목표',ico:'🎯'},
+  {id:'usage',label:'사용법',ico:'📖'},
+];
+const MEMBERS = ['예준','노아','밤비','은호','하민'];
+const CARD_TYPES = ['Individual','Unit','All','MMMM'];
+const UNITS = ['맛탕즈','베리즈','댕댕즈','예라인','쁜라인','노라인','냥냥즈','야타즈','댄라즈','댕냥즈'];
+const MMMS = ['몌무','뫄','미므','므모','먀미'];
 
-/* ══ DEF DB ══ */
-const DEF_DB={"meta":{"title":"PLAVE Caligo Pt.2","version":"2.0.0"},"albumTypes":[{"id":"poca","name":"POCAALBUM","shortName":"POCA","color":"#4f7eff","sets":[{"id":"poca_A","name":"A세트","cards":[{"id":"poca_A_1","name":"예준","img":null},{"id":"poca_A_2","name":"노아","img":null},{"id":"poca_A_3","name":"밤비","img":null},{"id":"poca_A_4","name":"은호","img":null},{"id":"poca_A_5","name":"하민","img":null}]},{"id":"poca_B","name":"B세트","cards":[{"id":"poca_B_1","name":"예준","img":null},{"id":"poca_B_2","name":"노아","img":null},{"id":"poca_B_3","name":"밤비","img":null},{"id":"poca_B_4","name":"은호","img":null},{"id":"poca_B_5","name":"하민","img":null}]}]},{"id":"photobook","name":"PHOTOBOOK","shortName":"PHOTO","color":"#7b5fff","sets":[{"id":"pb_A","name":"A세트","cards":[{"id":"pb_A_1","name":"예준","img":null},{"id":"pb_A_2","name":"노아","img":null},{"id":"pb_A_3","name":"밤비","img":null},{"id":"pb_A_4","name":"은호","img":null},{"id":"pb_A_5","name":"하민","img":null}]},{"id":"pb_B","name":"B세트","cards":[{"id":"pb_B_1","name":"예준","img":null},{"id":"pb_B_2","name":"노아","img":null},{"id":"pb_B_3","name":"밤비","img":null},{"id":"pb_B_4","name":"은호","img":null},{"id":"pb_B_5","name":"하민","img":null}]}]},{"id":"inventory","name":"INVENTORY","shortName":"INVEN","color":"#06b6d4","sets":[{"id":"inv_A","name":"A세트","cards":[{"id":"inv_A_1","name":"예준","img":null},{"id":"inv_A_2","name":"노아","img":null},{"id":"inv_A_3","name":"밤비","img":null},{"id":"inv_A_4","name":"은호","img":null},{"id":"inv_A_5","name":"하민","img":null}]},{"id":"inv_B","name":"B세트","cards":[{"id":"inv_B_1","name":"예준","img":null},{"id":"inv_B_2","name":"노아","img":null},{"id":"inv_B_3","name":"밤비","img":null},{"id":"inv_B_4","name":"은호","img":null},{"id":"inv_B_5","name":"하민","img":null}]}]},{"id":"idpass","name":"IDPASS","shortName":"ID","color":"#a855f7","sets":[{"id":"idp_A","name":"A세트","cards":[{"id":"idp_A_1","name":"예준","img":null},{"id":"idp_A_2","name":"노아","img":null},{"id":"idp_A_3","name":"밤비","img":null},{"id":"idp_A_4","name":"은호","img":null},{"id":"idp_A_5","name":"하민","img":null}]},{"id":"idp_B","name":"B세트","cards":[{"id":"idp_B_1","name":"예준","img":null},{"id":"idp_B_2","name":"노아","img":null},{"id":"idp_B_3","name":"밤비","img":null},{"id":"idp_B_4","name":"은호","img":null},{"id":"idp_B_5","name":"하민","img":null}]}]},{"id":"unpo","name":"미공포","shortName":"미공포","color":"#f59e0b","sets":[{"id":"up_poca_ms","name":"포카·메이크스타","cards":[{"id":"up_poca_ms_1","name":"예준","img":null},{"id":"up_poca_ms_2","name":"노아","img":null},{"id":"up_poca_ms_3","name":"밤비","img":null},{"id":"up_poca_ms_4","name":"은호","img":null},{"id":"up_poca_ms_5","name":"하민","img":null}]},{"id":"up_poca_yp","name":"포카·영풍문고","cards":[{"id":"up_poca_yp_1","name":"예준","img":null},{"id":"up_poca_yp_2","name":"노아","img":null},{"id":"up_poca_yp_3","name":"밤비","img":null},{"id":"up_poca_yp_4","name":"은호","img":null},{"id":"up_poca_yp_5","name":"하민","img":null}]},{"id":"up_poca_wm","name":"포카·Will Music","cards":[{"id":"up_poca_wm_1","name":"예준","img":null},{"id":"up_poca_wm_2","name":"노아","img":null},{"id":"up_poca_wm_3","name":"밤비","img":null},{"id":"up_poca_wm_4","name":"은호","img":null},{"id":"up_poca_wm_5","name":"하민","img":null}]},{"id":"up_poca_wv","name":"포카·Weverse Shop","cards":[{"id":"up_poca_wv_1","name":"예준","img":null},{"id":"up_poca_wv_2","name":"노아","img":null},{"id":"up_poca_wv_3","name":"밤비","img":null},{"id":"up_poca_wv_4","name":"은호","img":null},{"id":"up_poca_wv_5","name":"하민","img":null}]},{"id":"up_poca_wvjp","name":"포카·WEVERSE JP","cards":[{"id":"up_poca_wvjp_1","name":"예준","img":null},{"id":"up_poca_wvjp_2","name":"노아","img":null},{"id":"up_poca_wvjp_3","name":"밤비","img":null},{"id":"up_poca_wvjp_4","name":"은호","img":null},{"id":"up_poca_wvjp_5","name":"하민","img":null}]},{"id":"up_pb_vl","name":"포토북·VLAST SHOP","cards":[{"id":"up_pb_vl_1","name":"예준","img":null},{"id":"up_pb_vl_2","name":"노아","img":null},{"id":"up_pb_vl_3","name":"밤비","img":null},{"id":"up_pb_vl_4","name":"은호","img":null},{"id":"up_pb_vl_5","name":"하민","img":null}]},{"id":"up_pb_tme","name":"포토북·TME","cards":[{"id":"up_pb_tme_1","name":"예준","img":null},{"id":"up_pb_tme_2","name":"노아","img":null},{"id":"up_pb_tme_3","name":"밤비","img":null},{"id":"up_pb_tme_4","name":"은호","img":null},{"id":"up_pb_tme_5","name":"하민","img":null}]},{"id":"up_pb_izw","name":"포토북·이즈위","cards":[{"id":"up_pb_izw_1","name":"예준","img":null},{"id":"up_pb_izw_2","name":"노아","img":null},{"id":"up_pb_izw_3","name":"밤비","img":null},{"id":"up_pb_izw_4","name":"은호","img":null},{"id":"up_pb_izw_5","name":"하민","img":null}]},{"id":"up_inv_sw","name":"인벤·사운드웨이브","cards":[{"id":"up_inv_sw_1","name":"예준","img":null},{"id":"up_inv_sw_2","name":"노아","img":null},{"id":"up_inv_sw_3","name":"밤비","img":null},{"id":"up_inv_sw_4","name":"은호","img":null},{"id":"up_inv_sw_5","name":"하민","img":null}]},{"id":"up_inv_mp","name":"인벤·뮤직플랜트","cards":[{"id":"up_inv_mp_1","name":"예준","img":null},{"id":"up_inv_mp_2","name":"노아","img":null},{"id":"up_inv_mp_3","name":"밤비","img":null},{"id":"up_inv_mp_4","name":"은호","img":null},{"id":"up_inv_mp_5","name":"하민","img":null}]},{"id":"up_id_ms1","name":"아이디·무신사(온오프)","cards":[{"id":"up_id_ms1_1","name":"예준","img":null},{"id":"up_id_ms1_2","name":"노아","img":null},{"id":"up_id_ms1_3","name":"밤비","img":null},{"id":"up_id_ms1_4","name":"은호","img":null},{"id":"up_id_ms1_5","name":"하민","img":null}]},{"id":"up_id_ms2","name":"아이디·무신사(럭드)","cards":[{"id":"up_id_ms2_1","name":"예준","img":null},{"id":"up_id_ms2_2","name":"노아","img":null},{"id":"up_id_ms2_3","name":"밤비","img":null},{"id":"up_id_ms2_4","name":"은호","img":null},{"id":"up_id_ms2_5","name":"하민","img":null}]},{"id":"up_id_an","name":"아이디·애니메이트","cards":[{"id":"up_id_an_1","name":"예준","img":null},{"id":"up_id_an_2","name":"노아","img":null},{"id":"up_id_an_3","name":"밤비","img":null},{"id":"up_id_an_4","name":"은호","img":null},{"id":"up_id_an_5","name":"하민","img":null}]},{"id":"up_id_oy","name":"아이디·올리브영","cards":[{"id":"up_id_oy_1","name":"예준","img":null},{"id":"up_id_oy_2","name":"노아","img":null},{"id":"up_id_oy_3","name":"밤비","img":null},{"id":"up_id_oy_4","name":"은호","img":null},{"id":"up_id_oy_5","name":"하민","img":null}]},{"id":"up_id_tw","name":"아이디·타워레코드","cards":[{"id":"up_id_tw_1","name":"예준","img":null},{"id":"up_id_tw_2","name":"노아","img":null},{"id":"up_id_tw_3","name":"밤비","img":null},{"id":"up_id_tw_4","name":"은호","img":null},{"id":"up_id_tw_5","name":"하민","img":null}]},{"id":"up_id_hmv","name":"아이디·HMV","cards":[{"id":"up_id_hmv_1","name":"예준","img":null},{"id":"up_id_hmv_2","name":"노아","img":null},{"id":"up_id_hmv_3","name":"밤비","img":null},{"id":"up_id_hmv_4","name":"은호","img":null},{"id":"up_id_hmv_5","name":"하민","img":null}]},{"id":"up_id_h82b","name":"아이디·Hello82 예판 BITE","cards":[{"id":"up_id_h82b_1","name":"예준","img":null},{"id":"up_id_h82b_2","name":"노아","img":null},{"id":"up_id_h82b_3","name":"밤비","img":null},{"id":"up_id_h82b_4","name":"은호","img":null},{"id":"up_id_h82b_5","name":"하민","img":null}]},{"id":"up_id_h82l","name":"아이디·Hello82 팝업 LOOKUP","cards":[{"id":"up_id_h82l_1","name":"예준","img":null},{"id":"up_id_h82l_2","name":"노아","img":null},{"id":"up_id_h82l_3","name":"밤비","img":null},{"id":"up_id_h82l_4","name":"은호","img":null},{"id":"up_id_h82l_5","name":"하민","img":null}]}]}]};
-
-/* ══ LOAD/SAVE ══ */
-function loadDB(){const s=localStorage.getItem(DB_KEY);DB=s?JSON.parse(s):JSON.parse(JSON.stringify(DEF_DB));}
-function saveDB(){localStorage.setItem(DB_KEY,JSON.stringify(DB));}
-function loadST(){const s=localStorage.getItem(ST_KEY);if(s)try{ST=JSON.parse(s);}catch(e){}ST.goals=ST.goals||{};ST.collected=ST.collected||{};ST.memos=ST.memos||{};ST.hidden=ST.hidden||{};}
-function saveST(){localStorage.setItem(ST_KEY,JSON.stringify(ST));}
-function loadUI(){const s=localStorage.getItem(UI_KEY);if(s)try{UI=Object.assign(UI,JSON.parse(s));}catch(e){}
-  UI.col=UI.col||{};UI.mgl=UI.mgl||{};UI.cAlbs=Array.isArray(UI.cAlbs)?UI.cAlbs:[];
-  UI.cMembers=Array.isArray(UI.cMembers)?UI.cMembers:[];
-  UI.mAlbs=Array.isArray(UI.mAlbs)?UI.mAlbs:[];
-  UI.mMembers=Array.isArray(UI.mMembers)?UI.mMembers:[];
-  UI.talbArr=Array.isArray(UI.talbArr)?UI.talbArr:[];UI.theme=UI.theme||'dark';}
-function saveUI(){localStorage.setItem(UI_KEY,JSON.stringify(UI));}
+/* ══ STORAGE ══ */
+function saveST(){try{localStorage.setItem('poca_st',JSON.stringify(ST));}catch(e){}}
+function saveUI(){try{localStorage.setItem('poca_ui',JSON.stringify(UI));}catch(e){}}
+function saveDB(){try{if(DB)localStorage.setItem('poca_db',JSON.stringify(DB));}catch(e){}}
+function loadST(){try{const d=localStorage.getItem('poca_st');if(d){ST=JSON.parse(d);ST.goals=ST.goals||{};ST.collected=ST.collected||{};ST.memos=ST.memos||{};ST.hidden=ST.hidden||{};}}catch(e){}}
+function loadUI(){try{const d=localStorage.getItem('poca_ui');if(d){const u=JSON.parse(d);UI={...UI,...u};}}catch(e){}}
+function loadDB(){
+  try{
+    const d=localStorage.getItem('poca_db');
+    if(d){DB=JSON.parse(d);return;}
+  }catch(e){}
+  // Use inline DB (will be replaced by fetch)
+  DB=null;
+}
 
 /* ══ HELPERS ══ */
-const g=id=>ST.goals[id]||0;
-const c=id=>ST.collected[id]||0;
-const sp=id=>Math.max(0,c(id)-g(id));
-const wt=id=>g(id)>0?Math.max(0,g(id)-c(id)):0;
-const mo=id=>ST.memos[id]||'';
-const hid=id=>!!ST.hidden[id];
-function sts(id){const gv=g(id),cv=c(id);if(!gv)return'n';if(cv>gv)return'h';if(cv===gv)return'm';return'c';}
-function allCards(){const r=[];for(const a of DB.albumTypes)for(const s of a.sets)for(const card of s.cards)r.push({...card,aId:a.id,aN:a.name,aS:a.shortName,aC:a.color,sId:s.id,sN:s.name});return r;}
-function findCard(id){for(const a of DB.albumTypes)for(const s of a.sets)for(const card of s.cards)if(card.id===id)return{card,alb:a,set:s};return null;}
+const g = id => (ST.goals[id]||0);
+const c = id => (ST.collected[id]||0);
+const mo = id => (ST.memos[id]||'');
+const hid = id => !!(ST.hidden[id]);
+// spare = collected - goal (if goal>0, spare = c-g; if no goal, spare = c)
+const sp = id => { const cv=c(id),gv=g(id); return gv>0?Math.max(0,cv-gv):cv; };
+const wt = id => { const cv=c(id),gv=g(id); return gv>0?Math.max(0,gv-cv):0; };
+const sts = id => { // 'c'=want, 'm'=met, 'h'=have-spare, 'n'=none
+  const cv=c(id),gv=g(id);
+  if(gv>0&&cv<gv)return'c';
+  if(gv>0&&cv>=gv&&cv>gv)return'h';
+  if(gv>0&&cv===gv)return'm';
+  if(cv>0)return'h';
+  return'n';
+};
+function setGoal(id,v){if(v<0)v=0;if(v===0)delete ST.goals[id];else ST.goals[id]=v;saveST();}
+function allCards(){
+  if(!DB)return[];
+  const r=[];
+  for(const alb of DB.albumTypes)
+    for(const set of alb.sets)
+      for(const card of set.cards)
+        r.push({...card,aId:alb.id,sId:set.id});
+  return r;
+}
+function findCard(id){
+  if(!DB)return null;
+  for(const alb of DB.albumTypes)
+    for(const set of alb.sets)
+      for(const card of set.cards)
+        if(card.id===id)return{card,alb,set};
+  return null;
+}
+function isLS(){return window.innerWidth>window.innerHeight;}
 
-/* ══ ACTIONS ══ */
-function addC(id,e){if(e)e.stopPropagation();ST.collected[id]=(ST.collected[id]||0)+1;saveST();renderCur();const g0=g(id),c0=c(id);if(g0>0&&c0===g0)toast('🎉 달성!');else if(g0>0&&c0>g0)toast(`✨ +${c0-g0}`);}
-function subC(id,e){if(e)e.stopPropagation();ST.collected[id]=Math.max(0,(ST.collected[id]||0)-1);saveST();renderCur();}
-function setGoal(id,n){ST.goals[id]=Math.max(0,n);saveST();renderCur();}
-function saveMemo(v){if(!fsId)return;ST.memos[fsId]=v;saveST();renderCur();}
-function addSetGoal(sid,d){for(const a of DB.albumTypes)for(const s of a.sets)if(s.id===sid){for(const card of s.cards)ST.goals[card.id]=Math.max(0,(ST.goals[card.id]||0)+d);break;}saveST();renderCur();toast(d>0?'전체+1 ✓':'전체−1');}
-function toggleHide(){if(!fsId)return;const isH=hid(fsId);const msg=isH?'다시 있어요 목록에 표시할까요?':'있어요 목록에서 숨길까요? (수집 수는 유지됩니다)';if(!confirm(msg))return;if(isH)delete ST.hidden[fsId];else ST.hidden[fsId]=true;saveST();updFull();renderCur();toast(isH?'있어요에 표시됩니다':'있어요에서 숨겼어요');}
-function colSec(k){UI.col[k]=!UI.col[k];saveUI();renderCur();}
-function collapseAll(){allCards().forEach(x=>{UI.col[x.sId]=true;});saveUI();renderCur();toast('모두 접음');}
-function expandAll(){UI.col={};saveUI();renderCur();toast('모두 펼침');}
-function colAllGoals(){allCards().forEach(x=>{UI.mgl[x.sId]=true;});saveUI();renderGoals();}
-function expAllGoals(){UI.mgl={};saveUI();renderGoals();}
-function resetAllGoals(){if(!confirm('모든 목표를 0으로 초기화할까요?'))return;ST.goals={};saveST();renderGoals();toast('목표 초기화 완료');}
-function toggleAlb(id,arr){const i=arr.indexOf(id);if(i>=0)arr.splice(i,1);else arr.push(id);saveUI();renderCur();}
-function toggleMem(m,arr){const i=arr.indexOf(m);if(i>=0)arr.splice(i,1);else arr.push(m);saveUI();renderCur();}
-
-/* ══ FILTER BUILDERS ══ */
-function filterRow(cAlbs,cMembers,flt,onAlb,onMem,onFlt,extraRight=''){
-  return `<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:8px">
-    <div style="display:flex;flex-direction:column;gap:5px;flex:1">
-      <div class="frow" style="margin-bottom:0">
-        <button class="fp${!cAlbs.length?' on-all':''}" onclick="${onAlb}(null)">전체</button>
-        ${DB.albumTypes.map(a=>`<button class="fp${cAlbs.includes(a.id)?' on-alb':''}" onclick="${onAlb}('${a.id}')" style="${cAlbs.includes(a.id)?`background:${a.color};border-color:transparent;color:#fff`:`border-color:${a.color}44;color:${a.color}`}">${a.shortName}</button>`).join('')}
-      </div>
-      <div class="frow" style="margin-bottom:0">
-        ${MEMBERS.map(m=>`<button class="fp${cMembers.includes(m)?' on-m':''}" onclick="${onMem}('${m}')">${m}</button>`).join('')}
-        <div class="fsep"></div>
-        <div class="ftog">
-          <span class="ftog-btn${flt==='all'?' on':''}" onclick="${onFlt}('all')">모두</span>
-          <span class="ftog-btn${flt==='h'?' on':''}" onclick="${onFlt}('h')">있는것만</span>
-          <span class="ftog-btn${flt==='n'?' on':''}" onclick="${onFlt}('n')">없는것만</span>
-        </div>
-      </div>
-    </div>
-    ${extraRight}
-  </div>`;
+/* ══ FILTER LOGIC ══ */
+function filterCard(card){
+  const {flt_cardType,flt_member,flt_unit,flt_mmmm} = UI;
+  if(flt_cardType.length){if(!flt_cardType.includes(card.cardType))return false;}
+  if(flt_member.length&&card.cardType==='Individual'){if(!flt_member.includes(card.member))return false;}
+  if(flt_unit.length&&card.cardType==='Unit'){if(!flt_unit.includes(card.unit))return false;}
+  if(flt_mmmm.length&&card.cardType==='MMMM'){if(!flt_mmmm.includes(card.mmmm))return false;}
+  return true;
+}
+function filterAlbum(albId){
+  const {flt_album} = UI;
+  if(!flt_album.length)return true;
+  return flt_album.includes(albId);
+}
+function hasActiveFilter(){
+  return UI.flt_cardType.length||UI.flt_member.length||UI.flt_unit.length||UI.flt_mmmm.length||UI.flt_album.length;
+}
+function resetFilters(){
+  UI.flt_cardType=[];UI.flt_member=[];UI.flt_unit=[];UI.flt_mmmm=[];UI.flt_album=[];
+  saveUI();renderFilterPanel();
+}
+function applyFilters(){
+  // read from panel checkboxes
+  ['flt_cardType','flt_member','flt_unit','flt_mmmm','flt_album'].forEach(key=>{
+    const boxes=document.querySelectorAll(`[data-fk="${key}"]`);
+    UI[key]=[];
+    boxes.forEach(b=>{if(b.classList.contains('on'))UI[key].push(b.dataset.fv);});
+  });
+  saveUI();
+  closeSheet('filt-ov');
+  renderCur();
 }
 
-/* ══ NAVIGATION ══ */
-function goTab(v){curTab=v;document.querySelectorAll('[data-v]').forEach(el=>el.classList.toggle('on',el.dataset.v===v));document.getElementById('main').style.padding='';renderCur();}
-function renderCur(){if(curTab==='collect')renderCollect();else if(curTab==='trade')renderTrade();else if(curTab==='goals')renderGoals();else renderUsage();}
+/* ══ VISIBILITY TOGGLE ══ */
+function cycleCardVis(){
+  if(UI.cardVis==='all')UI.cardVis='have';
+  else if(UI.cardVis==='have')UI.cardVis='nothave';
+  else UI.cardVis='all';
+  saveUI();renderCur();
+}
+function visLabel(){
+  if(UI.cardVis==='have')return'✨ 있는것';
+  if(UI.cardVis==='nothave')return'🔍 없는것';
+  return'👁 전체';
+}
+function cardVisFilter(card){
+  if(UI.cardVis==='have')return c(card.id)>0;
+  if(UI.cardVis==='nothave')return c(card.id)===0;
+  return true;
+}
 
-/* ══ COLLECT ══ */
+/* ══ COLLAPSE TOGGLE ══ */
+function toggleCollapseAll(){
+  UI.collapseAll=!UI.collapseAll;
+  saveUI();renderCur();
+}
+function collapseLabel(){
+  return UI.collapseAll?'▶ 펼치기':'▼ 접기';
+}
+function isSectionOpen(key){
+  if(UI.col[key]!==undefined)return!UI.col[key];
+  return!UI.collapseAll;
+}
+function toggleSection(key){
+  // Individual override
+  UI.col[key]=isSectionOpen(key);
+  saveUI();renderCur();
+}
+
+/* ══ TABS ══ */
+function switchTab(id){
+  UI.tab=id;saveUI();
+  document.querySelectorAll('.dtab,.btab').forEach(el=>{
+    el.classList.toggle('on',el.dataset.tab===id);
+  });
+  renderCur();
+}
+
+/* ══ RENDER ══ */
+function renderCur(){
+  if(!DB){document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--tx2)">DB 로딩 중...</div>';return;}
+  const t=UI.tab;
+  if(t==='collect')renderCollect();
+  else if(t==='trade')renderTrade();
+  else if(t==='goals')renderGoals();
+  else if(t==='usage')renderUsage();
+}
+
+function renderNav(){
+  const dt=document.getElementById('dtabs');
+  const bn=document.getElementById('bnav');
+  dt.innerHTML=TABS.map(t=>`<div class="dtab${UI.tab===t.id?' on':''}" data-tab="${t.id}" onclick="switchTab('${t.id}')">${t.label}</div>`).join('');
+  bn.innerHTML=TABS.map(t=>`<div class="btab${UI.tab===t.id?' on':''} btab-inner" data-tab="${t.id}" onclick="switchTab('${t.id}')"><div class="btab-ico">${t.ico}</div>${t.label}</div>`).join('');
+}
+
+/* ── COLLECT ── */
 function renderCollect(){
-  const el=document.getElementById('main');
-  const nMem=UI.cMembers.length||5;
-  // min section width per visible card, capped for readability
-  const minW=Math.max(nMem*50+28, 110);
+  const all=allCards();
+  const totalCards=all.length;
+  const haveCards=all.filter(c2=>c(c2.id)>0).length;
+  const goalCards=all.filter(c2=>g(c2.id)>0).length;
+  const metCards=all.filter(c2=>g(c2.id)>0&&c(c2.id)>=g(c2.id)).length;
 
-  const colCtrl=`<div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end">
-    <div class="coltog"><span class="coltog-btn" onclick="collapseAll()">접기</span><span class="coltog-btn" onclick="expandAll()">펼치기</span></div>
-    <button class="shot-btn" onclick="exportCollectScreenshot()">📸 저장</button>
+  let html=`<div class="stats-bar">
+    <div class="stat-chip">전체 <span>${totalCards}</span></div>
+    <div class="stat-chip">수집 <span>${haveCards}</span></div>
+    <div class="stat-chip">목표 <span>${metCards}/${goalCards}</span></div>
   </div>`;
 
-  const filters=filterRow(UI.cAlbs,UI.cMembers,UI.flt,'setCAl','setCM','setFlt',colCtrl);
+  // Toolbar
+  const filtActive=hasActiveFilter();
+  html+=`<div class="toolbar">
+    <button class="tog-btn${filtActive?' filter-active':''}" onclick="openFilterPanel()">
+      🔍 필터${filtActive?' ●':''}
+    </button>
+    <div class="tsep"></div>
+    <button class="tog-btn${UI.cardVis!=='all'?' active':''}" onclick="cycleCardVis()">${visLabel()}</button>
+    <div class="tsep"></div>
+    <button class="tog-btn" onclick="toggleCollapseAll()">${collapseLabel()}</button>
+    <div class="tog-spacer"></div>
+    <button class="abtn" onclick="exportCollectScreenshot()" title="스크린샷">📸</button>
+  </div>`;
 
-  const albums=UI.cAlbs.length?DB.albumTypes.filter(a=>UI.cAlbs.includes(a.id)):DB.albumTypes;
-  let secs='';
-  for(const alb of albums){
+  html+='<div class="sets-wrap">';
+  for(const alb of DB.albumTypes){
+    if(!filterAlbum(alb.id))continue;
     for(const set of alb.sets){
-      let cards=set.cards.slice();
-      if(UI.cMembers.length) cards=cards.filter(x=>UI.cMembers.includes(x.name));
-      if(UI.flt==='h') cards=cards.filter(x=>c(x.id)>0);
-      else if(UI.flt==='n') cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
-      if(!cards.length) continue;
-      const isC=UI.col[set.id];
-      const t2=set.cards.filter(x=>g(x.id)>0).length;
-      const m2=set.cards.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)).length;
-      const pct=t2?Math.round(m2/t2*100):0;
-      const nc=cards.length; // actual visible card count
-      secs+=`<div class="sec-block">
-        <div class="sec-hdr" onclick="colSec('${set.id}')">
+      let cards=set.cards.filter(c2=>filterCard(c2)&&cardVisFilter(c2));
+      if(!cards.length)continue;
+      const key=`${alb.id}_${set.id}`;
+      const open=isSectionOpen(key);
+      const total=set.cards.length;
+      const have=set.cards.filter(c2=>c(c2.id)>0).length;
+      const pct=total>0?Math.round(have/total*100):0;
+      const cols=Math.min(cards.length,5);
+      html+=`<div class="sec-block">
+        <div class="sec-hdr" onclick="toggleSection('${key}')">
           <span class="sec-atag" style="background:${alb.color}">${alb.shortName}</span>
           <span class="sec-name">${set.name}</span>
-          ${t2>0?`<div class="sec-pw"><span class="sec-pct">${m2}/${t2}</span><div class="sec-pb"><div class="sec-pbf" style="width:${pct}%;background:${alb.color}"></div></div></div>`:''}
-          <span class="chev${isC?'':' open'}">▼</span>
-        </div>
-        ${isC?'':`<div class="sec-body"><div class="pcg" style="grid-template-columns:repeat(${nc},1fr)">
-          ${cards.map(card=>{
-            const gv=g(card.id),cv=c(card.id),s_=sp(card.id),w_=wt(card.id),st=sts(card.id);
-            const hasMemo=mo(card.id).trim().length>0;
-            let cls='pct';if(st==='n')cls+=' ng';else if(st==='c')cls+=' sc';else if(st==='m')cls+=' sm';else if(st==='h')cls+=' sh';
-            let bdg='';if(s_>0)bdg=`<div class="pbdg h">+${s_}</div>`;else if(w_>0)bdg=`<div class="pbdg w">−${w_}</div>`;else if(st==='m')bdg=`<div class="pbdg m">✓</div>`;
-            const cC=st==='c'?'var(--want)':st==='m'?'var(--ok)':st==='h'?'var(--have)':'var(--tx3)';
-            return `<div class="${cls}">
-              <div class="pci" onclick="openFull('${card.id}')">
-                ${card.img?`<img src="${card.img}" alt="${card.name}" loading="lazy">`:`<div class="pcph">${card.name}</div>`}
-                ${bdg}${hasMemo?'<div class="mdot"></div>':''}
-              </div>
-              <div class="pcb">
-                <div class="pcbtn" onclick="subC('${card.id}',event)">−</div>
-                <div class="pcm">
-                  <div class="pc-row"><span class="pc-lbl">보유</span><span class="pc-val" style="color:${cC}">${cv}</span></div>
-                  <div class="pc-row"><span class="pc-lbl">목표</span><span class="pc-val" style="color:var(--tx3)">${gv}</span></div>
-                </div>
-                <div class="pcbtn" onclick="addC('${card.id}',event)">+</div>
-              </div>
-            </div>`;}).join('')}
-        </div></div>`}
-      </div>`;
-    }
-  }
-  el.innerHTML=filters+`<div class="sets-wrap" style="grid-template-columns:repeat(auto-fill,minmax(${minW}px,1fr))">${secs}</div>`;
-}
-function setCAl(id){if(id===null)UI.cAlbs=[];else{const i=UI.cAlbs.indexOf(id);if(i>=0)UI.cAlbs.splice(i,1);else UI.cAlbs.push(id);}saveUI();renderCollect();}
-function setCM(m){if(!m)return;const i=UI.cMembers.indexOf(m);if(i>=0)UI.cMembers.splice(i,1);else UI.cMembers.push(m);saveUI();renderCollect();}
-function setFlt(f){UI.flt=f;saveUI();renderCollect();}
-
-/* ══ GOALS TAB ══ */
-function renderGoals(){
-  const el=document.getElementById('main');
-  const mAlbs=UI.mAlbs||[], mMems=UI.mMembers||[], mflt=UI.mflt||'all';
-  const colCtrl=`<div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end">
-    <div class="coltog"><span class="coltog-btn" onclick="colAllGoals()">접기</span><span class="coltog-btn" onclick="expAllGoals()">펼치기</span></div>
-  </div>`;
-  const filters=filterRow(mAlbs,mMems,mflt,'setMAl','setMM','setMFlt',colCtrl);
-
-  const cta=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-    <button class="btn btn-p" style="justify-content:center;padding:12px" onclick="showWizard()">
-      <span style="font-size:16px">⚡</span><div><div style="font-size:12px;font-weight:800">빠른 목표 설정</div><div style="font-size:10px;opacity:.8;font-weight:500">처음 사용자 추천</div></div>
-    </button>
-    <button class="btn" style="justify-content:center;padding:12px;background:var(--s1);border:1px solid var(--want-bd);color:var(--want)" onclick="resetAllGoals()">
-      <span style="font-size:16px">🗑</span><div><div style="font-size:12px;font-weight:800">목표 전체 초기화</div><div style="font-size:10px;opacity:.7;font-weight:500">모든 목표를 0으로</div></div>
-    </button>
-  </div>`;
-
-  const albums=(mAlbs.length?DB.albumTypes.filter(a=>mAlbs.includes(a.id)):DB.albumTypes);
-  let secs='';
-  for(const alb of albums){
-    for(const set of alb.sets){
-      let cards=set.cards.slice();
-      if(mMems.length) cards=cards.filter(x=>mMems.includes(x.name));
-      if(mflt==='h') cards=cards.filter(x=>c(x.id)>0);
-      else if(mflt==='n') cards=cards.filter(x=>c(x.id)===0);
-      if(!cards.length) continue;
-      const isC=UI.mgl[set.id];
-      secs+=`<div class="msec">
-        <div class="mhdr" onclick="UI.mgl['${set.id}']=!UI.mgl['${set.id}'];saveUI();renderGoals()">
-          <div class="mtitle">
-            <span class="sec-atag" style="background:${alb.color}">${alb.shortName}</span>
-            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${set.name}</span>
+          <div class="sec-pw">
+            <span class="sec-pct">${have}/${total}</span>
+            <div class="sec-pb"><div class="sec-pbf" style="width:${pct}%;background:${alb.color}"></div></div>
           </div>
-          <div class="macts" onclick="event.stopPropagation()">
-            <button class="sbtn" style="color:${alb.color};border-color:${alb.color}44" onclick="addSetGoal('${set.id}',-1)">전체−1</button>
-            <button class="sbtn" style="color:#fff;background:${alb.color};border-color:${alb.color}" onclick="addSetGoal('${set.id}',1)">전체+1</button>
-          </div>
-          <span class="chev${isC?'':' open'}" style="margin-left:4px">▼</span>
-        </div>
-        ${isC?'':`<div class="mmems">
-          ${cards.map(card=>{const gv=g(card.id),cv=c(card.id);return `<div class="mmem">
-            <div class="mmimg">${card.img?`<img src="${card.img}">`:`<div class="mmph">${card.name.slice(0,1)}</div>`}</div>
-            <div class="mmn">${card.name}</div>
-            <div class="mmctrl">
-              <button class="mmbtn" onclick="setGoal('${card.id}',${gv-1})">−</button>
-              <span class="mmval">${gv}</span>
-              <button class="mmbtn" onclick="setGoal('${card.id}',${gv+1})">+</button>
+          <span class="chev${open?' open':''}">▼</span>
+        </div>`;
+      if(open){
+        html+=`<div class="sec-body"><div class="pcg" style="grid-template-columns:repeat(${cols},1fr)">`;
+        for(const card of cards){
+          const cv=c(card.id),gv=g(card.id),st=sts(card.id);
+          const cls=st==='c'?'sc':st==='m'?'sm':st==='h'?'sh':'';
+          html+=`<div class="pct${cls?' '+cls:''}${cv===0&&gv===0?' ng':''}">
+            <div class="pci" onclick="openFull('${card.id}')">
+              ${card.img?`<img loading="lazy" src="${card.img}" alt="${card.name}">`:`<div class="pcph">${card.name}</div>`}
+              ${wt(card.id)>0?`<div class="pbdg w">−${wt(card.id)}</div>`:''}
             </div>
-            <div class="mmcol">${cv>0?cv+'장':'-'}</div>
-          </div>`;}).join('')}
-        </div>`}
-      </div>`;
+            <div class="pcf">
+              <span class="pclbl">${card.name}</span>
+              <div class="pcc">
+                <button class="pcbtn" onclick="adj('${card.id}',-1)">−</button>
+                <span class="pcnum">${cv}</span>
+                <button class="pcbtn" onclick="adj('${card.id}',+1)">+</button>
+              </div>
+            </div>
+          </div>`;
+        }
+        html+='</div></div>';
+      }
+      html+='</div>';
     }
   }
-  el.innerHTML=filters+cta+secs;
+  html+='</div>';
+  document.getElementById('page-content').innerHTML=html;
 }
-function setMAl(id){if(id===null)UI.mAlbs=[];else{const i=UI.mAlbs.indexOf(id);if(i>=0)UI.mAlbs.splice(i,1);else UI.mAlbs.push(id);}saveUI();renderGoals();}
-function setMM(m){if(!m)return;const i=UI.mMembers.indexOf(m);if(i>=0)UI.mMembers.splice(i,1);else UI.mMembers.push(m);saveUI();renderGoals();}
-function setMFlt(f){UI.mflt=f;saveUI();renderGoals();}
 
-/* ══ TRADE ══ */
-function isLS(){return window.innerWidth>window.innerHeight&&window.innerHeight<520;}
-function renderTrade(){if(isLS())renderTradeLandscape();else renderTradePortrait();}
+function adj(id,d){
+  ST.collected[id]=Math.max(0,(ST.collected[id]||0)+d);
+  saveST();
+  const el=document.querySelector(`[onclick="adj('${id}',-1)"]`);
+  if(el){
+    const num=el.parentNode.querySelector('.pcnum');
+    if(num)num.textContent=ST.collected[id];
+    const tile=el.closest('.pct');
+    if(tile){
+      const cv=c(id),gv=g(id),st=sts(id);
+      tile.classList.remove('sc','sm','sh');
+      if(st==='c')tile.classList.add('sc');
+      else if(st==='m')tile.classList.add('sm');
+      else if(st==='h')tile.classList.add('sh');
+      tile.classList.toggle('ng',cv===0&&gv===0);
+    }
+  }
+  if(d>0){const gv=g(id);if(gv>0&&c(id)===gv)toast('🎉 목표 달성!');}
+}
+
+/* ── TRADE ── */
+function renderTrade(){
+  const all=allCards();
+  const wCards=all.filter(x=>wt(x.id)>0);
+  const hCards=all.filter(x=>sp(x.id)>0&&!hid(x.id));
+  let html='';
+  if(!wCards.length&&!hCards.length){
+    html='<div class="trade-empty">수집 정보를 입력하면 교환 현황이 자동으로 표시돼요.<br>목표보다 적게 갖고 있으면 🔍 구해요에, 더 많으면 ✨ 있어요에 나타나요.</div>';
+  } else {
+    if(wCards.length){
+      html+=`<div class="trade-section">
+        <div class="trade-ttl"><span style="background:rgba(244,63,94,.15);color:var(--want);border:1px solid rgba(244,63,94,.3);padding:3px 10px;border-radius:12px;font-size:12px">🔍 구해요 ${wCards.reduce((a,x)=>a+wt(x.id),0)}개</span></div>`;
+      html+=buildTradeGrid(wCards,'want');
+      html+='</div>';
+    }
+    if(hCards.length){
+      html+=`<div class="trade-section">
+        <div class="trade-ttl"><span style="background:rgba(59,130,246,.15);color:var(--have);border:1px solid rgba(59,130,246,.3);padding:3px 10px;border-radius:12px;font-size:12px">✨ 있어요 ${hCards.reduce((a,x)=>a+sp(x.id),0)}개</span></div>`;
+      html+=buildTradeGrid(hCards,'have');
+      html+='</div>';
+    }
+  }
+  if(wCards.length||hCards.length){
+    html+=`<div style="margin-top:12px;text-align:center">
+      <button class="btn btn-s btn-sm" onclick="exportScreenshot()">📸 교환 스크린샷 저장</button>
+    </div>`;
+  }
+  document.getElementById('page-content').innerHTML=html;
+}
 
 function buildTradeGrid(cards,mode){
-  if(!cards.length)return`<div class="tr-empty">${mode==='w'?'🔍 구하는 카드가 없어요':'✨ 여유분이 없어요'}</div>`;
-  let h='';
+  if(!DB||!cards.length)return'';
+  let h='<div class="sets-wrap">';
   for(const alb of DB.albumTypes){
-    const ac=cards.filter(x=>x.aId===alb.id);if(!ac.length)continue;
+    const ac=cards.filter(x=>x.aId===alb.id);
+    if(!ac.length)continue;
     const sids=[...new Set(ac.map(x=>x.sId))];
-    h+=`<div style="margin-bottom:10px"><div class="tr-alb-lbl"><span style="width:7px;height:7px;border-radius:50%;background:${alb.color};display:inline-block"></span><span style="color:${alb.color};font-weight:800">${alb.name}</span></div>`;
     for(const sid of sids){
       const sc=ac.filter(x=>x.sId===sid);
-      h+=`<div class="tr-set-lbl">${sc[0]?.sN||''}</div><div class="pcg" style="grid-template-columns:repeat(5,1fr);margin-bottom:8px">`;
+      const set=alb.sets.find(s=>s.id===sid);
+      if(!set)continue;
+      const cols=Math.min(sc.length,5);
+      h+=`<div class="sec-block">
+        <div class="sec-hdr" style="cursor:default">
+          <span class="sec-atag" style="background:${alb.color}">${alb.shortName}</span>
+          <span class="sec-name">${set.name}</span>
+        </div>
+        <div class="sec-body"><div class="pcg" style="grid-template-columns:repeat(${cols},1fr)">`;
       for(const card of sc){
-        const cnt=mode==='w'?wt(card.id):sp(card.id);
-        const hasMemo=mo(card.id).trim().length>0;
-        h+=`<div class="trt ${mode==='w'?'wt':'ht'}" onclick="openFull('${card.id}')">
-          <div class="pci" style="position:relative">
-            ${card.img?`<img src="${card.img}" loading="lazy">`:`<div class="pcph">${card.name}</div>`}
-            ${hasMemo?'<div class="mdot"></div>':''}
+        const cnt=mode==='want'?wt(card.id):sp(card.id);
+        const col=mode==='want'?'rgba(244,63,94,.6)':'rgba(59,130,246,.6)';
+        const bg=mode==='want'?'var(--want)':'var(--have)';
+        h+=`<div class="pct" style="border-color:${col}">
+          <div class="pci" onclick="openFull('${card.id}')">
+            ${card.img?`<img loading="lazy" src="${card.img}" alt="${card.name}">`:`<div class="pcph">${card.name}</div>`}
           </div>
-          <div class="trb ${mode==='w'?'wb':'hb'}">
-            <span class="trcnt ${mode==='w'?'w':'h'}">${mode==='w'?'−':'+'} ${cnt}</span>
+          <div class="pcf">
+            <span class="pclbl">${card.name}</span>
+            <span style="font-family:'Outfit',sans-serif;font-weight:800;font-size:11px;color:${bg}">${mode==='want'?'−':'+'}${cnt}</span>
           </div>
         </div>`;
       }
-      h+='</div>';
+      h+='</div></div></div>';
     }
-    h+='</div>';
   }
+  h+='</div>';
   return h;
 }
 
-function renderTradePortrait(){
-  const el=document.getElementById('main');
-  el.style.padding='';
-  const all=allCards();
-  const taf=UI.talbArr;
-  const wC=all.filter(x=>wt(x.id)>0&&(!taf.length||taf.includes(x.aId)));
-  const hC=all.filter(x=>sp(x.id)>0&&!hid(x.id)&&(!taf.length||taf.includes(x.aId)));
-  const wT=all.reduce((a,x)=>a+wt(x.id),0);
-  const hT=all.filter(x=>!hid(x.id)).reduce((a,x)=>a+sp(x.id),0);
-  const tf=`<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:10px">
-    <button class="fp${!taf.length?' on-all':''}" onclick="setTAF(null)">전체</button>
-    ${DB.albumTypes.map(a=>{const on=taf.includes(a.id);return`<button class="fp${on?' on-alb':''}" onclick="setTAF('${a.id}')" style="${on?`background:${a.color};border-color:transparent;color:#fff`:`border-color:${a.color}44;color:${a.color}`}">${a.shortName}</button>`;}).join('')}
-    <button class="shot-btn" onclick="exportScreenshot()" style="margin-left:auto">📸 저장</button>
+/* ── GOALS ── */
+function renderGoals(){
+  if(!DB){document.getElementById('page-content').innerHTML='';return;}
+  let html=`<div class="toolbar">
+    <button class="btn btn-p btn-sm" onclick="showWizard()">🎯 마법사로 일괄 설정</button>
+    <div class="tog-spacer"></div>
+    <button class="btn btn-s btn-sm" onclick="clearAllGoals()">전체 초기화</button>
   </div>`;
-  el.innerHTML=`${tf}
-    <div class="tr-hdr wh"><span class="tr-title wt">🔍 구해요</span><span class="tr-badge wb">총 ${wT}개</span></div>
-    ${buildTradeGrid(wC,'w')}
-    <div style="height:12px"></div>
-    <div class="tr-hdr hh"><span class="tr-title ht">✨ 있어요</span><span class="tr-badge hb">총 ${hT}개</span></div>
-    ${buildTradeGrid(hC,'h')}`;
+  for(const alb of DB.albumTypes){
+    html+=`<div class="goal-alb">
+      <div class="goal-alb-hdr">
+        <span class="goal-alb-badge" style="background:${alb.color}">${alb.shortName}</span>
+        <span class="goal-alb-name">${alb.name}</span>
+      </div>`;
+    for(const set of alb.sets){
+      if(!set.cards.length)continue;
+      html+=`<div class="goal-set"><div class="goal-set-name">${set.name}</div>`;
+      for(const card of set.cards){
+        const gv=g(card.id);
+        html+=`<div class="goal-card-row">
+          <div class="goal-thumb">${card.img?`<img loading="lazy" src="${card.img}" alt="${card.name}">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--tx3)">${card.name}</div>`}</div>
+          <span class="goal-name">${card.name}</span>
+          <div class="goal-adj">
+            <button onclick="setGoal('${card.id}',${gv}-1);renderGoals()">−</button>
+            <span class="goal-adj-num">${gv}</span>
+            <button onclick="setGoal('${card.id}',${gv}+1);renderGoals()">+</button>
+          </div>
+        </div>`;
+      }
+      html+='</div>';
+    }
+    html+='</div>';
+  }
+  document.getElementById('page-content').innerHTML=html;
 }
 
-function renderTradeLandscape(){
-  const el=document.getElementById('main');
-  el.style.padding='0';
-  const all=allCards();
-  const taf=UI.talbArr;
-  const wC=all.filter(x=>wt(x.id)>0&&(!taf.length||taf.includes(x.aId)));
-  const hC=all.filter(x=>sp(x.id)>0&&!hid(x.id)&&(!taf.length||taf.includes(x.aId)));
-  const wT=all.reduce((a,x)=>a+wt(x.id),0);
-  const hT=all.filter(x=>!hid(x.id)).reduce((a,x)=>a+sp(x.id),0);
-  const open=UI.lsSidebarOpen!==false;
-  const lsH=`calc(100svh - 48px - ${document.querySelector('.dtabs')&&window.innerWidth>640?'40px':'52px'})`;
-  el.innerHTML=`<div class="trade-ls" style="height:${lsH}">
-    <div class="trade-ls-sb${open?'':' col'}" id="ls-sb">
-      <button class="ls-tog" onclick="toggleLsSb()">${open?'◀':'▶'}</button>
-      <div style="${open?'':'display:none'}">
-        <div style="display:flex;flex-direction:column;gap:3px;margin-top:4px">
-          <button class="ls-fp${!taf.length?' on':''}" onclick="setTAF(null)" style="${!taf.length?'background:var(--blue);border-color:var(--blue);color:#fff':''}">전체</button>
-          ${DB.albumTypes.map(a=>{const on=taf.includes(a.id);return`<button class="ls-fp${on?' on':''}" onclick="setTAF('${a.id}')" style="${on?`background:${a.color};border-color:${a.color};color:#fff`:`border-color:${a.color}44;color:${a.color}`}">${a.shortName}</button>`;}).join('')}
-          <div style="height:4px"></div>
-          <button onclick="exportScreenshot()" style="padding:5px 8px;border-radius:8px;font-size:11px;font-weight:700;background:var(--s2);border:1px solid var(--bd);color:var(--tx2);cursor:pointer">📸 저장</button>
-        </div>
-      </div>
-    </div>
-    <div class="trade-ls-main">
-      <div class="trade-ls-ch">
-        <div><span style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;color:var(--want)">🔍 구해요</span><span style="font-size:11px;color:var(--tx2);margin-left:5px">총 ${wT}개</span></div>
-        <div><span style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;color:var(--have)">✨ 있어요</span><span style="font-size:11px;color:var(--tx2);margin-left:5px">총 ${hT}개</span></div>
-      </div>
-      <div class="trade-ls-cols">
-        <div class="trade-ls-col">${buildTradeGrid(wC,'w')}</div>
-        <div class="trade-ls-col">${buildTradeGrid(hC,'h')}</div>
-      </div>
-    </div>
-  </div>`;
+function clearAllGoals(){
+  if(!confirm('모든 목표를 초기화할까요?'))return;
+  ST.goals={};saveST();renderGoals();toast('목표 초기화 완료');
 }
-function setTAF(id){if(!id){UI.talbArr=[];}else{const arr=UI.talbArr;const i=arr.indexOf(id);if(i>=0)arr.splice(i,1);else arr.push(id);UI.talbArr=[...arr];}renderTrade();}
-function toggleLsSb(){UI.lsSidebarOpen=!UI.lsSidebarOpen;renderTradeLandscape();}
-window.addEventListener('resize',()=>{if(curTab==='trade'){document.getElementById('main').style.padding='';renderTrade();}});
 
-/* ══ USAGE TAB ══ */
+/* ── USAGE ── */
 function renderUsage(){
-  const el=document.getElementById('main');
-  el.innerHTML=`
-  <div class="usage-card">
-    <div class="usage-h">🎴 이 앱에 대해서</div>
-    <div class="usage-p">
-      <b>Caligo Pt.2 드볼관리기</b>는 PLAVE 3rd Mini Album <b>Caligo Pt.2</b>의 포토카드 수집을 돕기 위해 만들어진 도구예요.<br><br>
-      어떤 카드를 몇 장씩 원하는지 목표를 설정하고, 수집 현황을 기록하면 자동으로 <b>교환 리스트(구해요 / 있어요)</b>를 만들어줘요.<br><br>
-      교환 이미지를 스크린샷으로 저장해서 SNS에 공유할 수 있어요 📸
-    </div>
+  document.getElementById('page-content').innerHTML=`
+  <div class="use-sec">
+    <h3>📦 수집 탭</h3>
+    <ul>
+      <li><b>카드 이미지 클릭</b>: 상세 보기에서 수량 조정, 목표 설정, 메모 입력</li>
+      <li><b>− / + 버튼</b>: 카드 타일에서 바로 수집 수 조정</li>
+      <li><b>필터 버튼</b>: 카드 종류(개인/유닛 등), 멤버, 유닛, MMMM 기준 필터</li>
+      <li><b>있는것/없는것 버튼</b>: 수집 유무로 표시 카드 전환</li>
+      <li><b>접기/펼치기 버튼</b>: 전체 섹션 일괄 접기·펼치기 토글</li>
+    </ul>
   </div>
-  <div class="usage-card">
-    <div class="usage-h">🗂 수집 탭</div>
-    <div class="usage-p">
-      • 각 카드 하단 <b>−/+</b> 버튼으로 보유 수량을 조정해요<br>
-      • 카드를 눌러서 상세 화면에서 목표 수량, 메모도 설정할 수 있어요<br>
-      • <b>빨간 테두리</b> = 목표 미달 &nbsp;|&nbsp; <b>초록</b> = 달성 &nbsp;|&nbsp; <b>파란</b> = 초과<br>
-      • 상단 필터로 앨범·멤버·있는것만/없는것만 필터링 가능<br>
-      • 📸 버튼으로 현재 보이는 카드를 스크린샷으로 저장
-    </div>
+  <div class="use-sec">
+    <h3>🔄 교환 탭</h3>
+    <ul>
+      <li><b>🔍 구해요</b>: 목표 설정 후 수집이 부족한 카드 자동 표시</li>
+      <li><b>✨ 있어요</b>: 목표보다 더 많이 갖고 있는 카드 자동 표시</li>
+      <li><b>교환 스크린샷</b>: 교환 현황을 이미지로 저장</li>
+    </ul>
   </div>
-  <div class="usage-card">
-    <div class="usage-h">🎯 목표 탭</div>
-    <div class="usage-p">
-      • <b>⚡ 빠른 목표 설정</b>으로 처음에 빠르게 목표를 잡아요<br>
-      • 앨범과 멤버를 선택하고, 전체 X장을 +/− 로 설정하면 끝!<br>
-      • 세트별 <b>전체+1 / 전체−1</b>로 한 번에 조정하거나, 멤버별로 개별 설정도 가능해요
-    </div>
+  <div class="use-sec">
+    <h3>🎯 목표 탭</h3>
+    <ul>
+      <li>각 카드별로 목표 수량을 개별 설정</li>
+      <li><b>마법사</b>: 앨범·멤버를 선택해 동일 목표를 일괄 적용</li>
+    </ul>
   </div>
-  <div class="usage-card">
-    <div class="usage-h">🔄 교환 탭</div>
-    <div class="usage-p">
-      • <b>구해요 🔍</b>: 목표보다 부족한 카드 (빨간)<br>
-      • <b>있어요 ✨</b>: 목표보다 여유분이 있는 카드 (파란)<br>
-      • 카드 상세에서 <b>있어요에서 숨기기</b>를 누르면 교환 목록에서 제외돼요<br>
-      • <b>📸 저장</b> 버튼으로 교환 리스트 이미지를 저장해서 공유하세요<br>
-      • 가로 모드로 돌리면 구해요·있어요가 나란히 펼쳐져요 📱↔
-    </div>
-  </div>
-  <div class="usage-card">
-    <div class="usage-h">💾 데이터 저장 & 백업</div>
-    <div class="usage-p">
-      • 모든 데이터는 <b>내 기기 브라우저</b>에만 저장돼요 (서버 전송 없음)<br>
-      • ⚙️ 설정 → <b>백업하기</b>로 JSON 파일을 저장해두세요<br>
-      • 폰 바꾸거나 브라우저 초기화 전에 반드시 백업 필요!<br>
-      • 백업 파일로 다른 기기에서도 복원할 수 있어요
-    </div>
+  <div class="use-sec">
+    <h3>⚙️ 설정</h3>
+    <ul>
+      <li><b>백업 내보내기</b>: JSON 파일로 수집 데이터 저장</li>
+      <li><b>백업 불러오기</b>: 저장된 JSON으로 데이터 복원</li>
+      <li><b>테마</b>: 헤더 🌙/☀️ 버튼으로 다크/라이트 전환</li>
+    </ul>
   </div>
   <div style="text-align:center;padding:16px;font-size:11px;color:var(--tx3)">
     Made with 💙 for PLLIs &nbsp;|&nbsp; @plli_ze
   </div>`;
 }
 
+/* ══ FILTER PANEL ══ */
+function openFilterPanel(){
+  renderFilterPanel();
+  document.getElementById('filt-ov').classList.add('open');
+}
+function renderFilterPanel(){
+  const {flt_cardType,flt_member,flt_unit,flt_mmmm,flt_album}=UI;
+  if(!DB){document.getElementById('filt-body').innerHTML='';return;}
+  let h='';
+  // Album
+  h+=`<div class="filt-section">
+    <div class="filt-label">앨범</div>
+    <div class="filt-chips">`;
+  for(const alb of DB.albumTypes){
+    const on=flt_album.includes(alb.id);
+    h+=`<div class="fchip${on?' on':''}" data-fk="flt_album" data-fv="${alb.id}" onclick="toggleFchip(this)">${alb.shortName}</div>`;
+  }
+  h+='</div></div>';
+  // Card Type
+  h+=`<div class="filt-section">
+    <div class="filt-label">카드 종류</div>
+    <div class="filt-chips">
+      ${CARD_TYPES.map(ct=>`<div class="fchip${flt_cardType.includes(ct)?' on':''}" data-fk="flt_cardType" data-fv="${ct}" onclick="toggleFchip(this)">${ct==='Individual'?'개인':ct==='Unit'?'유닛':ct==='All'?'단체':'MMMM'}</div>`).join('')}
+    </div>
+  </div>`;
+  // Member
+  h+=`<div class="filt-section">
+    <div class="filt-label">멤버</div>
+    <div class="filt-chips">
+      ${MEMBERS.map(m=>`<div class="fchip${flt_member.includes(m)?' on':''}" data-fk="flt_member" data-fv="${m}" onclick="toggleFchip(this)">${m}</div>`).join('')}
+    </div>
+  </div>`;
+  // Unit
+  h+=`<div class="filt-section">
+    <div class="filt-label">유닛</div>
+    <div class="filt-chips">
+      ${UNITS.map(u=>`<div class="fchip${flt_unit.includes(u)?' on':''}" data-fk="flt_unit" data-fv="${u}" onclick="toggleFchip(this)">${u}</div>`).join('')}
+    </div>
+  </div>`;
+  // MMMM
+  h+=`<div class="filt-section">
+    <div class="filt-label">MMMM</div>
+    <div class="filt-chips">
+      ${MMMS.map(m=>`<div class="fchip${flt_mmmm.includes(m)?' on':''}" data-fk="flt_mmmm" data-fv="${m}" onclick="toggleFchip(this)">${m}</div>`).join('')}
+    </div>
+  </div>`;
+  document.getElementById('filt-body').innerHTML=h;
+}
+function toggleFchip(el){el.classList.toggle('on');}
+
 /* ══ FULLSCREEN ══ */
 function openFull(id){
   const r=findCard(id);if(!r)return;
   fsId=id;const{card,alb,set}=r;
-  document.getElementById('fs-img').innerHTML=card.img?`<img class="fsimg" src="${card.img}">`:`<div class="fsph">📷</div>`;
+  document.getElementById('fs-img').innerHTML=card.img?`<img class="fsimg" src="${card.img}" alt="${card.name}">`:`<div class="fsph">📷</div>`;
   document.getElementById('fs-name').textContent=card.name;
   document.getElementById('fs-meta').textContent=`${alb.name} · ${set.name}`;
   updFull();
@@ -721,28 +806,61 @@ function updFull(){
   document.getElementById('fs-coll').textContent=cv;
   document.getElementById('fs-goal').textContent=gv;
   const ch=document.getElementById('fs-chips');
-  if(ch){let h='';if(s_>0)h+=`<span style="background:var(--have-g);border:1px solid var(--have-bd);color:var(--have);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">✨ 있어요 ${s_}</span>`;if(w_>0)h+=`<span style="background:var(--want-g);border:1px solid var(--want-bd);color:var(--want);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">🔍 구해요 ${w_}</span>`;ch.innerHTML=h;}
+  if(ch){
+    let h='';
+    if(s_>0)h+=`<span style="background:var(--have-g);border:1px solid var(--have-bd);color:var(--have);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">✨ 있어요 ${s_}</span>`;
+    if(w_>0)h+=`<span style="background:var(--want-g);border:1px solid var(--want-bd);color:var(--want);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">🔍 구해요 ${w_}</span>`;
+    ch.innerHTML=h;
+  }
   const hb=document.getElementById('fs-hide-btn');
   if(hb){
-    hb.style.display=s_>0?'block':'none';
-    if(s_>0){const isH=hid(fsId);hb.textContent=isH?'👁 있어요에 다시 표시하기':'🚫 있어요에서 숨기기';hb.style.cssText=`display:block;background:none;border-color:${isH?'var(--ok)':'var(--want)'};color:${isH?'var(--ok)':'var(--want)'};width:100%;padding:8px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;border:1px solid;font-family:'Outfit',sans-serif`;}
+    if(s_>0){
+      const isH=hid(fsId);
+      hb.style.cssText=`display:block;background:none;border:1px solid ${isH?'var(--ok)':'var(--want)'};color:${isH?'var(--ok)':'var(--want)'};width:100%;padding:8px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif`;
+      hb.textContent=isH?'👁 있어요에 다시 표시하기':'🚫 있어요에서 숨기기';
+    } else {
+      hb.style.display='none';
+    }
   }
 }
 function closeFull(){document.getElementById('fsov').classList.remove('open');fsId=null;}
-function fsAdj(d){if(!fsId)return;ST.collected[fsId]=Math.max(0,(ST.collected[fsId]||0)+d);saveST();updFull();renderCur();if(d>0){const g0=g(fsId),c0=c(fsId);if(g0>0&&c0===g0)toast('🎉 목표 달성!');}}
-function fsGoal(d){if(!fsId)return;setGoal(fsId,g(fsId)+d);updFull();}
-function toggleHide(){if(!fsId)return;const isH=hid(fsId);if(!confirm(isH?'다시 있어요에 표시할까요?':'있어요 목록에서 숨길까요?\n(수집 수는 유지됩니다)'))return;if(isH)delete ST.hidden[fsId];else ST.hidden[fsId]=true;saveST();updFull();renderCur();toast(isH?'있어요에 표시됩니다':'있어요에서 숨겼어요');}
+function fsAdj(d){
+  if(!fsId)return;
+  ST.collected[fsId]=Math.max(0,(ST.collected[fsId]||0)+d);
+  saveST();updFull();renderCur();
+  if(d>0){const gv=g(fsId),cv=c(fsId);if(gv>0&&cv===gv)toast('🎉 목표 달성!');}
+}
+function fsGoal(d){
+  if(!fsId)return;
+  setGoal(fsId,g(fsId)+d);
+  updFull();
+}
+function toggleHide(){
+  if(!fsId)return;
+  const isH=hid(fsId);
+  if(!confirm(isH?'다시 있어요에 표시할까요?':'있어요 목록에서 숨길까요?\n(수집 수는 유지됩니다)'))return;
+  if(isH)delete ST.hidden[fsId];else ST.hidden[fsId]=true;
+  saveST();updFull();renderCur();
+  toast(isH?'있어요에 표시됩니다':'있어요에서 숨겼어요');
+}
+function saveMemo(){
+  if(!fsId)return;
+  const v=document.getElementById('fs-memo').value;
+  if(v)ST.memos[fsId]=v;else delete ST.memos[fsId];
+  saveST();
+}
 
 /* ══ WIZARD ══ */
 function showWizard(){
   wiz={step:1,albums:['poca','photobook','inventory','idpass'],inclUnpo:false,members:[...MEMBERS],count:1};
-  renderWizStep();document.getElementById('wiz-ov').classList.add('open');
+  renderWizStep();
+  document.getElementById('wiz-ov').classList.add('open');
 }
 function renderWizStep(){
   const body=document.getElementById('wiz-body'),foot=document.getElementById('wiz-foot');
   document.getElementById('wiz-ttl').textContent=wiz.step===1?'🎯 Step 1/2 — 앨범 선택':'🎯 Step 2/2 — 멤버 & 수량';
   if(wiz.step===1){
-    const albs=[{id:'poca',name:'POCAALBUM',color:'#4f7eff'},{id:'photobook',name:'PHOTOBOOK',color:'#7b5fff'},{id:'inventory',name:'INVENTORY',color:'#06b6d4'},{id:'idpass',name:'IDPASS',color:'#a855f7'}];
+    const albs=[{id:'poca',name:'포카앨범',color:'#4f7eff'},{id:'photobook',name:'포토북앨범',color:'#7b5fff'},{id:'inventory',name:'인벤토리앨범',color:'#ec4899'},{id:'idpass',name:'아이디 패스앨범',color:'#c9c9c9'}];
     body.innerHTML=`<p style="font-size:12px;color:var(--tx2);margin-bottom:12px">수집할 앨범을 선택하세요 (복수 선택 가능)</p>
       <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px">
         ${albs.map(a=>`<button class="wiz-chip" onclick="wizToggleAlb('${a.id}')" style="${wiz.albums.includes(a.id)?`background:${a.color};border-color:${a.color};color:#fff`:`border-color:${a.color}55;color:${a.color};background:none`}">${a.name}</button>`).join('')}
@@ -751,8 +869,8 @@ function renderWizStep(){
         <input type="checkbox" ${wiz.inclUnpo?'checked':''} onchange="wiz.inclUnpo=this.checked" style="width:16px;height:16px">
         <span style="font-size:12px;font-weight:600">미공포 포함 <span style="font-size:11px;font-weight:400;color:var(--tx2)">(메이크스타, 무신사, HMV 등)</span></span>
       </label>`;
-    foot.innerHTML=`<button class="btn btn-s btn-sm" onclick="closeSheet('wiz-ov')">나중에</button><button class="btn btn-p btn-sm" onclick="wizNext()">다음 →</button>`;
-  }else{
+    foot.innerHTML=`<button class="btn btn-s btn-sm" onclick="closeSheet('wiz-ov')" style="flex:1">나중에</button><button class="btn btn-p btn-sm" onclick="wizNext()" style="flex:2">다음 →</button>`;
+  } else {
     body.innerHTML=`<p style="font-size:12px;color:var(--tx2);margin-bottom:12px">수집할 멤버와 목표 수량을 설정하세요.</p>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px">
         ${MEMBERS.map(m=>`<button class="wiz-chip" onclick="wizToggleMember('${m}');renderWizStep()" style="${wiz.members.includes(m)?'background:var(--blue);border-color:var(--blue);color:#fff':'border-color:var(--bd);color:var(--tx2);background:none'}">${m}</button>`).join('')}
@@ -760,13 +878,13 @@ function renderWizStep(){
       <div style="text-align:center">
         <p style="font-size:11px;color:var(--tx2);margin-bottom:12px">선택한 멤버 전체에 동일하게 적용</p>
         <div style="display:inline-flex;align-items:center;background:var(--s2);border:1px solid var(--bd);border-radius:14px;overflow:hidden">
-          <button onclick="if(wiz.count>0)wiz.count--;renderWizStep()" style="padding:12px 22px;font-size:22px;font-weight:800;background:none;border:none;border-right:1px solid var(--bd);color:var(--tx);cursor:pointer;font-family:'Outfit',sans-serif">−</button>
+          <button onclick="if(wiz.count>0)wiz.count--;renderWizStep()" style="padding:12px 22px;font-size:22px;font-weight:800;border-right:1px solid var(--bd);color:var(--tx)">−</button>
           <span style="font-family:'Outfit',sans-serif;font-weight:800;font-size:32px;min-width:64px;text-align:center;padding:0 8px">${wiz.count}</span>
-          <button onclick="wiz.count++;renderWizStep()" style="padding:12px 22px;font-size:22px;font-weight:800;background:none;border:none;border-left:1px solid var(--bd);color:var(--tx);cursor:pointer;font-family:'Outfit',sans-serif">+</button>
+          <button onclick="wiz.count++;renderWizStep()" style="padding:12px 22px;font-size:22px;font-weight:800;border-left:1px solid var(--bd);color:var(--tx)">+</button>
         </div>
         <div style="font-size:12px;color:var(--tx2);margin-top:8px">장 / 멤버</div>
       </div>`;
-    foot.innerHTML=`<button class="btn btn-s btn-sm" onclick="wizPrev()">← 이전</button><button class="btn btn-p btn-sm" onclick="wizApply()">설정 완료 ✓</button>`;
+    foot.innerHTML=`<button class="btn btn-s btn-sm" onclick="wizPrev()" style="flex:1">← 이전</button><button class="btn btn-p btn-sm" onclick="wizApply()" style="flex:2">설정 완료 ✓</button>`;
   }
 }
 function wizToggleAlb(id){const i=wiz.albums.indexOf(id);if(i>=0)wiz.albums.splice(i,1);else wiz.albums.push(id);renderWizStep();}
@@ -776,14 +894,27 @@ function wizPrev(){wiz.step=1;renderWizStep();}
 function wizApply(){
   if(!wiz.members.length){toast('멤버를 선택해주세요');return;}
   const albs=[...wiz.albums,...(wiz.inclUnpo?['unpo']:[])];
-  for(const alb of DB.albumTypes){if(!albs.includes(alb.id))continue;for(const set of alb.sets)for(const card of set.cards)if(wiz.members.includes(card.name))ST.goals[card.id]=wiz.count;}
-  saveST();closeSheet('wiz-ov');renderCur();toast('🎉 목표 설정 완료! 세부 조정은 목표 탭에서');
+  for(const alb of DB.albumTypes){
+    if(!albs.includes(alb.id))continue;
+    for(const set of alb.sets)
+      for(const card of set.cards)
+        if(wiz.members.includes(card.member)||wiz.members.includes(card.name))
+          ST.goals[card.id]=wiz.count;
+  }
+  saveST();closeSheet('wiz-ov');renderCur();toast('🎉 목표 설정 완료!');
 }
 
-/* ══ SCREENSHOT (Trade) ══ */
-async function loadH2C(){if(window.html2canvas)return;return new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
-
-function buildShotGrid(cards,mode,bg,tx2,alb2){
+/* ══ SCREENSHOT ══ */
+async function loadH2C(){
+  if(window.html2canvas)return;
+  return new Promise((res,rej)=>{
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    s.onload=res;s.onerror=rej;
+    document.head.appendChild(s);
+  });
+}
+function buildShotGrid(cards,mode,bg,tx2){
   if(!cards.length)return`<div style="color:${tx2};font-size:11px;padding:10px">없음</div>`;
   let h='';
   for(const alb of DB.albumTypes){
@@ -808,7 +939,6 @@ function buildShotGrid(cards,mode,bg,tx2,alb2){
   }
   return h;
 }
-
 async function exportScreenshot(){
   toast('스크린샷 준비 중...');
   try{await loadH2C();}catch(e){toast('라이브러리 로드 실패');return;}
@@ -820,109 +950,134 @@ async function exportScreenshot(){
   const bg=dark?'#08090f':'#f0f2f9';const tx2=dark?'#7a8fb0':'#5a6a90';
   const bd=dark?'#1f2535':'#d4daf0';const now=new Date().toLocaleDateString('ko-KR');
   const area=document.getElementById('shot-area');
-  const lscape=isLS();
-  const w=lscape?720:360;
-  area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:12px;font-family:'Noto Sans KR',sans-serif;color:${dark?'#e8edf8':'#141830'}`;
+  area.style.cssText=`position:fixed;left:-9999px;top:0;width:360px;background:${bg};padding:12px;font-family:'Noto Sans KR',sans-serif;color:${dark?'#e8edf8':'#141830'}`;
   const hdr=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid ${bd}"><div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Caligo Pt.2 드볼관리기</div><div style="font-size:10px;color:${tx2}">${now}</div></div>`;
-  if(lscape){
-    area.innerHTML=`${hdr}<div style="display:flex;gap:10px">
-      <div style="flex:1;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);border-radius:8px;padding:8px"><div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:13px;color:#f43f5e;margin-bottom:6px">🔍 구해요 ${wCards.reduce((a,x)=>a+wt(x.id),0)}개</div>${buildShotGrid(wCards,'w',bg,tx2)}</div>
-      <div style="flex:1;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:8px"><div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:13px;color:#3b82f6;margin-bottom:6px">✨ 있어요 ${hCards.reduce((a,x)=>a+sp(x.id),0)}개</div>${buildShotGrid(hCards,'h',bg,tx2)}</div>
-    </div>`;
-  }else{
-    area.innerHTML=`${hdr}
-      ${wCards.length?`<div style="background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);border-radius:8px;padding:10px;margin-bottom:10px"><div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;color:#f43f5e;margin-bottom:7px">🔍 구해요 ${wCards.reduce((a,x)=>a+wt(x.id),0)}개</div>${buildShotGrid(wCards,'w',bg,tx2)}</div>`:''}
-      ${hCards.length?`<div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:10px"><div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;color:#3b82f6;margin-bottom:7px">✨ 있어요 ${hCards.reduce((a,x)=>a+sp(x.id),0)}개</div>${buildShotGrid(hCards,'h',bg,tx2)}</div>`:''}`;
-  }
+  area.innerHTML=hdr+
+    (wCards.length?`<div style="background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);border-radius:8px;padding:10px;margin-bottom:10px"><div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;color:#f43f5e;margin-bottom:7px">🔍 구해요 ${wCards.reduce((a,x)=>a+wt(x.id),0)}개</div>${buildShotGrid(wCards,'w',bg,tx2)}</div>`:'')+
+    (hCards.length?`<div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:10px"><div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;color:#3b82f6;margin-bottom:7px">✨ 있어요 ${hCards.reduce((a,x)=>a+sp(x.id),0)}개</div>${buildShotGrid(hCards,'h',bg,tx2)}</div>`:'');
   try{
-    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:w});
+    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:360});
     const link=document.createElement('a');link.download=`교환_${now.replace(/\./g,'')}.png`;link.href=canvas.toDataURL('image/png');link.click();
     toast('📸 저장 완료!');
   }catch(e){toast('실패: '+e.message);}
   area.innerHTML='';
 }
-
-/* ══ COLLECT SCREENSHOT ══ */
 async function exportCollectScreenshot(){
   toast('스크린샷 준비 중...');
   try{await loadH2C();}catch(e){toast('라이브러리 로드 실패');return;}
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   const bg=dark?'#08090f':'#f0f2f9';const tx2=dark?'#7a8fb0':'#5a6a90';
   const bd=dark?'#1f2535':'#d4daf0';const now=new Date().toLocaleDateString('ko-KR');
-  const lscape=isLS();const w=lscape?720:360;
   const area=document.getElementById('shot-area');
-  area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:12px;font-family:'Noto Sans KR',sans-serif;color:${dark?'#e8edf8':'#141830'}`;
-  const albums=UI.cAlbs.length?DB.albumTypes.filter(a=>UI.cAlbs.includes(a.id)):DB.albumTypes;
+  area.style.cssText=`position:fixed;left:-9999px;top:0;width:360px;background:${bg};padding:12px;font-family:'Noto Sans KR',sans-serif;color:${dark?'#e8edf8':'#141830'}`;
   let secH='';
-  for(const alb of albums){
+  for(const alb of DB.albumTypes){
     for(const set of alb.sets){
-      let cards=set.cards.slice();
-      if(UI.cMembers.length)cards=cards.filter(x=>UI.cMembers.includes(x.name));
-      if(UI.flt==='h')cards=cards.filter(x=>c(x.id)>0);
-      else if(UI.flt==='n')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
+      const cards=set.cards.filter(c2=>filterCard(c2));
       if(!cards.length)continue;
       secH+=`<div style="margin-bottom:8px">
         <div style="font-size:10px;font-weight:700;margin-bottom:3px"><span style="background:${alb.color};color:#fff;padding:1px 6px;border-radius:5px;font-size:9px">${alb.shortName}</span> ${set.name}</div>
-        <div style="display:grid;grid-template-columns:repeat(${cards.length},1fr);gap:3px">
-          ${cards.map(card=>{const cv=c(card.id),gv=g(card.id),st=sts(card.id);const bdr=st==='c'?'rgba(244,63,94,.5)':st==='m'?'rgba(34,197,94,.6)':st==='h'?'rgba(59,130,246,.6)':'rgba(255,255,255,.1)';return`<div style="border-radius:5px;overflow:hidden;border:1px solid ${bdr}">
-            <div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${alb.color}22">${card.img?`<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}</div>
-            <div style="padding:2px 3px;background:rgba(0,0,0,.5);display:flex;justify-content:space-between;font-size:7px;font-family:'Outfit',monospace;font-weight:700">
-              <span style="color:${st==='c'?'#f43f5e':st==='m'?'#22c55e':st==='h'?'#3b82f6':'#7a8fb0'}">${cv}</span><span style="color:${tx2}">${gv}</span>
-            </div>
-          </div>`;}).join('')}
+        <div style="display:grid;grid-template-columns:repeat(${Math.min(cards.length,5)},1fr);gap:3px">
+          ${cards.map(card=>{
+            const cv=c(card.id),gv=g(card.id),st=sts(card.id);
+            const bdr=st==='c'?'rgba(244,63,94,.5)':st==='m'?'rgba(34,197,94,.6)':st==='h'?'rgba(59,130,246,.6)':'rgba(255,255,255,.1)';
+            return`<div style="border-radius:5px;overflow:hidden;border:1px solid ${bdr}">
+              <div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${alb.color}22">${card.img?`<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}</div>
+              <div style="padding:2px 3px;background:rgba(0,0,0,.5);display:flex;justify-content:space-between;font-size:7px;font-family:'Outfit',monospace;font-weight:700">
+                <span style="color:${st==='c'?'#f43f5e':st==='m'?'#22c55e':st==='h'?'#3b82f6':'#7a8fb0'}">${cv}</span><span style="color:${tx2}">${gv}</span>
+              </div>
+            </div>`;
+          }).join('')}
         </div>
       </div>`;
     }
   }
   const hdr=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid ${bd}"><div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Caligo Pt.2 수집 현황</div><div style="font-size:10px;color:${tx2}">${now}</div></div>`;
-  area.innerHTML=hdr+`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(${Math.max((UI.cMembers.length||5)*46+20,100)}px,1fr));gap:6px">${secH}</div>`;
+  area.innerHTML=hdr+`<div style="display:grid;gap:6px">${secH}</div>`;
   try{
-    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:w});
+    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:360});
     const link=document.createElement('a');link.download=`수집_${now.replace(/\./g,'')}.png`;link.href=canvas.toDataURL('image/png');link.click();
     toast('📸 저장 완료!');
   }catch(e){toast('실패: '+e.message);}
   area.innerHTML='';
 }
 
-/* ══ NOTICE ══ */
-function showNotice(){
-  document.getElementById('notice-ko').textContent=NOTICE_KO;
-  document.getElementById('notice-en').textContent=NOTICE_EN;
-  document.getElementById('notice-ov').classList.add('open');
-}
-function closeNotice(){
-  UI.noticeVer=NOTICE_VER;saveUI();
-  document.getElementById('notice-ov').classList.remove('open');
-}
-
 /* ══ SETTINGS ══ */
 function showSettings(){document.getElementById('set-ov').classList.add('open');}
 function closeSheet(id){document.getElementById(id).classList.remove('open');}
-function importState(inp){if(!inp.files[0])return;const r=new FileReader();r.onload=e=>{try{ST=JSON.parse(e.target.result);ST.goals=ST.goals||{};ST.collected=ST.collected||{};ST.memos=ST.memos||{};ST.hidden=ST.hidden||{};saveST();closeSheet('set-ov');renderCur();toast('복원 완료 ✓');}catch(e){toast('파일 오류');}};r.readAsText(inp.files[0]);}
-function exportState(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(ST,null,2)],{type:'application/json'}));a.download=`포카백업_${new Date().toISOString().split('T')[0]}.json`;a.click();toast('백업 파일 저장됨 ✓');}
-function resetState(){if(!confirm('모든 수집·목표·메모를 초기화할까요?'))return;ST={goals:{},collected:{},memos:{},hidden:{}};saveST();closeSheet('set-ov');renderCur();toast('초기화 완료');}
-function applyTheme(t){document.documentElement.setAttribute('data-theme',t);const b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'🌙':'☀️';}
-function toggleTheme(){UI.theme=UI.theme==='dark'?'light':'dark';applyTheme(UI.theme);saveUI();}
-function toast(msg){const w=document.getElementById('tw');const el=document.createElement('div');el.className='toast';el.textContent=msg;w.appendChild(el);setTimeout(()=>el.remove(),2100);}
+function importState(inp){
+  if(!inp.files[0])return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      ST=JSON.parse(e.target.result);
+      ST.goals=ST.goals||{};ST.collected=ST.collected||{};ST.memos=ST.memos||{};ST.hidden=ST.hidden||{};
+      saveST();closeSheet('set-ov');renderCur();toast('복원 완료 ✓');
+    }catch(e){toast('파일 오류');}
+  };
+  r.readAsText(inp.files[0]);
+}
+function exportState(){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(ST,null,2)],{type:'application/json'}));
+  a.download=`포카백업_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  toast('백업 파일 저장됨 ✓');
+}
+function resetState(){
+  if(!confirm('모든 수집·목표·메모를 초기화할까요?'))return;
+  ST={goals:{},collected:{},memos:{},hidden:{}};
+  saveST();closeSheet('set-ov');renderCur();toast('초기화 완료');
+}
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  const b=document.getElementById('theme-btn');
+  if(b)b.textContent=t==='dark'?'🌙':'☀️';
+}
+function toggleTheme(){
+  UI.theme=UI.theme==='dark'?'light':'dark';
+  applyTheme(UI.theme);saveUI();
+}
+
+/* ══ TOAST ══ */
+function toast(msg){
+  const w=document.getElementById('tw');
+  const el=document.createElement('div');
+  el.className='toast';el.textContent=msg;
+  w.appendChild(el);
+  setTimeout(()=>el.remove(),2100);
+}
 
 /* ══ INIT ══ */
 function init(){
-  loadDB();loadST();loadUI();
+  loadST();loadUI();
   applyTheme(UI.theme||'dark');
-  renderCur();
-  // scroll-to-top
+  renderNav();
+  // Show loading state
+  document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--tx2);font-size:13px">📦 DB 로딩 중...</div>';
+  // Load DB
+  fetch('./poca_db.json')
+    .then(r=>r.json())
+    .then(d=>{
+      DB=d;
+      saveDB();
+      renderCur();
+      // Auto wizard for new users
+      const hasGoal=Object.values(ST.goals).some(v=>v>0);
+      if(!hasGoal)setTimeout(showWizard,600);
+    })
+    .catch(()=>{
+      // Try from localStorage
+      loadDB();
+      if(DB){renderCur();}
+      else{document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--want)">⚠️ poca_db.json을 같은 폴더에 두고 웹서버로 열어주세요.</div>';}
+    });
+  // Scroll top button
   document.getElementById('main').addEventListener('scroll',function(){
-    const btn=document.getElementById('scroll-top-btn');if(!btn)return;
-    btn.style.opacity=this.scrollTop>200?'1':'0';
-    btn.style.pointerEvents=this.scrollTop>200?'auto':'none';
+    const btn=document.getElementById('scroll-top-btn');
+    if(!btn)return;
+    btn.classList.toggle('vis',this.scrollTop>200);
   },{passive:true});
-  // notice check
-  if((UI.noticeVer||0)<NOTICE_VER)setTimeout(showNotice,600);
-  // wizard for new users
-  const hasGoal=Object.values(ST.goals).some(v=>v>0);
-  if(!hasGoal&&(UI.noticeVer||0)>=NOTICE_VER)setTimeout(showWizard,400);
-  // load db
-  fetch('./poca_db.json').then(r=>r.json()).then(d=>{DB=d;saveDB();renderCur();}).catch(()=>{});
 }
 init();
 </script>
