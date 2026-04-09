@@ -14,8 +14,8 @@
   --have:#3b82f6;--have-g:rgba(59,130,246,.12);--have-bd:rgba(59,130,246,.3);
   --ok:#22c55e;--warn:#f59e0b;
   --r:12px;--r-sm:8px;
-  --card-min:72px;   /* min card width — strip text fits in one line */
-  --nav-w:200px;     /* landscape sidebar width */
+  --card-min:72px;
+  --nav-w:200px;
 }
 [data-theme="dark"]{
   --bg:#08090f;--s1:#0e1018;--s2:#13161f;--s3:#191d28;
@@ -29,100 +29,61 @@ input,textarea{font-family:inherit;color:var(--tx);background:var(--s2);border:1
 input:focus,textarea:focus{border-color:var(--blue)}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
 
-/* ══════════════════════════
-   PORTRAIT LAYOUT
-══════════════════════════ */
+/* ── PORTRAIT LAYOUT ── */
 .app{display:flex;flex-direction:column;height:100svh}
 .hdr{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 12px;height:48px;display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:50}
 .logo-main{font-family:'Outfit',sans-serif;font-weight:800;font-size:13px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .logo-sub{font-family:'Outfit',sans-serif;font-weight:600;font-size:10px;color:var(--tx2);margin-left:6px}
 .hdr-r{display:flex;gap:4px;margin-left:auto}
 .abtn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm);background:var(--s2);border:1px solid var(--bd);font-size:14px;flex-shrink:0}
-
-/* portrait tabs */
 .dtabs{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 12px;flex-shrink:0;overflow-x:auto;display:none}
 .dtab{padding:9px 13px;font-size:12px;font-weight:700;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;font-family:'Outfit',sans-serif}
 .dtab.on{color:var(--blue);border-bottom-color:var(--blue)}
-
-/* mobile bottom nav */
 .bnav{position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--bd);z-index:100;padding-bottom:env(safe-area-inset-bottom,0px)}
 .bnav-inner{display:flex;height:52px}
 .btab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:9px;font-weight:700;color:var(--tx2);cursor:pointer;font-family:'Outfit',sans-serif}
 .btab.on{color:var(--blue)}
 .btab-ico{font-size:18px;line-height:1}
-
 .main{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px 10px calc(60px + env(safe-area-inset-bottom,0px));-webkit-overflow-scrolling:touch}
-
 @media(max-width:640px){.dtabs{display:none}.bnav{display:block}}
 @media(min-width:641px) and (orientation:portrait){.dtabs{display:flex}.bnav{display:none!important}.main{padding:12px}}
 
-/* ══════════════════════════
-   LANDSCAPE SIDEBAR LAYOUT
-══════════════════════════ */
+/* ── LANDSCAPE SIDEBAR ── */
 @media(orientation:landscape){
   .app{flex-direction:row}
-  .hdr{display:none} /* header hidden in landscape, info in sidebar */
-  .dtabs{display:none}
-  .bnav{display:none!important}
+  .hdr{display:none}.dtabs{display:none}.bnav{display:none!important}
   .main{padding:12px;padding-bottom:12px}
-
-  /* sidebar */
-  .ls-sidebar{
-    width:var(--nav-w);flex-shrink:0;background:var(--s1);
-    border-right:1px solid var(--bd);
-    display:flex;flex-direction:column;
-    transition:width .25s ease, opacity .2s;
-    overflow:hidden;z-index:40;
-    height:100svh;
-  }
+  .ls-sidebar{width:var(--nav-w);flex-shrink:0;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;transition:width .25s,opacity .2s;overflow:hidden;z-index:40;height:100svh}
   .ls-sidebar.collapsed{width:0;opacity:0}
-  .ls-toggle{
-    position:fixed;left:0;top:50%;transform:translateY(-50%);
-    z-index:50;width:20px;height:44px;
-    background:var(--blue);color:#fff;
-    border-radius:0 8px 8px 0;
-    display:flex;align-items:center;justify-content:center;
-    font-size:11px;font-weight:800;cursor:pointer;
-    transition:left .25s ease;
-    border:none;
-  }
+  .ls-toggle{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:50;width:20px;height:44px;background:var(--blue);color:#fff;border-radius:0 8px 8px 0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;cursor:pointer;transition:left .25s;border:none;}
   .ls-sidebar:not(.collapsed)~.ls-toggle{left:var(--nav-w)}
   .ls-logo{padding:14px 12px 8px;border-bottom:1px solid var(--bd)}
   .ls-logo-main{font-family:'Outfit',sans-serif;font-weight:800;font-size:13px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
   .ls-logo-sub{font-family:'Outfit',sans-serif;font-size:9px;color:var(--tx2);margin-top:2px}
   .ls-nav{flex:1;overflow-y:auto;padding:8px 0}
-  .ls-tab{display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:12px;font-weight:700;color:var(--tx2);cursor:pointer;border-radius:8px;margin:1px 6px;transition:all .14s;font-family:'Outfit',sans-serif;white-space:nowrap}
+  .ls-tab{display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:12px;font-weight:700;color:var(--tx2);cursor:pointer;border-radius:8px;margin:1px 6px;font-family:'Outfit',sans-serif;white-space:nowrap}
   .ls-tab.on{background:var(--s3);color:var(--blue)}
   .ls-tab:hover:not(.on){background:var(--s2)}
   .ls-tab-ico{font-size:16px;flex-shrink:0}
-  .ls-bottom{padding:8px;border-top:1px solid var(--bd);display:flex;flex-direction:column;gap:6px}
+  .ls-bottom{padding:8px;border-top:1px solid var(--bd);display:flex;flex-direction:column;gap:5px}
   .ls-btn{padding:7px 10px;font-size:11px;font-weight:700;border-radius:8px;background:var(--s2);border:1px solid var(--bd);color:var(--tx2);display:flex;align-items:center;gap:6px;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap}
   .ls-btn:hover{background:var(--s3)}
 }
-@media(orientation:portrait){
-  .ls-sidebar{display:none}
-  .ls-toggle{display:none}
-}
+@media(orientation:portrait){.ls-sidebar{display:none}.ls-toggle{display:none}}
 
-/* ══════════════════════════
-   STATS + FILTER BAR
-══════════════════════════ */
-.top-bar{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+/* ── TOP BAR ── */
+.top-bar{display:flex;align-items:center;gap:5px;margin-bottom:8px;flex-wrap:wrap}
 .stat-chip{padding:4px 10px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);font-family:'Outfit',sans-serif;font-weight:700;font-size:11px;white-space:nowrap}
 .stat-chip span{color:var(--blue)}
-.filter-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:var(--r-sm);background:var(--s1);border:1.5px solid var(--bd);color:var(--tx2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;transition:all .14s}
+.filter-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:var(--r-sm);background:var(--s1);border:1.5px solid var(--bd);color:var(--tx2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap}
 .filter-btn.active{border-color:var(--blue);color:var(--blue);background:var(--s2)}
 .ctrl-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:var(--r-sm);background:var(--s2);border:1px solid var(--bd);color:var(--tx2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap}
 .shot-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:var(--r-sm);background:var(--s2);border:1px solid var(--bd);color:var(--tx2);font-size:10px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap}
 .spacer{flex:1}
 
-/* ══════════════════════════
-   SECTIONS
-══════════════════════════ */
-.sets-wrap{display:grid;gap:6px;align-items:start;
-  /* always at least --card-min * 5 + gaps wide per section column */
-  grid-template-columns:repeat(auto-fill,minmax(calc(var(--card-min)*5 + 16px),1fr));
-}
+/* ── SECTIONS ── */
+/* section grid: each column must fit at least 5 cards × CARD_MIN */
+.sets-wrap{display:grid;gap:6px;align-items:start;grid-template-columns:repeat(auto-fill,minmax(calc(var(--card-min)*5 + 20px),1fr))}
 .sec-block{border-radius:var(--r);background:var(--s1);border:1px solid var(--bd);overflow:hidden}
 .sec-hdr{display:flex;align-items:center;gap:6px;padding:8px 10px;cursor:pointer;user-select:none;transition:background .12s}
 .sec-hdr:hover{background:var(--s2)}
@@ -136,21 +97,10 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .chev.open{transform:rotate(180deg)}
 .sec-body{padding:6px 7px 8px}
 
-/* ══════════════════════════
-   CARD GRID
-   - always 5 columns, fixed card-min width per column
-   - strip fits on one line
-══════════════════════════ */
-.pcg{
-  display:grid;
-  grid-template-columns:repeat(5, minmax(0,1fr));
-  gap:4px;
-}
-/* when fewer than 5 cards: don't stretch them too wide — cap at card-min*2 */
-.pcg.few{
-  grid-template-columns:repeat(var(--few-cols), minmax(0, calc(var(--card-min)*1.8)));
-  justify-content:start;
-}
+/* ── CARD GRID: always 5 cols ── */
+.pcg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+/* few: ≤5 cards, cap width so cards don't become huge */
+.pcg.few{grid-template-columns:repeat(var(--few-cols),minmax(0,calc(var(--card-min)*1.7)));justify-content:start}
 
 /* ── CARD TILE ── */
 .pct{border-radius:7px;overflow:hidden;background:var(--s2);border:1px solid var(--bd);transition:border-color .2s,box-shadow .2s;user-select:none;display:flex;flex-direction:column}
@@ -170,52 +120,55 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .pcbtn{width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:13px;font-weight:800;color:#fff;background:rgba(255,255,255,.18);flex-shrink:0;line-height:1}
 .pcbtn:active{transform:scale(.88)}
 .pc-cnt{font-family:'Outfit',sans-serif;font-weight:800;font-size:12px;color:#fff;flex:1;text-align:center}
-/* strip: exactly 18px, nowrap — text designed to fit "✨ 있어요 +99" at 9px */
 .pc-strip{padding:3px 4px;font-size:9px;font-weight:700;text-align:center;font-family:'Outfit',sans-serif;height:18px;line-height:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
-/* goal adj row */
 .pc-goal-row{display:flex;align-items:center;justify-content:center;padding:3px 4px;background:var(--s2);border-top:1px solid var(--bd);flex-shrink:0}
 .gadj{display:inline-flex;align-items:center;background:var(--s3);border:1px solid var(--bd);border-radius:9px;overflow:hidden}
 .gadj button{padding:2px 9px;font-size:13px;font-weight:800;color:var(--tx);font-family:'Outfit',sans-serif}
 .gadj-num{font-family:'Outfit',sans-serif;font-weight:800;font-size:12px;min-width:22px;text-align:center;color:var(--tx)}
 
-/* ══════════════════════════
-   TRADE TAB
-══════════════════════════ */
-.trade-wrap{display:flex;flex-direction:column;gap:12px}
-/* tablet always side by side; landscape always side by side */
+/* ── TRADE ── */
+.trade-wrap{display:flex;flex-direction:column;gap:10px}
 @media(min-width:768px){.trade-wrap{flex-direction:row;align-items:flex-start}}
 .trade-col{flex:1;min-width:0}
-.trade-ttl-bar{padding:8px 10px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r) var(--r) 0 0}
+/* trade section grid: auto-fill so multiple sections fit side by side */
+.trade-sets{display:grid;gap:6px;grid-template-columns:repeat(auto-fill,minmax(calc(var(--card-min)*5 + 20px),1fr))}
+.trade-hdr-bar{padding:8px 10px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r) var(--r) 0 0;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .trade-body{background:var(--s1);border:1px solid var(--bd);border-top:none;border-radius:0 0 var(--r) var(--r);padding:8px}
 
-/* ══════════════════════════
-   FULLSCREEN CARD OVERLAY
-══════════════════════════ */
-.fs-ov{position:fixed;inset:0;z-index:400;background:rgba(8,9,15,.94);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;padding:20px}
+/* ── FULLSCREEN ── */
+.fs-ov{position:fixed;inset:0;z-index:400;background:rgba(8,9,15,.94);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;padding:16px}
 .fs-ov.open{opacity:1;pointer-events:auto}
-.fs-inner{display:flex;flex-direction:column;align-items:center;width:100%;max-width:380px;max-height:calc(100svh - 40px);overflow-y:auto}
+.fs-inner{display:flex;flex-direction:column;align-items:center;width:100%;max-width:380px;max-height:calc(100svh - 32px);overflow-y:auto}
 .fs-img-wrap{width:min(140px,38vw);flex-shrink:0}
 .fsimg{width:100%;border-radius:10px;display:block}
 .fsph-big{width:100%;aspect-ratio:5/7;display:flex;align-items:center;justify-content:center;background:var(--s2);border-radius:10px;font-size:30px}
 .fs-name{font-family:'Outfit',sans-serif;font-weight:800;font-size:16px;text-align:center;color:#fff;margin-top:10px}
 .fs-meta{font-size:11px;color:rgba(255,255,255,.5);text-align:center;margin-bottom:8px}
 .fs-chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;min-height:22px}
+/* side-by-side controls with more space between - and + */
 .fs-controls{display:flex;gap:10px;justify-content:center;width:100%;margin-bottom:10px}
-.fs-box{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:10px;padding:9px 6px}
+.fs-box{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:10px;padding:10px 8px}
 .fs-box-lbl{font-size:10px;color:rgba(255,255,255,.5);font-weight:700;font-family:'Outfit',sans-serif}
 .fs-box-val{font-family:'Outfit',sans-serif;font-weight:800;font-size:26px;color:#fff}
-.fs-box-btns{display:flex;gap:6px}
-.fs-box-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.15);border-radius:8px;font-size:16px;font-weight:800;color:#fff}
+/* larger, more spaced adj buttons */
+.fs-box-btns{display:flex;gap:12px}
+.fs-box-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.18);border-radius:10px;font-size:20px;font-weight:800;color:#fff}
 .fs-box-btn:active{transform:scale(.88)}
 .fs-bottom{width:100%}
-.fs-memo{width:100%;padding:7px 9px;font-size:12px;resize:none;border-radius:var(--r-sm);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#fff;margin-bottom:8px}
+.fs-memo{width:100%;padding:7px 9px;font-size:12px;resize:none;border-radius:var(--r-sm);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#fff;margin-bottom:7px}
 .fs-memo::placeholder{color:rgba(255,255,255,.3)}
 .fs-hide-btn{width:100%;padding:8px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;border:1px solid;font-family:'Outfit',sans-serif;margin-bottom:7px;display:none}
+.fs-report-btn{width:100%;padding:9px;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.4);border-radius:var(--r-sm);font-size:12px;font-weight:700;color:rgba(180,140,255,.9);cursor:pointer;font-family:'Outfit',sans-serif;text-align:center;margin-bottom:7px}
 .fs-close{width:100%;padding:11px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--r-sm);font-size:13px;font-weight:700;color:rgba(255,255,255,.75);cursor:pointer;font-family:'Outfit',sans-serif;text-align:center}
 
-/* ══════════════════════════
-   FILTER PANEL OVERLAY
-══════════════════════════ */
+/* ── REPORT FORM inside fullscreen ── */
+.fs-report-form{width:100%;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);border-radius:var(--r-sm);padding:10px;margin-bottom:7px}
+.fs-report-form textarea{width:100%;padding:7px 9px;font-size:12px;resize:none;border-radius:var(--r-sm);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;margin-bottom:6px}
+.fs-report-form textarea::placeholder{color:rgba(255,255,255,.3)}
+.fs-report-file{display:block;width:100%;padding:7px 9px;font-size:11px;border-radius:var(--r-sm);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);cursor:pointer;margin-bottom:6px}
+.fs-report-submit{width:100%;padding:8px;background:rgba(139,92,246,.5);border:1px solid rgba(139,92,246,.6);border-radius:var(--r-sm);font-size:12px;font-weight:700;color:#fff;cursor:pointer;font-family:'Outfit',sans-serif}
+
+/* ── OVERLAYS ── */
 .ov{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s}
 .ov.open{opacity:1;pointer-events:auto}
 .ov-bg{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
@@ -225,37 +178,28 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .shdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .sttl{font-family:'Outfit',sans-serif;font-weight:800;font-size:15px}
 
-/* filter chips inside panel */
+/* filter panel */
 .filt-sec{margin-bottom:14px}
 .filt-sec-title{font-size:10px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;font-family:'Outfit',sans-serif}
 .filt-chips{display:flex;flex-wrap:wrap;gap:6px}
-.fchip{padding:5px 12px;border-radius:16px;font-size:11px;font-weight:700;background:var(--s2);border:1.5px solid var(--bd);color:var(--tx2);cursor:pointer;transition:all .12s;font-family:'Outfit',sans-serif;white-space:nowrap}
+.fchip{padding:5px 12px;border-radius:16px;font-size:11px;font-weight:700;background:var(--s2);border:1.5px solid var(--bd);color:var(--tx2);cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap}
 .fchip.on{background:var(--s3);border-color:var(--blue);color:var(--blue)}
-/* alb chip colors set inline */
 .filt-foot{display:flex;gap:8px;margin-top:16px}
 
-/* ══════════════════════════
-   SETTINGS / WIZARD OVERLAYS
-══════════════════════════ */
-.btn{padding:9px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .14s;display:inline-block}
+/* settings/wizard */
+.btn{padding:9px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;display:inline-block}
 .btn-p{background:var(--blue);color:#fff;border:none}
 .btn-s{background:var(--s2);color:var(--tx2);border:1px solid var(--bd)}
 .btn-sm{padding:7px 12px;font-size:11px}
 .btn-full{width:100%;margin-bottom:6px;text-align:center}
 .btn-warn{background:rgba(244,63,94,.12);color:var(--want);border:1px solid rgba(244,63,94,.3);width:100%;padding:9px;border-radius:var(--r-sm);font-size:12px;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer;text-align:center}
-.desc{font-size:11px;color:var(--tx2);line-height:1.6;padding:8px;background:var(--s2);border-radius:var(--r-sm);border:1px solid var(--bd);margin-bottom:8px}
+.desc{font-size:11px;color:var(--tx2);line-height:1.7;padding:10px;background:var(--s2);border-radius:var(--r-sm);border:1px solid var(--bd);margin-bottom:8px}
 .wiz-chip{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;border:1.5px solid var(--bd);color:var(--tx2);background:var(--s2);cursor:pointer;font-family:'Outfit',sans-serif}
-
-/* ══════════════════════════
-   USAGE
-══════════════════════════ */
 .use-sec{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px}
 .use-sec h3{font-family:'Outfit',sans-serif;font-weight:700;font-size:13px;margin-bottom:8px;color:var(--blue)}
 .use-sec ul{padding-left:14px;font-size:12px;line-height:2;color:var(--tx2)}
 
-/* ══════════════════════════
-   MISC
-══════════════════════════ */
+/* misc */
 .tw{position:fixed;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 8px);left:50%;transform:translateX(-50%);z-index:500;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:5px}
 @media(orientation:landscape){.tw{bottom:16px}}
 .toast{background:var(--tx);color:var(--bg);padding:7px 16px;border-radius:20px;font-size:12px;font-weight:700;animation:tin .2s,tout .3s 1.8s forwards;white-space:nowrap}
@@ -273,27 +217,28 @@ input:focus,textarea:focus{border-color:var(--blue)}
   <div class="ls-sidebar" id="ls-sidebar">
     <div class="ls-logo">
       <div class="ls-logo-main">Caligo Pt.2</div>
-      <div class="ls-logo-sub">포토카드 수집 트래커</div>
+      <div class="ls-logo-sub" id="ls-logo-sub">포토카드 수집 트래커</div>
     </div>
     <div class="ls-nav" id="ls-nav"></div>
     <div class="ls-bottom">
-      <button class="ls-btn" onclick="exportCollectScreenshot()">📸 수집 스크린샷</button>
+      <button class="ls-btn" onclick="exportCollectScreenshot()" id="ls-shot-btn">📸 스크린샷</button>
       <button class="ls-btn" id="ls-theme-btn" onclick="toggleTheme()">☀️ 테마 전환</button>
-      <button class="ls-btn" onclick="showSettings()">⚙️ 설정</button>
+      <button class="ls-btn" onclick="toggleLang()" id="ls-lang-btn">🌐 English</button>
+      <button class="ls-btn" onclick="showSettings()" id="ls-set-btn">⚙️ 설정</button>
     </div>
   </div>
   <button class="ls-toggle" id="ls-toggle" onclick="toggleSidebar()">◀</button>
 
-  <!-- PORTRAIT HEADER + TABS -->
+  <!-- PORTRAIT HEADER -->
   <div class="hdr">
-    <span class="logo-main">Caligo Pt.2</span><span class="logo-sub">포토카드 수집 트래커</span>
+    <span class="logo-main">Caligo Pt.2</span><span class="logo-sub" id="p-logo-sub">포토카드 수집 트래커</span>
     <div class="hdr-r">
       <button class="abtn" id="theme-btn" onclick="toggleTheme()">☀️</button>
+      <button class="abtn" onclick="toggleLang()" title="EN/KO">🌐</button>
       <button class="abtn" onclick="showSettings()">⚙️</button>
     </div>
   </div>
   <div class="dtabs" id="dtabs"></div>
-
   <div class="main" id="main"><div id="page-content"></div></div>
   <div class="bnav"><div class="bnav-inner" id="bnav"></div></div>
 </div>
@@ -309,7 +254,7 @@ input:focus,textarea:focus{border-color:var(--blue)}
     <div class="fs-chips" id="fs-chips"></div>
     <div class="fs-controls">
       <div class="fs-box">
-        <div class="fs-box-lbl">수집</div>
+        <div class="fs-box-lbl" id="fs-lbl-coll">수집</div>
         <div class="fs-box-val" id="fs-coll">0</div>
         <div class="fs-box-btns">
           <button class="fs-box-btn" onclick="fsAdj(-1)">−</button>
@@ -317,7 +262,7 @@ input:focus,textarea:focus{border-color:var(--blue)}
         </div>
       </div>
       <div class="fs-box">
-        <div class="fs-box-lbl">목표</div>
+        <div class="fs-box-lbl" id="fs-lbl-goal">목표</div>
         <div class="fs-box-val" id="fs-goal">0</div>
         <div class="fs-box-btns">
           <button class="fs-box-btn" onclick="fsGoal(-1)">−</button>
@@ -328,7 +273,14 @@ input:focus,textarea:focus{border-color:var(--blue)}
     <div class="fs-bottom">
       <button class="fs-hide-btn" id="fs-hide-btn" onclick="toggleHide()"></button>
       <textarea class="fs-memo" id="fs-memo" placeholder="메모..." rows="2" oninput="saveMemo()"></textarea>
-      <button class="fs-close" onclick="closeFull()">✕ 닫기</button>
+      <button class="fs-report-btn" onclick="toggleReportForm()" id="fs-report-toggle-btn">📷 사진/오류 제보</button>
+      <div class="fs-report-form" id="fs-report-form" style="display:none">
+        <div style="font-size:11px;color:rgba(180,140,255,.9);margin-bottom:7px;font-weight:700">📷 사진/오류 제보</div>
+        <textarea id="report-text" rows="3" placeholder="제보 내용을 입력해 주세요 (카드명, 수정 내용 등)..."></textarea>
+        <input type="file" id="report-file" accept="image/*" class="fs-report-file">
+        <button class="fs-report-submit" onclick="submitReport()">제보 보내기 →</button>
+      </div>
+      <button class="fs-close" onclick="closeFull()" id="fs-close-btn">✕ 닫기</button>
     </div>
   </div>
 </div>
@@ -338,11 +290,11 @@ input:focus,textarea:focus{border-color:var(--blue)}
   <div class="ov-bg" onclick="closeSheet('filt-ov')"></div>
   <div class="sheet">
     <div class="sh-bar"></div>
-    <div class="shdr"><span class="sttl">🔍 필터 설정</span><button onclick="closeSheet('filt-ov')" style="font-size:16px;color:var(--tx2)">✕</button></div>
+    <div class="shdr"><span class="sttl" id="filt-ttl">🔍 필터 설정</span><button onclick="closeSheet('filt-ov')" style="font-size:16px;color:var(--tx2)">✕</button></div>
     <div id="filt-body"></div>
     <div class="filt-foot">
-      <button class="btn btn-s btn-sm" onclick="resetCurFilter()" style="flex:1">초기화</button>
-      <button class="btn btn-p btn-sm" onclick="applyFilter()" style="flex:2">적용</button>
+      <button class="btn btn-s btn-sm" onclick="resetCurFilter()" style="flex:1" id="filt-reset-btn">초기화</button>
+      <button class="btn btn-p btn-sm" onclick="applyFilter()" style="flex:2" id="filt-apply-btn">적용</button>
     </div>
   </div>
 </div>
@@ -352,16 +304,26 @@ input:focus,textarea:focus{border-color:var(--blue)}
   <div class="ov-bg" onclick="closeSheet('set-ov')"></div>
   <div class="sheet">
     <div class="sh-bar"></div>
-    <div class="shdr"><span class="sttl">⚙️ 설정</span><button onclick="closeSheet('set-ov')" style="font-size:16px;color:var(--tx2)">✕</button></div>
-    <div class="desc"><b>💾 데이터 백업이란?</b><br>목표·수집 개수·메모를 파일로 저장해요.</div>
-    <button class="btn btn-p btn-full btn-sm" onclick="exportState()">💾 지금 백업하기</button>
-    <button class="btn btn-s btn-full btn-sm" onclick="document.getElementById('st-inp').click()">📂 백업 파일로 복원하기</button>
+    <div class="shdr"><span class="sttl" id="set-ttl">⚙️ 설정</span><button onclick="closeSheet('set-ov')" style="font-size:16px;color:var(--tx2)">✕</button></div>
+    <div class="desc" id="set-backup-desc">
+      <b>💾 데이터 백업이란?</b><br>
+      목표 수량·수집 개수·메모를 JSON 파일로 저장해요.<br>
+      <br>
+      ✅ 이런 경우에 유용해요:<br>
+      • 폰을 교체하거나 기기를 바꿀 때<br>
+      • 브라우저 캐시·데이터를 삭제할 때<br>
+      • 다른 기기에서 같은 데이터를 쓰고 싶을 때<br>
+      <br>
+      💡 주기적으로 백업해 두는 걸 추천해요!
+    </div>
+    <button class="btn btn-p btn-full btn-sm" onclick="exportState()" id="set-backup-btn">💾 지금 백업하기</button>
+    <button class="btn btn-s btn-full btn-sm" onclick="document.getElementById('st-inp').click()" id="set-restore-btn">📂 백업 파일로 복원하기</button>
     <input type="file" id="st-inp" accept=".json" style="display:none" onchange="importState(this)">
-    <div class="desc" style="margin-top:6px"><b>⚠️ 주의</b><br>복원하면 현재 데이터가 덮어씌워져요.</div>
+    <div class="desc" style="margin-top:6px" id="set-warn-desc"><b>⚠️ 복원 주의</b><br>백업 파일로 복원하면 현재 기기의 데이터가 파일 내용으로 완전히 덮어씌워져요. 복원 전에 현재 데이터를 먼저 백업하는 걸 권장해요.</div>
     <hr style="border:none;border-top:1px solid var(--bd);margin:10px 0">
-    <button class="btn-warn" onclick="resetState()">⚠️ 전체 초기화</button>
+    <button class="btn-warn" onclick="resetState()" id="set-reset-btn">⚠️ 전체 초기화</button>
     <div style="display:flex;justify-content:flex-end;margin-top:12px">
-      <button class="btn btn-s btn-sm" onclick="closeSheet('set-ov')">닫기</button>
+      <button class="btn btn-s btn-sm" onclick="closeSheet('set-ov')" id="set-close-btn">닫기</button>
     </div>
   </div>
 </div>
@@ -382,9 +344,83 @@ input:focus,textarea:focus{border-color:var(--blue)}
 
 <script>
 /* ══════════════════════════════════
+   I18N
+══════════════════════════════════ */
+const T={
+  ko:{
+    appSub:'포토카드 수집 트래커',
+    tabs:['수집','교환','목표','사용법'],
+    lsShot:'📸 스크린샷',lsTheme:'☀️ 테마 전환',lsLang:'🌐 English',lsSet:'⚙️ 설정',
+    fsFiltTtl:'🔍 필터 설정',fsFiltReset:'초기화',fsFiltApply:'적용',
+    fsLblColl:'수집',fsLblGoal:'목표',fsClose:'✕ 닫기',fsReport:'📷 사진/오류 제보',
+    setTtl:'⚙️ 설정',setBackupBtn:'💾 지금 백업하기',setRestoreBtn:'📂 백업 파일로 복원하기',setResetBtn:'⚠️ 전체 초기화',setCloseBtn:'닫기',
+    wizTtl:'🎯 빠른 목표 설정',
+    statAll:'전체',statColl:'수집',statGoal:'달성',
+    filtAlbums:'앨범',filtMembers:'멤버 (개인 카드)',filtUnits:'유닛 카드',filtMmms:'MMMM',filtExcUnits:'유닛 카드 제외',filtExcAll:'단체 카드 제외',filtExcMmmm:'MMMM 카드 제외',
+    visAll:'👁 전체',visHave:'✨ 있는것',visNot:'🔍 없는것',
+    collBtn:'▼ 접기',expandBtn:'▶ 펼치기',shotBtn:'📸',goalReset:'🗑',
+    tradeWant:'🔍 구해요',tradeHave:'✨ 있어요',tradeWantUnit:'개',tradeHaveUnit:'개',
+    tradeFilt:'앨범 필터',
+    wizNext:'다음 →',wizPrev:'← 이전',wizApply:'설정 완료 ✓',wizLater:'나중에',
+    applyDone:'✅ 목표 설정 완료!\n\n적용된 카드: {count}장\n멤버: {members}\n{units}{all}{mmmm}\n목표 탭으로 이동할까요?',
+    reportPlaceholder:'제보 내용을 입력해 주세요 (카드명, 수정 내용 등)...',
+    reportSend:'제보 보내기 →',
+    reportEmpty:'내용을 입력해 주세요.',
+    reportSent:'✅ 제보가 전송됐어요! 검수 후 등록/수정 예정이에요. 감사합니다 💙',
+    reportFail:'전송 실패. 직접 이메일로 보내주세요: pllize0312@gmail.com',
+    memoPlaceholder:'메모...',
+  },
+  en:{
+    appSub:'Photocard Collection Tracker',
+    tabs:['Collection','Exchange','Target','How to Use'],
+    lsShot:'📸 Screenshot',lsTheme:'☀️ Theme',lsLang:'🌐 한국어',lsSet:'⚙️ Settings',
+    fsFiltTtl:'🔍 Filter',fsFiltReset:'Reset',fsFiltApply:'Apply',
+    fsLblColl:'Collected',fsLblGoal:'Target',fsClose:'✕ Close',fsReport:'📷 Photo/Error Report',
+    setTtl:'⚙️ Settings',setBackupBtn:'💾 Backup Now',setRestoreBtn:'📂 Restore from Backup',setResetBtn:'⚠️ Reset All Data',setCloseBtn:'Close',
+    wizTtl:'🎯 Quick Target Setup',
+    statAll:'Total',statColl:'Collected',statGoal:'Goal',
+    filtAlbums:'Albums',filtMembers:'Members (Individual)',filtUnits:'Unit Cards',filtMmms:'MMMM',filtExcUnits:'Exclude Units',filtExcAll:'Exclude Group',filtExcMmmm:'Exclude MMMM',
+    visAll:'👁 All',visHave:'✨ Have',visNot:'🔍 Need',
+    collBtn:'▼ Collapse',expandBtn:'▶ Expand',shotBtn:'📸',goalReset:'🗑',
+    tradeWant:'🔍 Wanted',tradeHave:'✨ For Trade',tradeWantUnit:'',tradeHaveUnit:'',
+    tradeFilt:'Album Filter',
+    wizNext:'Next →',wizPrev:'← Back',wizApply:'Confirm ✓',wizLater:'Later',
+    applyDone:'✅ Target set!\n\nCards: {count}\nMembers: {members}\n{units}{all}{mmmm}\nGo to Target tab?',
+    reportPlaceholder:'Describe the issue (card name, correction, etc.)...',
+    reportSend:'Send Report →',
+    reportEmpty:'Please enter a description.',
+    reportSent:'✅ Sent! Will be reviewed and updated soon. Thank you 💙',
+    reportFail:'Failed. Please email: pllize0312@gmail.com',
+    memoPlaceholder:'Memo...',
+  }
+};
+let lang='ko';
+function t(k){return T[lang][k]||T['ko'][k]||k;}
+function toggleLang(){lang=lang==='ko'?'en':'ko';applyLang();renderCur();}
+function applyLang(){
+  document.getElementById('p-logo-sub').textContent=t('appSub');
+  const ls=document.getElementById('ls-logo-sub');if(ls)ls.textContent=t('appSub');
+  const lsL=document.getElementById('ls-lang-btn');if(lsL)lsL.textContent=t('lsLang');
+  const lsS=document.getElementById('ls-shot-btn');if(lsS)lsS.textContent=t('lsShot');
+  const lsSet=document.getElementById('ls-set-btn');if(lsSet)lsSet.textContent=t('lsSet');
+  const fsFiltTtl=document.getElementById('filt-ttl');if(fsFiltTtl)fsFiltTtl.textContent=t('fsFiltTtl');
+  const fFR=document.getElementById('filt-reset-btn');if(fFR)fFR.textContent=t('fsFiltReset');
+  const fFA=document.getElementById('filt-apply-btn');if(fFA)fFA.textContent=t('fsFiltApply');
+  const fcl=document.getElementById('fs-lbl-coll');if(fcl)fcl.textContent=t('fsLblColl');
+  const fgl=document.getElementById('fs-lbl-goal');if(fgl)fgl.textContent=t('fsLblGoal');
+  const fcb=document.getElementById('fs-close-btn');if(fcb)fcb.textContent=t('fsClose');
+  const frb=document.getElementById('fs-report-toggle-btn');if(frb)frb.textContent=t('fsReport');
+  const memo=document.getElementById('fs-memo');if(memo)memo.placeholder=t('memoPlaceholder');
+  const rt=document.getElementById('report-text');if(rt)rt.placeholder=t('reportPlaceholder');
+  const rBtn=document.querySelector('.fs-report-submit');if(rBtn)rBtn.textContent=t('reportSend');
+  const setTtl=document.getElementById('set-ttl');if(setTtl)setTtl.textContent=t('setTtl');
+  renderNav();
+}
+
+/* ══════════════════════════════════
    CONSTANTS
 ══════════════════════════════════ */
-const DB_KEY='plave_poca_db_v3', ST_KEY='plave_poca_st_v2', UI_KEY='plave_poca_ui_v7';
+const DB_KEY='plave_poca_db_v3', ST_KEY='plave_poca_st_v2', UI_KEY='plave_poca_ui_v8';
 const MEMBERS=['예준','노아','밤비','은호','하민'];
 const UNITS=['맛탕즈','베리즈','댕댕즈','예라인','쁜라인','노라인','냥냥즈','야타즈','댄라즈','댕냥즈'];
 const MMMS=['몌무','뫄','미므','므모','먀미'];
@@ -395,14 +431,7 @@ const MU={
   '은호': ['댕댕즈','노라인','야타즈','댕냥즈'],
   '하민': ['예라인','냥냥즈','댄라즈','댕냥즈'],
 };
-const TABS=[
-  {id:'collect',label:'수집',ico:'📦'},
-  {id:'trade',  label:'교환',ico:'🔄'},
-  {id:'goals',  label:'목표',ico:'🎯'},
-  {id:'usage',  label:'사용법',ico:'📖'},
-];
-const CARD_MIN=72; // px — min card width so strip fits on one line
-const COLS=5;      // max columns per row
+const REPORT_EMAIL='pllize0312@gmail.com';
 
 /* ══════════════════════════════════
    STATE
@@ -410,17 +439,14 @@ const COLS=5;      // max columns per row
 let DB=null;
 let ST={goals:{},collected:{},memos:{},hidden:{}};
 let UI={
-  col:{},mgl:{},
-  // filter state per tab — album/member/unit/mmmm multi-select + visibility toggle
-  cf:{albs:[],members:[],units:[],mmms:[],vis:'all'}, // collect
-  mf:{albs:[],members:[],units:[],mmms:[],vis:'all'}, // goals
-  collapseC:false, // false=expanded
-  collapseG:false,
-  theme:'light',
-  sidebarOpen:true,
+  col:{},mgl:{},tcol:{},
+  cf:{albs:[],members:[],units:[],mmms:[],excUnits:false,excAll:false,excMmmm:false,vis:'all'},
+  mf:{albs:[],members:[],units:[],mmms:[],excUnits:false,excAll:false,excMmmm:false,vis:'all'},
+  tf:{albs:[]}, // trade filter
+  collapseC:false,collapseG:false,
+  theme:'light',sidebarOpen:true,
 };
-let curTab='collect', fsId=null, wiz={};
-let curFilterTarget='collect'; // which tab's filter panel is open
+let curTab='collect', fsId=null, wiz={}, curFilterTarget='collect';
 
 /* ══════════════════════════════════
    STORAGE
@@ -431,12 +457,15 @@ function loadST(){const s=localStorage.getItem(ST_KEY);if(s)try{ST=JSON.parse(s)
 function saveST(){try{localStorage.setItem(ST_KEY,JSON.stringify(ST));}catch(e){}}
 function loadUI(){
   const s=localStorage.getItem(UI_KEY);
-  if(s)try{const u=JSON.parse(s);Object.assign(UI,u);}catch(e){}
-  ['col','mgl'].forEach(k=>{UI[k]=UI[k]||{};});
-  UI.cf=UI.cf||{albs:[],members:[],units:[],mmms:[],vis:'all'};
-  UI.mf=UI.mf||{albs:[],members:[],units:[],mmms:[],vis:'all'};
-  ['albs','members','units','mmms'].forEach(k=>{if(!Array.isArray(UI.cf[k]))UI.cf[k]=[];if(!Array.isArray(UI.mf[k]))UI.mf[k]=[];});
-  UI.cf.vis=UI.cf.vis||'all';UI.mf.vis=UI.mf.vis||'all';
+  if(s)try{Object.assign(UI,JSON.parse(s));}catch(e){}
+  ['col','mgl','tcol'].forEach(k=>{UI[k]=UI[k]||{};});
+  const defF=()=>({albs:[],members:[],units:[],mmms:[],excUnits:false,excAll:false,excMmmm:false,vis:'all'});
+  ['cf','mf'].forEach(k=>{
+    if(!UI[k]||typeof UI[k]!=='object')UI[k]=defF();
+    ['albs','members','units','mmms'].forEach(f=>{if(!Array.isArray(UI[k][f]))UI[k][f]=[];});
+    UI[k].vis=UI[k].vis||'all';
+  });
+  UI.tf=UI.tf||{albs:[]};if(!Array.isArray(UI.tf.albs))UI.tf.albs=[];
   UI.theme=UI.theme||'light';
   UI.sidebarOpen=UI.sidebarOpen!==false;
 }
@@ -456,29 +485,33 @@ function allCards(){if(!DB)return[];const r=[];for(const a of DB.albumTypes)for(
 function findCard(id){if(!DB)return null;for(const a of DB.albumTypes)for(const s of a.sets)for(const card of s.cards)if(card.id===id)return{card,alb:a,set:s};return null;}
 function isLS(){return window.matchMedia('(orientation:landscape)').matches;}
 
-// Does a card pass the current filter?
+/* FILTER — includes exclude toggles and MMMM fix */
 function cardPassFilter(card, f){
-  if(f.albs.length&&!f.albs.includes(card.aId))return false;
   const ct=card.cardType;
+  // exclude toggles first
+  if(f.excUnits&&ct==='Unit')return false;
+  if(f.excAll&&ct==='All')return false;
+  if(f.excMmmm&&ct==='MMMM')return false;
+  // MMMM: hide entirely if no mmmm value (safety) and no mmmm filter active
+  if(ct==='MMMM'&&!card.mmmm)return false;
+  // album filter
+  if(f.albs.length&&!f.albs.includes(card.aId))return false;
   if(ct==='Individual'){
     if(f.members.length&&!f.members.includes(card.member)&&!f.members.includes(card.name))return false;
   } else if(ct==='Unit'){
     if(f.units.length&&!f.units.includes(card.unit))return false;
-    // if member filter active but no unit filter, filter units by member
     if(!f.units.length&&f.members.length){
-      const match=f.members.some(m=>MU[m]&&MU[m].includes(card.unit));
-      if(!match)return false;
+      if(!f.members.some(m=>MU[m]&&MU[m].includes(card.unit)))return false;
     }
   } else if(ct==='MMMM'){
     if(f.mmms.length&&!f.mmms.includes(card.mmmm))return false;
   }
-  // All cards always pass member/unit/mmmm filters (they're global)
   return true;
 }
-function hasFilter(f){return f.albs.length||f.members.length||f.units.length||f.mmms.length;}
+function hasFilter(f){return f.albs.length||f.members.length||f.units.length||f.mmms.length||f.excUnits||f.excAll||f.excMmmm;}
 
 /* ══════════════════════════════════
-   STATUS / STRIP
+   STRIP / STATUS
 ══════════════════════════════════ */
 function stripHtml(id){
   const cv=c(id),gv=g(id),s_=sp(id),w_=wt(id),st=sts(id);
@@ -497,9 +530,13 @@ function stripStyle(id){
 }
 
 /* ══════════════════════════════════
-   CARD TILE HTML
+   CARD TILE
 ══════════════════════════════════ */
-function cardTileHTML(card, showGoalRow){
+function pcgAttrs(n){
+  if(n<=5)return`class="pcg few" style="--few-cols:${n}"`;
+  return`class="pcg"`;
+}
+function cardTileHTML(card,showGoalRow){
   const cv=c(card.id),gv=g(card.id),s_=sp(card.id),w_=wt(card.id),st=sts(card.id);
   const hasMemo=mo(card.id).trim().length>0;
   let cls='pct';
@@ -509,7 +546,7 @@ function cardTileHTML(card, showGoalRow){
   else if(w_>0)bdg=`<div class="pbdg w">−${w_}</div>`;
   else if(st==='m')bdg=`<div class="pbdg m">✓</div>`;
   else if(cv>0&&!gv)bdg=`<div class="pbdg h">${cv}</div>`;
-  return `<div class="${cls}" data-id="${card.id}">
+  return`<div class="${cls}" data-id="${card.id}">
     <div class="pci" onclick="openFull('${card.id}')">
       ${card.img?`<img src="${card.img}" alt="${card.name}" loading="lazy">`:`<div class="pcph">${card.name}</div>`}
       ${bdg}${hasMemo?'<div class="mdot"></div>':''}
@@ -527,16 +564,6 @@ function cardTileHTML(card, showGoalRow){
     </div></div>`:''}
   </div>`;
 }
-
-// pcg class and style for N cards
-function pcgAttrs(n){
-  if(n<=COLS){
-    // few: render N columns but cap each card width so they don't stretch huge
-    return `class="pcg few" style="--few-cols:${n}"`;
-  }
-  return `class="pcg"`;
-}
-
 function patchTile(id){
   const tile=document.querySelector(`.pct[data-id="${id}"]`);if(!tile)return;
   const cv=c(id),gv=g(id),s_=sp(id),w_=wt(id),st=sts(id);
@@ -565,15 +592,16 @@ function toggleHide(){if(!fsId)return;const isH=hid(fsId);if(!confirm(isH?'다�
 function saveMemo(){if(!fsId)return;const v=document.getElementById('fs-memo').value;if(v)ST.memos[fsId]=v;else delete ST.memos[fsId];saveST();}
 function colSec(k){UI.col[k]=!UI.col[k];saveUI();renderCur();}
 function mColSec(k){UI.mgl[k]=!UI.mgl[k];saveUI();renderGoals();}
+function tColSec(k){UI.tcol[k]=!UI.tcol[k];saveUI();renderTrade();}
 function collapseAll(){if(!DB)return;for(const a of DB.albumTypes)for(const s of a.sets)UI.col[s.id]=true;UI.collapseC=true;saveUI();renderCur();toast('모두 접음');}
 function expandAll(){UI.col={};UI.collapseC=false;saveUI();renderCur();toast('모두 펼침');}
-function toggleCollapseC(){if(UI.collapseC){expandAll();}else{collapseAll();}}
+function toggleCollapseC(){if(UI.collapseC)expandAll();else collapseAll();}
 function colAllGoals(){if(!DB)return;for(const a of DB.albumTypes)for(const s of a.sets)UI.mgl[s.id]=true;UI.collapseG=true;saveUI();renderGoals();}
-function expAllGoals(){UI.mgl={};UI.collapseG=false;saveUI();renderGoals();toast('모두 펼침');}
+function expAllGoals(){UI.mgl={};UI.collapseG=false;saveUI();renderGoals();}
 function toggleCollapseG(){if(UI.collapseG)expAllGoals();else colAllGoals();}
 function resetAllGoals(){if(!confirm('모든 목표를 0으로 초기화할까요?'))return;ST.goals={};saveST();renderGoals();toast('목표 초기화 완료');}
-function cycleVis(fObj, cb){if(fObj.vis==='all')fObj.vis='have';else if(fObj.vis==='have')fObj.vis='nothave';else fObj.vis='all';saveUI();cb();}
-function visLabel(vis){if(vis==='have')return'✨ 있는것';if(vis==='nothave')return'🔍 없는것';return'👁 전체';}
+function cycleVis(fKey,cb){const f=UI[fKey];if(f.vis==='all')f.vis='have';else if(f.vis==='have')f.vis='nothave';else f.vis='all';saveUI();cb();}
+function visLabel(vis){if(vis==='have')return t('visHave');if(vis==='nothave')return t('visNot');return t('visAll');}
 
 /* ══════════════════════════════════
    FILTER PANEL
@@ -587,65 +615,107 @@ function openFilter(target){
 function renderFilterPanel(f){
   let h='';
   // Albums
-  h+=`<div class="filt-sec"><div class="filt-sec-title">앨범</div><div class="filt-chips">`;
-  for(const alb of DB.albumTypes){
-    const on=f.albs.includes(alb.id);
-    h+=`<span class="fchip${on?' on':''}" data-fk="albs" data-fv="${alb.id}" style="${on?`background:${alb.color}22;border-color:${alb.color};color:${alb.color}`:''}" onclick="toggleFchip(this)">${alb.shortName}</span>`;
-  }
+  h+=`<div class="filt-sec"><div class="filt-sec-title">${t('filtAlbums')}</div><div class="filt-chips">`;
+  for(const alb of DB.albumTypes){const on=f.albs.includes(alb.id);h+=`<span class="fchip${on?' on':''}" data-fk="albs" data-fv="${alb.id}" style="${on?`background:${alb.color}22;border-color:${alb.color};color:${alb.color}`:''}" onclick="toggleFchip(this)">${alb.shortName}</span>`;}
   h+=`</div></div>`;
-  // Members (Individual)
-  h+=`<div class="filt-sec"><div class="filt-sec-title">멤버 (개인 카드)</div><div class="filt-chips">`;
+  // Members
+  h+=`<div class="filt-sec"><div class="filt-sec-title">${t('filtMembers')}</div><div class="filt-chips">`;
   for(const m of MEMBERS){const on=f.members.includes(m);h+=`<span class="fchip${on?' on':''}" data-fk="members" data-fv="${m}" onclick="toggleFchip(this)">${m}</span>`;}
   h+=`</div></div>`;
   // Units
-  h+=`<div class="filt-sec"><div class="filt-sec-title">유닛 카드</div><div class="filt-chips">`;
+  h+=`<div class="filt-sec"><div class="filt-sec-title">${t('filtUnits')}</div><div class="filt-chips">`;
   for(const u of UNITS){const on=f.units.includes(u);h+=`<span class="fchip${on?' on':''}" data-fk="units" data-fv="${u}" onclick="toggleFchip(this)">${u}</span>`;}
   h+=`</div></div>`;
   // MMMM
-  h+=`<div class="filt-sec"><div class="filt-sec-title">MMMM</div><div class="filt-chips">`;
+  h+=`<div class="filt-sec"><div class="filt-sec-title">${t('filtMmms')}</div><div class="filt-chips">`;
   for(const m of MMMS){const on=f.mmms.includes(m);h+=`<span class="fchip${on?' on':''}" data-fk="mmms" data-fv="${m}" onclick="toggleFchip(this)">${m}</span>`;}
   h+=`</div></div>`;
+  // Exclude toggles
+  h+=`<div class="filt-sec"><div class="filt-sec-title">제외 옵션</div><div class="filt-chips">
+    <span class="fchip${f.excUnits?' on':''}" data-fk-exc="excUnits" onclick="toggleFchipExc(this,'excUnits')">${t('filtExcUnits')}</span>
+    <span class="fchip${f.excAll?' on':''}" data-fk-exc="excAll" onclick="toggleFchipExc(this,'excAll')">${t('filtExcAll')}</span>
+    <span class="fchip${f.excMmmm?' on':''}" data-fk-exc="excMmmm" onclick="toggleFchipExc(this,'excMmmm')">${t('filtExcMmmm')}</span>
+  </div></div>`;
   document.getElementById('filt-body').innerHTML=h;
 }
 function toggleFchip(el){el.classList.toggle('on');}
+function toggleFchipExc(el,key){el.classList.toggle('on');const f=curFilterTarget==='collect'?UI.cf:UI.mf;f[key]=el.classList.contains('on');saveUI();}
 function applyFilter(){
   const f=curFilterTarget==='collect'?UI.cf:UI.mf;
-  ['albs','members','units','mmms'].forEach(key=>{
-    f[key]=[];
-    document.querySelectorAll(`#filt-body [data-fk="${key}"].on`).forEach(el=>f[key].push(el.dataset.fv));
-  });
+  ['albs','members','units','mmms'].forEach(key=>{f[key]=[];document.querySelectorAll(`#filt-body [data-fk="${key}"].on`).forEach(el=>f[key].push(el.dataset.fv));});
+  // exc already updated on click
   saveUI();closeSheet('filt-ov');renderCur();
 }
 function resetCurFilter(){
   const f=curFilterTarget==='collect'?UI.cf:UI.mf;
-  f.albs=[];f.members=[];f.units=[];f.mmms=[];
-  saveUI();
-  renderFilterPanel(f);
+  f.albs=[];f.members=[];f.units=[];f.mmms=[];f.excUnits=false;f.excAll=false;f.excMmmm=false;
+  saveUI();renderFilterPanel(f);
+}
+
+/* ══════════════════════════════════
+   TOP BAR
+══════════════════════════════════ */
+function topBarHTML(statsHTML,filtTarget,f,collapseState,onCollapse,onVis,extraRight){
+  const filtActive=hasFilter(f);
+  return`<div class="top-bar">
+    ${statsHTML}
+    <div class="spacer"></div>
+    <button class="ctrl-btn" onclick="cycleVis('${filtTarget==='collect'?'cf':'mf'}',${onVis})">${visLabel(f.vis)}</button>
+    <button class="ctrl-btn" onclick="${onCollapse}">${collapseState?t('expandBtn'):t('collBtn')}</button>
+    <button class="filter-btn${filtActive?' active':''}" onclick="openFilter('${filtTarget}')">🔍 ${filtActive?'●':''}</button>
+    ${extraRight||''}
+  </div>`;
+}
+
+/* ══════════════════════════════════
+   SECTION BUILDER
+══════════════════════════════════ */
+function buildSections(albums,f,colMap,onColSec,showGoalRow){
+  let secs='';
+  for(const alb of albums){
+    for(const set of alb.sets){
+      let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
+      if(f.vis==='have')cards=cards.filter(x=>c(x.id)>0);
+      else if(f.vis==='nothave')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
+      if(!cards.length)continue;
+      const isC=!!colMap[set.id];
+      const t2=set.cards.filter(x=>g(x.id)>0).length;
+      const m2=set.cards.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)).length;
+      const pct=t2?Math.round(m2/t2*100):0;
+      secs+=`<div class="sec-block">
+        <div class="sec-hdr" onclick="${onColSec}('${set.id}')">
+          <span class="sec-atag" style="background:${alb.color}">${alb.shortName}</span>
+          <span class="sec-name">${set.name}</span>
+          ${t2>0?`<div class="sec-pw"><span class="sec-pct">${m2}/${t2}</span><div class="sec-pb"><div class="sec-pbf" style="width:${pct}%;background:${alb.color}"></div></div></div>`:''}
+          <span class="chev${isC?'':' open'}">▼</span>
+        </div>
+        ${isC?'':`<div class="sec-body"><div ${pcgAttrs(cards.length)}>${cards.map(card=>cardTileHTML(card,showGoalRow)).join('')}</div></div>`}
+      </div>`;
+    }
+  }
+  return secs;
 }
 
 /* ══════════════════════════════════
    NAVIGATION
 ══════════════════════════════════ */
 function renderNav(){
-  const dTabs=TABS.map(t=>`<div class="dtab${curTab===t.id?' on':''}" data-v="${t.id}" onclick="goTab('${t.id}')">${t.label}</div>`).join('');
-  document.getElementById('dtabs').innerHTML=dTabs;
-  document.getElementById('bnav').innerHTML=TABS.map(t=>`<div class="btab${curTab===t.id?' on':''}" data-v="${t.id}" onclick="goTab('${t.id}')"><div class="btab-ico">${t.ico}</div>${t.label}</div>`).join('');
-  // landscape sidebar nav
-  document.getElementById('ls-nav').innerHTML=TABS.map(t=>`<div class="ls-tab${curTab===t.id?' on':''}" data-v="${t.id}" onclick="goTab('${t.id}')"><span class="ls-tab-ico">${t.ico}</span>${t.label}</div>`).join('');
-  // sidebar visibility
+  const tabLabels=t('tabs');
+  const TABS=[
+    {id:'collect',ico:'📦',label:tabLabels[0]},
+    {id:'trade',  ico:'🔄',label:tabLabels[1]},
+    {id:'goals',  ico:'🎯',label:tabLabels[2]},
+    {id:'usage',  ico:'📖',label:tabLabels[3]},
+  ];
+  document.getElementById('dtabs').innerHTML=TABS.map(tp=>`<div class="dtab${curTab===tp.id?' on':''}" data-v="${tp.id}" onclick="goTab('${tp.id}')">${tp.label}</div>`).join('');
+  document.getElementById('bnav').innerHTML=TABS.map(tp=>`<div class="btab${curTab===tp.id?' on':''}" data-v="${tp.id}" onclick="goTab('${tp.id}')"><div class="btab-ico">${tp.ico}</div>${tp.label}</div>`).join('');
+  document.getElementById('ls-nav').innerHTML=TABS.map(tp=>`<div class="ls-tab${curTab===tp.id?' on':''}" data-v="${tp.id}" onclick="goTab('${tp.id}')"><span class="ls-tab-ico">${tp.ico}</span>${tp.label}</div>`).join('');
   const sb=document.getElementById('ls-sidebar');
   const tog=document.getElementById('ls-toggle');
-  if(sb){
-    sb.classList.toggle('collapsed',!UI.sidebarOpen);
-    tog.textContent=UI.sidebarOpen?'◀':'▶';
-  }
+  if(sb){sb.classList.toggle('collapsed',!UI.sidebarOpen);tog.textContent=UI.sidebarOpen?'◀':'▶';}
 }
 function toggleSidebar(){UI.sidebarOpen=!UI.sidebarOpen;saveUI();renderNav();}
-function goTab(v){
-  curTab=v;
-  document.querySelectorAll('[data-v]').forEach(el=>el.classList.toggle('on',el.dataset.v===v));
-  renderCur();
-}
+function goTab(v){curTab=v;document.querySelectorAll('[data-v]').forEach(el=>el.classList.toggle('on',el.dataset.v===v));renderCur();}
 function renderCur(){
   if(!DB){document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--tx2)">📦 DB 로딩 중...</div>';return;}
   if(curTab==='collect')renderCollect();
@@ -655,79 +725,18 @@ function renderCur(){
 }
 
 /* ══════════════════════════════════
-   TOP BAR (stats + filter button + controls)
-══════════════════════════════════ */
-function topBarHTML(statsHTML, filtTarget, f, collapseState, onCollapse, onVis, extraRight){
-  const filtActive=hasFilter(f);
-  const visLbl=visLabel(f.vis);
-  const collLbl=collapseState?'▶ 펼치기':'▼ 접기';
-  return `<div class="top-bar">
-    ${statsHTML}
-    <div class="spacer"></div>
-    <button class="ctrl-btn" onclick="cycleVis(UI.${filtTarget==='collect'?'cf':'mf'},${onVis})">${visLbl}</button>
-    <button class="ctrl-btn" onclick="${onCollapse}">${collLbl}</button>
-    <button class="filter-btn${filtActive?' active':''}" onclick="openFilter('${filtTarget}')">🔍 필터${filtActive?' ●':''}</button>
-    ${extraRight||''}
-  </div>`;
-}
-
-/* ══════════════════════════════════
-   SECTION builder
-══════════════════════════════════ */
-function buildSections(albums, f, colMap, onColSec, showGoalRow){
-  let secs='';
-  for(const alb of albums){
-    for(const set of alb.sets){
-      // filter cards
-      let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
-      if(f.vis==='have')cards=cards.filter(x=>c(x.id)>0);
-      else if(f.vis==='nothave')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
-      if(!cards.length)continue;
-      const isC=!!colMap[set.id];
-      const t2=set.cards.filter(x=>g(x.id)>0).length;
-      const m2=set.cards.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)).length;
-      const pct=t2?Math.round(m2/t2*100):0;
-      const n=cards.length;
-      secs+=`<div class="sec-block">
-        <div class="sec-hdr" onclick="${onColSec}('${set.id}')">
-          <span class="sec-atag" style="background:${alb.color}">${alb.shortName}</span>
-          <span class="sec-name">${set.name}</span>
-          ${t2>0?`<div class="sec-pw"><span class="sec-pct">${m2}/${t2}</span><div class="sec-pb"><div class="sec-pbf" style="width:${pct}%;background:${alb.color}"></div></div></div>`:''}
-          <span class="chev${isC?'':' open'}">▼</span>
-        </div>
-        ${isC?'':`<div class="sec-body">
-          <div ${pcgAttrs(n)}>
-            ${cards.map(card=>cardTileHTML(card,showGoalRow)).join('')}
-          </div>
-        </div>`}
-      </div>`;
-    }
-  }
-  return secs;
-}
-
-/* ══════════════════════════════════
    COLLECT TAB
 ══════════════════════════════════ */
 function renderCollect(){
   const el=document.getElementById('page-content');
   const f=UI.cf;
-  const allC=allCards();
-  const haveC=allC.filter(x=>c(x.id)>0).length;
-  const metC=allC.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)).length;
-  const goalC=allC.filter(x=>g(x.id)>0).length;
-  const statsHTML=`
-    <div class="stat-chip">전체 <span>${allC.length}</span></div>
-    <div class="stat-chip">수집 <span>${haveC}</span></div>
-    <div class="stat-chip">달성 <span>${metC}/${goalC}</span></div>`;
-  const extra=`<button class="shot-btn" onclick="exportCollectScreenshot()">📸</button>`;
+  const allC=allCards(),haveC=allC.filter(x=>c(x.id)>0).length,metC=allC.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)).length,goalC=allC.filter(x=>g(x.id)>0).length;
+  const statsHTML=`<div class="stat-chip">${t('statAll')} <span>${allC.length}</span></div><div class="stat-chip">${t('statColl')} <span>${haveC}</span></div><div class="stat-chip">${t('statGoal')} <span>${metC}/${goalC}</span></div>`;
+  const extra=`<button class="shot-btn" onclick="exportCollectScreenshot()">${t('shotBtn')}</button>`;
   const albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
   const secs=buildSections(albums,f,UI.col,'colSec',false);
-  el.innerHTML=
-    topBarHTML(statsHTML,'collect',f,UI.collapseC,'toggleCollapseC()','renderCollect',extra)+
-    `<div class="sets-wrap">${secs}</div>`;
+  el.innerHTML=topBarHTML(statsHTML,'collect',f,UI.collapseC,'toggleCollapseC()','renderCollect',extra)+`<div class="sets-wrap">${secs}</div>`;
 }
-function renderCollectWrapped(){renderCollect();}
 
 /* ══════════════════════════════════
    GOALS TAB
@@ -735,85 +744,100 @@ function renderCollectWrapped(){renderCollect();}
 function renderGoals(){
   const el=document.getElementById('page-content');
   const f=UI.mf;
-  const statsHTML='';
-  const extra=`<button class="shot-btn" style="color:var(--want);border-color:rgba(244,63,94,.3)" onclick="resetAllGoals()">🗑</button>`;
+  const extra=`<button class="shot-btn" style="color:var(--want);border-color:rgba(244,63,94,.3)" onclick="resetAllGoals()">${t('goalReset')}</button>`;
   const albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
   const secs=buildSections(albums,f,UI.mgl,'mColSec',true);
-  el.innerHTML=
-    `<div style="margin-bottom:8px"><button class="btn btn-p btn-sm" onclick="showWizard()">🎯 마법사로 일괄 설정</button></div>`+
-    topBarHTML(statsHTML,'goals',f,UI.collapseG,'toggleCollapseG()','renderGoals',extra)+
+  el.innerHTML=`<div style="margin-bottom:8px"><button class="btn btn-p btn-sm" onclick="showWizard()">🎯 마법사로 일괄 설정</button></div>`+
+    topBarHTML('','goals',f,UI.collapseG,'toggleCollapseG()','renderGoals',extra)+
     `<div class="sets-wrap">${secs}</div>`;
 }
 
 /* ══════════════════════════════════
-   TRADE TAB
+   TRADE TAB — album filter + collapsible sections + multi-column layout
 ══════════════════════════════════ */
 function renderTrade(){
   const el=document.getElementById('page-content');
   const all=allCards();
-  const wCards=all.filter(x=>wt(x.id)>0);
-  const hCards=all.filter(x=>sp(x.id)>0&&!hid(x.id));
-  if(!wCards.length&&!hCards.length){
+  // apply trade album filter
+  const tf=UI.tf;
+  const wAll=all.filter(x=>wt(x.id)>0);
+  const hAll=all.filter(x=>sp(x.id)>0&&!hid(x.id));
+  const wCards=tf.albs.length?wAll.filter(x=>tf.albs.includes(x.aId)):wAll;
+  const hCards=tf.albs.length?hAll.filter(x=>tf.albs.includes(x.aId)):hAll;
+
+  if(!wAll.length&&!hAll.length){
     el.innerHTML=`<div style="padding:20px;text-align:center;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx2);font-size:12px;line-height:1.8">수집 정보를 입력하면 교환 현황이 자동으로 표시돼요.<br>목표보다 적으면 🔍 구해요, 더 많으면 ✨ 있어요에 나타나요.</div>`;
     return;
   }
-  const shotBtn=`<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="shot-btn" onclick="exportScreenshot()">📸 교환 스크린샷 저장</button></div>`;
+
+  // album filter bar for trade
+  const filtActive=tf.albs.length>0;
+  const tradeTopBar=`<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:8px">
+    <button class="ctrl-btn${!tf.albs.length?' active':''}" onclick="setTradeAlb(null)">${lang==='ko'?'전체':'All'}</button>
+    ${DB.albumTypes.map(a=>`<button class="ctrl-btn" onclick="setTradeAlb('${a.id}')" style="${tf.albs.includes(a.id)?`background:${a.color};border-color:${a.color};color:#fff`:`border-color:${a.color}55;color:${a.color}`}">${a.shortName}</button>`).join('')}
+    <div class="spacer"></div>
+    <button class="shot-btn" onclick="exportScreenshot()">📸 ${lang==='ko'?'교환 스크린샷':' Screenshot'}</button>
+  </div>`;
+
   let cols='<div class="trade-wrap">';
   if(wCards.length){
     cols+=`<div class="trade-col">
-      <div class="trade-ttl-bar" style="border-bottom:1px solid rgba(244,63,94,.3)">
-        <span style="background:rgba(244,63,94,.15);color:var(--want);border:1px solid rgba(244,63,94,.3);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">🔍 구해요 ${wCards.reduce((a,x)=>a+wt(x.id),0)}개</span>
+      <div class="trade-hdr-bar" style="border-bottom:1px solid rgba(244,63,94,.3)">
+        <span style="background:rgba(244,63,94,.15);color:var(--want);border:1px solid rgba(244,63,94,.3);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">🔍 ${t('tradeWant')} ${wCards.reduce((a,x)=>a+wt(x.id),0)}${t('tradeWantUnit')}</span>
       </div>
-      <div class="trade-body">${tradeBodyHTML(wCards,'want')}</div>
+      <div class="trade-body"><div class="trade-sets">${buildTradeSets(wCards,'want')}</div></div>
     </div>`;
   }
   if(hCards.length){
     cols+=`<div class="trade-col">
-      <div class="trade-ttl-bar" style="border-bottom:1px solid rgba(59,130,246,.3)">
-        <span style="background:rgba(59,130,246,.15);color:var(--have);border:1px solid rgba(59,130,246,.3);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">✨ 있어요 ${hCards.reduce((a,x)=>a+sp(x.id),0)}개</span>
+      <div class="trade-hdr-bar" style="border-bottom:1px solid rgba(59,130,246,.3)">
+        <span style="background:rgba(59,130,246,.15);color:var(--have);border:1px solid rgba(59,130,246,.3);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">✨ ${t('tradeHave')} ${hCards.reduce((a,x)=>a+sp(x.id),0)}${t('tradeHaveUnit')}</span>
       </div>
-      <div class="trade-body">${tradeBodyHTML(hCards,'have')}</div>
+      <div class="trade-body"><div class="trade-sets">${buildTradeSets(hCards,'have')}</div></div>
     </div>`;
   }
   cols+='</div>';
-  el.innerHTML=shotBtn+cols;
+  el.innerHTML=tradeTopBar+cols;
 }
 
-function tradeBodyHTML(cards, mode){
+function setTradeAlb(id){
+  if(id===null)UI.tf.albs=[];
+  else{const i=UI.tf.albs.indexOf(id);if(i>=0)UI.tf.albs.splice(i,1);else UI.tf.albs.push(id);}
+  saveUI();renderTrade();
+}
+
+function buildTradeSets(cards,mode){
   if(!DB||!cards.length)return'';
-  let h='<div class="sets-wrap">';
+  let h='';
   for(const alb of DB.albumTypes){
     const ac=cards.filter(x=>x.aId===alb.id);if(!ac.length)continue;
     const sids=[...new Set(ac.map(x=>x.sId))];
     for(const sid of sids){
       const sc=ac.filter(x=>x.sId===sid);
       const set=alb.sets.find(s=>s.id===sid);if(!set)continue;
+      const isC=!!UI.tcol[`${mode}_${sid}`];
       const bdCol=mode==='want'?'rgba(244,63,94,.45)':'rgba(59,130,246,.45)';
       const txCol=mode==='want'?'var(--want)':'var(--have)';
       const bg=mode==='want'?'var(--want-g)':'var(--have-g)';
-      const n=sc.length;
       h+=`<div class="sec-block">
-        <div class="sec-hdr" style="cursor:default;padding:6px 10px">
+        <div class="sec-hdr" onclick="tColSec('${mode}_${sid}')">
           <span class="sec-atag" style="background:${alb.color}">${alb.shortName}</span>
           <span class="sec-name">${set.name}</span>
+          <span style="font-size:10px;font-weight:700;color:${txCol};font-family:'Outfit',sans-serif;flex-shrink:0">${sc.length}장</span>
+          <span class="chev${isC?'':' open'}">▼</span>
         </div>
-        <div class="sec-body">
-          <div ${pcgAttrs(n)}>
-            ${sc.map(card=>{
-              const cnt=mode==='want'?wt(card.id):sp(card.id);
-              return `<div class="pct" style="border-color:${bdCol}" data-id="${card.id}">
-                <div class="pci" onclick="openFull('${card.id}')">
-                  ${card.img?`<img src="${card.img}" alt="${card.name}" loading="lazy">`:`<div class="pcph">${card.name}</div>`}
-                </div>
-                <div class="pc-strip" style="color:${txCol};background:${bg}">${mode==='want'?'−':'+'} ${cnt}장</div>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>
+        ${isC?'':`<div class="sec-body"><div ${pcgAttrs(sc.length)}>${sc.map(card=>{
+          const cnt=mode==='want'?wt(card.id):sp(card.id);
+          return`<div class="pct" style="border-color:${bdCol}" data-id="${card.id}">
+            <div class="pci" onclick="openFull('${card.id}')">
+              ${card.img?`<img src="${card.img}" alt="${card.name}" loading="lazy">`:`<div class="pcph">${card.name}</div>`}
+            </div>
+            <div class="pc-strip" style="color:${txCol};background:${bg}">${mode==='want'?'−':'+'} ${cnt}장</div>
+          </div>`;
+        }).join('')}</div></div>`}
       </div>`;
     }
   }
-  h+='</div>';
   return h;
 }
 
@@ -826,6 +850,8 @@ function openFull(id){
   document.getElementById('fs-img').innerHTML=card.img?`<img class="fsimg" src="${card.img}" alt="${card.name}">`:`<div class="fsph-big">📷</div>`;
   document.getElementById('fs-name').textContent=card.name;
   document.getElementById('fs-meta').textContent=`${alb.name} · ${set.name}`;
+  // hide report form
+  document.getElementById('fs-report-form').style.display='none';
   updFull();
   const m=document.getElementById('fs-memo');if(m)m.value=mo(id);
   document.getElementById('fsov').classList.add('open');
@@ -836,13 +862,49 @@ function updFull(){
   document.getElementById('fs-coll').textContent=cv;
   document.getElementById('fs-goal').textContent=gv;
   const ch=document.getElementById('fs-chips');
-  if(ch){let h='';if(s_>0)h+=`<span style="background:var(--have-g);border:1px solid var(--have-bd);color:var(--have);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">✨ 있어요 ${s_}</span>`;if(w_>0)h+=`<span style="background:var(--want-g);border:1px solid var(--want-bd);color:var(--want);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">🔍 구해요 ${w_}</span>`;ch.innerHTML=h;}
+  if(ch){let h='';if(s_>0)h+=`<span style="background:var(--have-g);border:1px solid var(--have-bd);color:var(--have);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">✨ ${s_}</span>`;if(w_>0)h+=`<span style="background:var(--want-g);border:1px solid var(--want-bd);color:var(--want);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">🔍 ${w_}</span>`;ch.innerHTML=h;}
   const hb=document.getElementById('fs-hide-btn');
-  if(hb){if(s_>0){const isH=hid(fsId);hb.style.cssText=`display:block;background:none;border-color:${isH?'var(--ok)':'var(--want)'};color:${isH?'var(--ok)':'var(--want)'};width:100%;padding:8px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;margin-bottom:7px`;hb.textContent=isH?'👁 있어요에 다시 표시하기':'🚫 있어요에서 숨기기';}else{hb.style.display='none';}}
+  if(hb){if(s_>0){const isH=hid(fsId);hb.style.cssText=`display:block;background:none;border-color:${isH?'var(--ok)':'var(--want)'};color:${isH?'var(--ok)':'var(--want)'};width:100%;padding:8px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;margin-bottom:7px`;hb.textContent=isH?'👁 있어요에 다시 표시':'🚫 있어요에서 숨기기';}else{hb.style.display='none';}}
 }
 function closeFull(){document.getElementById('fsov').classList.remove('open');fsId=null;}
 function fsAdj(d){if(!fsId)return;ST.collected[fsId]=Math.max(0,(ST.collected[fsId]||0)+d);saveST();updFull();patchTile(fsId);if(d>0){const gv=g(fsId),cv=c(fsId);if(gv>0&&cv===gv)toast('🎉 달성!');}}
 function fsGoal(d){if(!fsId)return;setGoalById(fsId,g(fsId)+d);updFull();patchTile(fsId);}
+
+/* ── REPORT FORM ── */
+function toggleReportForm(){
+  const form=document.getElementById('fs-report-form');
+  form.style.display=form.style.display==='none'?'block':'none';
+}
+async function submitReport(){
+  const textEl=document.getElementById('report-text');
+  const fileEl=document.getElementById('report-file');
+  const txt=textEl.value.trim();
+  if(!txt){toast(t('reportEmpty'));return;}
+  const r=findCard(fsId);
+  const cardInfo=r?`${r.alb.name} › ${r.set.name} › ${r.card.name}`:'Unknown';
+  // Build mailto
+  const subject=encodeURIComponent(`[포카 제보] ${cardInfo}`);
+  const bodyLines=[
+    `카드 정보: ${cardInfo}`,
+    ``,
+    `제보 내용:`,
+    txt,
+    ``,
+    `---`,
+    `Sent from Caligo Pt.2 포토카드 수집 트래커`,
+  ];
+  if(fileEl.files&&fileEl.files[0]){
+    bodyLines.splice(4,0,`첨부 파일: ${fileEl.files[0].name} (이메일에 수동으로 첨부해 주세요)`);
+  }
+  const body=encodeURIComponent(bodyLines.join('\n'));
+  const mailto=`mailto:${REPORT_EMAIL}?subject=${subject}&body=${body}`;
+  // Open mail client
+  window.location.href=mailto;
+  toast(t('reportSent'));
+  // Reset form
+  textEl.value='';fileEl.value='';
+  document.getElementById('fs-report-form').style.display='none';
+}
 
 /* ══════════════════════════════════
    WIZARD
@@ -863,7 +925,7 @@ function renderWizStep(){
         <input type="checkbox" ${wiz.inclUnpo?'checked':''} onchange="wiz.inclUnpo=this.checked" style="width:15px;height:15px">
         <span style="font-size:12px;font-weight:600">미공포 포함</span>
       </label>`;
-    foot.innerHTML=`<button class="btn btn-s btn-sm" onclick="closeSheet('wiz-ov')" style="flex:1">나중에</button><button class="btn btn-p btn-sm" onclick="wizNext()" style="flex:2">다음 →</button>`;
+    foot.innerHTML=`<button class="btn btn-s btn-sm" onclick="closeSheet('wiz-ov')" style="flex:1">${t('wizLater')}</button><button class="btn btn-p btn-sm" onclick="wizNext()" style="flex:2">${t('wizNext')}</button>`;
   }else{
     const unitPreview=[...new Set(wiz.members.flatMap(m=>MU[m]||[]))].join(' · ')||'없음';
     body.innerHTML=`<p style="font-size:12px;color:var(--tx2);margin-bottom:10px">멤버 선택 시 해당 유닛 카드도 자동 포함돼요.</p>
@@ -872,17 +934,10 @@ function renderWizStep(){
       </div>
       ${wiz.members.length?`<div style="font-size:10px;color:var(--tx2);margin-bottom:10px;padding:6px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)">자동 포함 유닛: ${unitPreview}</div>`:''}
       <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)">
-          <input type="checkbox" ${wiz.inclAll?'checked':''} onchange="wiz.inclAll=this.checked" style="width:15px;height:15px">
-          <span style="font-size:12px;font-weight:600">단체(All) 카드 포함</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)">
-          <input type="checkbox" ${wiz.inclMmmm?'checked':''} onchange="wiz.inclMmmm=this.checked" style="width:15px;height:15px">
-          <span style="font-size:12px;font-weight:600">MMMM 카드 포함</span>
-        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)"><input type="checkbox" ${wiz.inclAll?'checked':''} onchange="wiz.inclAll=this.checked" style="width:15px;height:15px"><span style="font-size:12px;font-weight:600">단체(All) 카드 포함</span></label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)"><input type="checkbox" ${wiz.inclMmmm?'checked':''} onchange="wiz.inclMmmm=this.checked" style="width:15px;height:15px"><span style="font-size:12px;font-weight:600">MMMM 카드 포함</span></label>
       </div>
-      <div style="text-align:center">
-        <p style="font-size:11px;color:var(--tx2);margin-bottom:10px">수량</p>
+      <div style="text-align:center"><p style="font-size:11px;color:var(--tx2);margin-bottom:10px">수량</p>
         <div style="display:inline-flex;align-items:center;background:var(--s2);border:1px solid var(--bd);border-radius:14px;overflow:hidden">
           <button onclick="if(wiz.count>0)wiz.count--;renderWizStep()" style="padding:10px 20px;font-size:20px;font-weight:800;border-right:1px solid var(--bd);color:var(--tx)">−</button>
           <span style="font-family:'Outfit',sans-serif;font-weight:800;font-size:28px;min-width:52px;text-align:center">${wiz.count}</span>
@@ -890,7 +945,7 @@ function renderWizStep(){
         </div>
         <div style="font-size:11px;color:var(--tx2);margin-top:6px">장</div>
       </div>`;
-    foot.innerHTML=`<button class="btn btn-s btn-sm" onclick="wizPrev()" style="flex:1">← 이전</button><button class="btn btn-p btn-sm" onclick="wizApply()" style="flex:2">설정 완료 ✓</button>`;
+    foot.innerHTML=`<button class="btn btn-s btn-sm" onclick="wizPrev()" style="flex:1">${t('wizPrev')}</button><button class="btn btn-p btn-sm" onclick="wizApply()" style="flex:2">${t('wizApply')}</button>`;
   }
 }
 function wizToggleAlb(id){const i=wiz.albums.indexOf(id);if(i>=0)wiz.albums.splice(i,1);else wiz.albums.push(id);}
@@ -902,21 +957,12 @@ function wizApply(){
   const albs=[...wiz.albums,...(wiz.inclUnpo?['unpo']:[])];
   const relevantUnits=new Set(wiz.members.flatMap(m=>MU[m]||[]));
   let count=0;
-  for(const alb of DB.albumTypes){
-    if(!albs.includes(alb.id))continue;
-    for(const set of alb.sets)for(const card of set.cards){
-      const ct=card.cardType;
-      if(ct==='Individual'&&(wiz.members.includes(card.member)||wiz.members.includes(card.name))){ST.goals[card.id]=wiz.count;count++;}
-      else if(ct==='Unit'&&relevantUnits.has(card.unit)){ST.goals[card.id]=wiz.count;count++;}
-      else if(ct==='All'&&wiz.inclAll){ST.goals[card.id]=wiz.count;count++;}
-      else if(ct==='MMMM'&&wiz.inclMmmm){ST.goals[card.id]=wiz.count;count++;}
-    }
-  }
+  for(const alb of DB.albumTypes){if(!albs.includes(alb.id))continue;for(const set of alb.sets)for(const card of set.cards){const ct=card.cardType;if(ct==='Individual'&&(wiz.members.includes(card.member)||wiz.members.includes(card.name))){ST.goals[card.id]=wiz.count;count++;}else if(ct==='Unit'&&relevantUnits.has(card.unit)){ST.goals[card.id]=wiz.count;count++;}else if(ct==='All'&&wiz.inclAll){ST.goals[card.id]=wiz.count;count++;}else if(ct==='MMMM'&&wiz.inclMmmm){ST.goals[card.id]=wiz.count;count++;}}}
   saveST();closeSheet('wiz-ov');renderCur();
   setTimeout(()=>{
     const unitList=[...relevantUnits].join(', ');
-    const lines=[`✅ 목표 설정 완료!`,``,`적용된 카드: ${count}장`,`멤버: ${wiz.members.join(', ')||'없음'}`,unitList?`유닛 (자동포함): ${unitList}`:'',wiz.inclAll?'단체 카드 포함':'',wiz.inclMmmm?'MMMM 카드 포함':'',``,`목표 탭으로 이동할까요?`].filter(l=>l!==undefined&&l!=='');
-    if(confirm(lines.join('\n')))goTab('goals');
+    const msg=t('applyDone').replace('{count}',count).replace('{members}',wiz.members.join(', ')||'없음').replace('{units}',unitList?`유닛: ${unitList}\n`:'').replace('{all}',wiz.inclAll?'단체 카드 포함\n':'').replace('{mmmm}',wiz.inclMmmm?'MMMM 카드 포함\n':'');
+    if(confirm(msg))goTab('goals');
   },150);
 }
 
@@ -925,26 +971,31 @@ function wizApply(){
 ══════════════════════════════════ */
 function renderUsage(){
   document.getElementById('page-content').innerHTML=`
-  <div class="use-sec"><h3>📦 수집 탭</h3><ul>
-    <li><b>카드 이미지 클릭</b>: 상세 보기 — 수집/목표 나란히, 메모</li>
-    <li><b>− / + 버튼</b>: 카드에서 바로 수집 수 조정</li>
-    <li><b>상태 표시줄</b>: ✓달성 / ✨있어요 / 🔍없어요 자동 표시</li>
-    <li><b>🔍 필터</b>: 앨범·멤버·유닛·MMMM 다중 선택 필터</li>
-    <li><b>👁/✨/🔍 버튼</b>: 전체 / 있는것 / 없는것 순환</li>
-    <li><b>▼/▶ 버튼</b>: 전체 섹션 접기/펼치기 토글</li>
+  <div class="use-sec"><h3>📦 수집 (Collection)</h3><ul>
+    <li>카드 클릭 → 상세 보기: 수집/목표 나란히 조정, 메모, 제보</li>
+    <li>− / + 버튼으로 카드에서 바로 수집 수 조정</li>
+    <li>🔍 필터: 앨범·멤버·유닛·MMMM 다중 선택, 유닛/단체/MMMM 제외 옵션</li>
+    <li>👁/✨/🔍 버튼: 전체/있는것/없는것 순환</li>
+    <li>▼/▶ 버튼: 전체 섹션 접기/펼치기 토글</li>
   </ul></div>
-  <div class="use-sec"><h3>🔄 교환 탭</h3><ul>
-    <li>🔍 구해요 / ✨ 있어요 자동 분류</li>
-    <li>태블릿 및 가로모드에서 나란히 표시</li>
+  <div class="use-sec"><h3>🔄 교환 (Exchange)</h3><ul>
+    <li>앨범 필터로 원하는 앨범만 표시</li>
+    <li>각 섹션 헤더를 눌러 접기/펼치기 가능</li>
+    <li>태블릿 및 가로모드에서 구해요/있어요 나란히 표시</li>
   </ul></div>
-  <div class="use-sec"><h3>🎯 목표 탭</h3><ul>
-    <li>수집창과 동일한 필터, 카드 그리드 뷰</li>
-    <li><b>마법사</b>: 멤버 선택 시 유닛 자동 포함, 단체/MMMM 선택 가능</li>
-    <li><b>🗑 초기화</b>: 목표 전체 초기화</li>
+  <div class="use-sec"><h3>🎯 목표 (Target)</h3><ul>
+    <li>수집창과 동일한 필터, 카드 그리드에서 목표 수량 조정</li>
+    <li>마법사: 멤버 → 유닛 자동 포함, 단체/MMMM 선택</li>
+    <li>🗑 초기화로 목표 전체 리셋</li>
   </ul></div>
-  <div class="use-sec"><h3>🖥 가로모드</h3><ul>
-    <li>왼쪽 사이드바에 탭 메뉴, 스크린샷, 설정 버튼 표시</li>
-    <li>◀/▶ 버튼으로 사이드바 접기/펼치기 가능</li>
+  <div class="use-sec"><h3>📷 사진/오류 제보</h3><ul>
+    <li>카드 클릭 → 사진/오류 제보 버튼</li>
+    <li>제보 내용 작성 후 메일 앱이 자동으로 열려요</li>
+    <li>메일 주소: ${REPORT_EMAIL}</li>
+  </ul></div>
+  <div class="use-sec"><h3>🖥 가로모드 사이드바</h3><ul>
+    <li>왼쪽 사이드바에 탭 메뉴, 스크린샷, 테마, 설정 버튼</li>
+    <li>◀/▶ 버튼으로 사이드바 접기/펼치기</li>
   </ul></div>
   <div style="text-align:center;padding:16px;font-size:11px;color:var(--tx3)">Made with 💙 for PLLIs &nbsp;|&nbsp; @plli_ze</div>`;
 }
@@ -998,12 +1049,7 @@ function closeSheet(id){document.getElementById(id).classList.remove('open');}
 function importState(inp){if(!inp.files[0])return;const r=new FileReader();r.onload=e=>{try{ST=JSON.parse(e.target.result);ST.goals=ST.goals||{};ST.collected=ST.collected||{};ST.memos=ST.memos||{};ST.hidden=ST.hidden||{};saveST();closeSheet('set-ov');renderCur();toast('복원 완료 ✓');}catch(e){toast('파일 오류');}};r.readAsText(inp.files[0]);}
 function exportState(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(ST,null,2)],{type:'application/json'}));a.download=`포카백업_${new Date().toISOString().split('T')[0]}.json`;a.click();toast('백업 파일 저장됨 ✓');}
 function resetState(){if(!confirm('모든 수집·목표·메모를 초기화할까요?'))return;ST={goals:{},collected:{},memos:{},hidden:{}};saveST();closeSheet('set-ov');renderCur();toast('초기화 완료');}
-function applyTheme(t){
-  document.documentElement.setAttribute('data-theme',t);
-  ['theme-btn','ls-theme-btn'].forEach(id=>{const b=document.getElementById(id);if(b)b.textContent=t==='dark'?'🌙 테마 전환':'☀️ 테마 전환';});
-  // portrait header button simpler
-  const hb=document.getElementById('theme-btn');if(hb)hb.textContent=t==='dark'?'🌙':'☀️';
-}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);const b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'🌙':'☀️';const lb=document.getElementById('ls-theme-btn');if(lb)lb.textContent=t==='dark'?'🌙 테마':'☀️ 테마';}
 function toggleTheme(){UI.theme=UI.theme==='dark'?'light':'dark';applyTheme(UI.theme);saveUI();}
 function toast(msg){const w=document.getElementById('tw');const el=document.createElement('div');el.className='toast';el.textContent=msg;w.appendChild(el);setTimeout(()=>el.remove(),2100);}
 
@@ -1013,22 +1059,16 @@ function toast(msg){const w=document.getElementById('tw');const el=document.crea
 function init(){
   loadST();loadUI();
   applyTheme(UI.theme||'light');
+  applyLang();
   renderNav();
   document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--tx2);font-size:13px">📦 DB 로딩 중...</div>';
   fetch('./poca_db.json')
     .then(r=>r.json())
-    .then(d=>{
-      DB=d;saveDB();renderCur();
-      const hasGoal=Object.values(ST.goals).some(v=>v>0);
-      if(!hasGoal)setTimeout(showWizard,600);
-    })
+    .then(d=>{DB=d;saveDB();renderCur();const hasGoal=Object.values(ST.goals).some(v=>v>0);if(!hasGoal)setTimeout(showWizard,600);})
     .catch(()=>{loadDB();if(DB)renderCur();else document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--want)">⚠️ poca_db.json을 같은 폴더에 두고 웹서버로 열어주세요.</div>';});
-  document.getElementById('main').addEventListener('scroll',function(){
-    const btn=document.getElementById('scroll-top-btn');if(btn)btn.classList.toggle('vis',this.scrollTop>200);
-  },{passive:true});
-  // re-render on orientation change to update sidebar
+  document.getElementById('main').addEventListener('scroll',function(){const btn=document.getElementById('scroll-top-btn');if(btn)btn.classList.toggle('vis',this.scrollTop>200);},{passive:true});
   window.addEventListener('orientationchange',()=>setTimeout(()=>{renderNav();renderCur();},200));
-  window.addEventListener('resize',()=>setTimeout(()=>{renderNav();},100));
+  window.addEventListener('resize',()=>setTimeout(()=>renderNav(),100));
 }
 init();
 </script>
