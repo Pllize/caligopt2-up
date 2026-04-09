@@ -97,10 +97,12 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .chev.open{transform:rotate(180deg)}
 .sec-body{padding:6px 7px 8px}
 
-/* ── CARD GRID: always 5 cols ── */
+/* ── CARD GRID: always 5 cols inside section blocks ── */
 .pcg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
 /* few: ≤5 cards, cap width so cards don't become huge */
 .pcg.few{grid-template-columns:repeat(var(--few-cols),minmax(0,calc(var(--card-min)*1.7)));justify-content:start}
+/* flat view: auto-fill with fixed card size so large screens show many columns */
+.pcg-flat{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-min),calc(var(--card-min)*1.45)));gap:4px}
 
 /* ── CARD TILE ── */
 .pct{border-radius:7px;overflow:hidden;background:var(--s2);border:1px solid var(--bd);transition:border-color .2s,box-shadow .2s;user-select:none;display:flex;flex-direction:column}
@@ -444,7 +446,7 @@ let UI={
   col:{},mgl:{},tcol:{},
   cf:{albs:[],members:[],units:[],mmms:[],excUnits:false,excAll:false,excMmmm:false,vis:'all',flatView:false},
   mf:{albs:[],members:[],units:[],mmms:[],excUnits:false,excAll:false,excMmmm:false,vis:'all',flatView:false},
-  tf:{albs:[]}, // trade filter
+  tf:{albs:[],flatView:false}, // trade filter
   collapseC:false,collapseG:false,
   theme:'light',sidebarOpen:true,
 };
@@ -467,7 +469,7 @@ function loadUI(){
     ['albs','members','units','mmms'].forEach(f=>{if(!Array.isArray(UI[k][f]))UI[k][f]=[];});
     UI[k].vis=UI[k].vis||'all';
   });
-  UI.tf=UI.tf||{albs:[]};if(!Array.isArray(UI.tf.albs))UI.tf.albs=[];
+  UI.tf=UI.tf||{albs:[],flatView:false};if(!Array.isArray(UI.tf.albs))UI.tf.albs=[];if(UI.tf.flatView===undefined)UI.tf.flatView=false;
   UI.theme=UI.theme||'light';
   UI.sidebarOpen=UI.sidebarOpen!==false;
 }
@@ -689,9 +691,9 @@ function buildSections(albums,f,colMap,onColSec,showGoalRow){
       }
     }
     if(!flatCards.length)return`<div style="padding:20px;text-align:center;color:var(--tx2);font-size:12px">해당하는 카드가 없어요.</div>`;
-    // Use full-width single-block 5-col grid
+    // flat grid: auto-fill so large screens show many columns at consistent card size
     return`<div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:8px">
-      <div class="pcg">${flatCards.map(card=>cardTileHTML(card,showGoalRow)).join('')}</div>
+      <div class="pcg-flat">${flatCards.map(card=>cardTileHTML(card,showGoalRow)).join('')}</div>
     </div>`;
   }
 
@@ -795,13 +797,13 @@ function renderTrade(){
     return;
   }
 
-  // album filter bar for trade
-  const filtActive=tf.albs.length>0;
+  // album filter bar + flat view toggle for trade
   const tradeTopBar=`<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:8px">
     <button class="ctrl-btn${!tf.albs.length?' active':''}" onclick="setTradeAlb(null)">${lang==='ko'?'전체':'All'}</button>
     ${DB.albumTypes.map(a=>`<button class="ctrl-btn" onclick="setTradeAlb('${a.id}')" style="${tf.albs.includes(a.id)?`background:${a.color};border-color:${a.color};color:#fff`:`border-color:${a.color}55;color:${a.color}`}">${a.shortName}</button>`).join('')}
+    <button class="filter-btn${tf.flatView?' active':''}" onclick="toggleTradeFlatView()">📋 카드 나열${tf.flatView?' ●':''}</button>
     <div class="spacer"></div>
-    <button class="shot-btn" onclick="exportScreenshot()">📸 ${lang==='ko'?'교환 스크린샷':' Screenshot'}</button>
+    <button class="shot-btn" onclick="exportScreenshot()">📸 ${lang==='ko'?'교환 스크린샷':'Screenshot'}</button>
   </div>`;
 
   let cols='<div class="trade-wrap">';
@@ -836,9 +838,31 @@ function setTradeAlb(id){
   else{const i=UI.tf.albs.indexOf(id);if(i>=0)UI.tf.albs.splice(i,1);else UI.tf.albs.push(id);}
   saveUI();renderTrade();
 }
+function toggleTradeFlatView(){
+  UI.tf.flatView=!UI.tf.flatView;
+  saveUI();renderTrade();
+}
 
 function buildTradeSets(cards,mode){
   if(!DB||!cards.length)return'';
+  const bdCol=mode==='want'?'rgba(244,63,94,.45)':'rgba(59,130,246,.45)';
+  const txCol=mode==='want'?'var(--want)':'var(--have)';
+  const bg=mode==='want'?'var(--want-g)':'var(--have-g)';
+
+  // FLAT VIEW: all cards in one grid, no section separators
+  if(UI.tf.flatView){
+    return`<div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:8px">
+      <div class="pcg-flat">${cards.map(card=>{
+        const cnt=mode==='want'?wt(card.id):sp(card.id);
+        return`<div class="pct" style="border-color:${bdCol}" data-id="${card.id}">
+          <div class="pci" onclick="openFull('${card.id}')">
+            ${card.img?`<img src="${card.img}" alt="${card.name}" loading="lazy">`:`<div class="pcph">${card.name}</div>`}
+          </div>
+          <div class="pc-strip" style="color:${txCol};background:${bg}">${mode==='want'?'−':'+'} ${cnt}장</div>
+        </div>`;
+      }).join('')}</div>
+    </div>`;
+  }
   let h='';
   for(const alb of DB.albumTypes){
     const ac=cards.filter(x=>x.aId===alb.id);if(!ac.length)continue;
@@ -847,9 +871,6 @@ function buildTradeSets(cards,mode){
       const sc=ac.filter(x=>x.sId===sid);
       const set=alb.sets.find(s=>s.id===sid);if(!set)continue;
       const isC=!!UI.tcol[`${mode}_${sid}`];
-      const bdCol=mode==='want'?'rgba(244,63,94,.45)':'rgba(59,130,246,.45)';
-      const txCol=mode==='want'?'var(--want)':'var(--have)';
-      const bg=mode==='want'?'var(--want-g)':'var(--have-g)';
       h+=`<div class="sec-block">
         <div class="sec-hdr" onclick="tColSec('${mode}_${sid}')">
           <span class="sec-atag" style="background:${alb.color}">${alb.shortName}</span>
