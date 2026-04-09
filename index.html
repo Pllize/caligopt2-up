@@ -121,17 +121,19 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .pcbtn:active{transform:scale(.88)}
 .pc-cnt{font-family:'Outfit',sans-serif;font-weight:800;font-size:12px;color:#fff;flex:1;text-align:center}
 .pc-strip{padding:3px 4px;font-size:9px;font-weight:700;text-align:center;font-family:'Outfit',sans-serif;height:18px;line-height:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
-.pc-goal-row{display:flex;align-items:center;justify-content:center;padding:3px 4px;background:var(--s2);border-top:1px solid var(--bd);flex-shrink:0}
-.gadj{display:inline-flex;align-items:center;background:var(--s3);border:1px solid var(--bd);border-radius:9px;overflow:hidden}
-.gadj button{padding:2px 9px;font-size:13px;font-weight:800;color:var(--tx);font-family:'Outfit',sans-serif}
-.gadj-num{font-family:'Outfit',sans-serif;font-weight:800;font-size:12px;min-width:22px;text-align:center;color:var(--tx)}
+.pc-goal-row{display:flex;align-items:center;justify-content:center;padding:3px 2px;background:var(--s2);border-top:1px solid var(--bd);flex-shrink:0}
+.gadj{display:flex;align-items:center;width:100%;background:var(--s3);border:1px solid var(--bd);border-radius:7px;overflow:hidden}
+.gadj button{flex:1;padding:4px 0;font-size:14px;font-weight:800;color:var(--tx);font-family:'Outfit',sans-serif;text-align:center;min-width:0}
+.gadj button:first-child{border-right:1px solid var(--bd)}
+.gadj button:last-child{border-left:1px solid var(--bd)}
+.gadj-num{flex:1;font-family:'Outfit',sans-serif;font-weight:800;font-size:11px;min-width:0;text-align:center;color:var(--tx);padding:0 2px}
 
 /* ── TRADE ── */
 .trade-wrap{display:flex;flex-direction:column;gap:10px}
 @media(min-width:768px){.trade-wrap{flex-direction:row;align-items:flex-start}}
 .trade-col{flex:1;min-width:0}
-/* trade section grid: auto-fill so multiple sections fit side by side */
-.trade-sets{display:grid;gap:6px;grid-template-columns:repeat(auto-fill,minmax(calc(var(--card-min)*5 + 20px),1fr))}
+/* trade section grid: auto-fill so multiple short sections sit side by side */
+.trade-sets{display:grid;gap:6px;grid-template-columns:repeat(auto-fill,minmax(calc(var(--card-min)*3 + 12px),1fr))}
 .trade-hdr-bar{padding:8px 10px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r) var(--r) 0 0;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .trade-body{background:var(--s1);border:1px solid var(--bd);border-top:none;border-radius:0 0 var(--r) var(--r);padding:8px}
 
@@ -440,8 +442,8 @@ let DB=null;
 let ST={goals:{},collected:{},memos:{},hidden:{}};
 let UI={
   col:{},mgl:{},tcol:{},
-  cf:{albs:[],members:[],units:[],mmms:[],excUnits:false,excAll:false,excMmmm:false,vis:'all'},
-  mf:{albs:[],members:[],units:[],mmms:[],excUnits:false,excAll:false,excMmmm:false,vis:'all'},
+  cf:{albs:[],members:[],units:[],mmms:[],excUnits:false,excAll:false,excMmmm:false,vis:'all',flatView:false},
+  mf:{albs:[],members:[],units:[],mmms:[],excUnits:false,excAll:false,excMmmm:false,vis:'all',flatView:false},
   tf:{albs:[]}, // trade filter
   collapseC:false,collapseG:false,
   theme:'light',sidebarOpen:true,
@@ -459,7 +461,7 @@ function loadUI(){
   const s=localStorage.getItem(UI_KEY);
   if(s)try{Object.assign(UI,JSON.parse(s));}catch(e){}
   ['col','mgl','tcol'].forEach(k=>{UI[k]=UI[k]||{};});
-  const defF=()=>({albs:[],members:[],units:[],mmms:[],excUnits:false,excAll:false,excMmmm:false,vis:'all'});
+  const defF=()=>({albs:[],members:[],units:[],mmms:[],excUnits:false,excAll:false,excMmmm:false,vis:'all',flatView:false});
   ['cf','mf'].forEach(k=>{
     if(!UI[k]||typeof UI[k]!=='object')UI[k]=defF();
     ['albs','members','units','mmms'].forEach(f=>{if(!Array.isArray(UI[k][f]))UI[k][f]=[];});
@@ -630,6 +632,10 @@ function renderFilterPanel(f){
   h+=`<div class="filt-sec"><div class="filt-sec-title">${t('filtMmms')}</div><div class="filt-chips">`;
   for(const m of MMMS){const on=f.mmms.includes(m);h+=`<span class="fchip${on?' on':''}" data-fk="mmms" data-fv="${m}" onclick="toggleFchip(this)">${m}</span>`;}
   h+=`</div></div>`;
+  // Flat view toggle
+  h+=`<div class="filt-sec"><div class="filt-sec-title">보기 방식</div><div class="filt-chips">
+    <span class="fchip${f.flatView?' on':''}" data-fk-exc="flatView" onclick="toggleFchipExc(this,'flatView')">📋 카드만 나열 (세트 구분 없음)</span>
+  </div></div>`;
   // Exclude toggles
   h+=`<div class="filt-sec"><div class="filt-sec-title">제외 옵션</div><div class="filt-chips">
     <span class="fchip${f.excUnits?' on':''}" data-fk-exc="excUnits" onclick="toggleFchipExc(this,'excUnits')">${t('filtExcUnits')}</span>
@@ -648,7 +654,7 @@ function applyFilter(){
 }
 function resetCurFilter(){
   const f=curFilterTarget==='collect'?UI.cf:UI.mf;
-  f.albs=[];f.members=[];f.units=[];f.mmms=[];f.excUnits=false;f.excAll=false;f.excMmmm=false;
+  f.albs=[];f.members=[];f.units=[];f.mmms=[];f.excUnits=false;f.excAll=false;f.excMmmm=false;f.flatView=false;
   saveUI();renderFilterPanel(f);
 }
 
@@ -671,6 +677,24 @@ function topBarHTML(statsHTML,filtTarget,f,collapseState,onCollapse,onVis,extraR
    SECTION BUILDER
 ══════════════════════════════════ */
 function buildSections(albums,f,colMap,onColSec,showGoalRow){
+  // FLAT VIEW: all matching cards in one big grid, no section wrappers
+  if(f.flatView){
+    let flatCards=[];
+    for(const alb of albums){
+      for(const set of alb.sets){
+        let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
+        if(f.vis==='have')cards=cards.filter(x=>c(x.id)>0);
+        else if(f.vis==='nothave')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
+        flatCards=flatCards.concat(cards.map(card=>({...card,aId:alb.id,aC:alb.color})));
+      }
+    }
+    if(!flatCards.length)return`<div style="padding:20px;text-align:center;color:var(--tx2);font-size:12px">해당하는 카드가 없어요.</div>`;
+    // Use full-width single-block 5-col grid
+    return`<div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:8px">
+      <div class="pcg">${flatCards.map(card=>cardTileHTML(card,showGoalRow)).join('')}</div>
+    </div>`;
+  }
+
   let secs='';
   for(const alb of albums){
     for(const set of alb.sets){
@@ -735,7 +759,8 @@ function renderCollect(){
   const extra=`<button class="shot-btn" onclick="exportCollectScreenshot()">${t('shotBtn')}</button>`;
   const albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
   const secs=buildSections(albums,f,UI.col,'colSec',false);
-  el.innerHTML=topBarHTML(statsHTML,'collect',f,UI.collapseC,'toggleCollapseC()','renderCollect',extra)+`<div class="sets-wrap">${secs}</div>`;
+  const wrap=f.flatView?secs:`<div class="sets-wrap">${secs}</div>`;
+  el.innerHTML=topBarHTML(statsHTML,'collect',f,UI.collapseC,'toggleCollapseC()','renderCollect',extra)+wrap;
 }
 
 /* ══════════════════════════════════
@@ -747,9 +772,9 @@ function renderGoals(){
   const extra=`<button class="shot-btn" style="color:var(--want);border-color:rgba(244,63,94,.3)" onclick="resetAllGoals()">${t('goalReset')}</button>`;
   const albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
   const secs=buildSections(albums,f,UI.mgl,'mColSec',true);
+  const wrap=f.flatView?secs:`<div class="sets-wrap">${secs}</div>`;
   el.innerHTML=`<div style="margin-bottom:8px"><button class="btn btn-p btn-sm" onclick="showWizard()">🎯 마법사로 일괄 설정</button></div>`+
-    topBarHTML('','goals',f,UI.collapseG,'toggleCollapseG()','renderGoals',extra)+
-    `<div class="sets-wrap">${secs}</div>`;
+    topBarHTML('','goals',f,UI.collapseG,'toggleCollapseG()','renderGoals',extra)+wrap;
 }
 
 /* ══════════════════════════════════
@@ -782,16 +807,22 @@ function renderTrade(){
   let cols='<div class="trade-wrap">';
   if(wCards.length){
     cols+=`<div class="trade-col">
-      <div class="trade-hdr-bar" style="border-bottom:1px solid rgba(244,63,94,.3)">
-        <span style="background:rgba(244,63,94,.15);color:var(--want);border:1px solid rgba(244,63,94,.3);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">🔍 ${t('tradeWant')} ${wCards.reduce((a,x)=>a+wt(x.id),0)}${t('tradeWantUnit')}</span>
+      <div class="trade-hdr-bar" style="border-bottom:2px solid rgba(244,63,94,.4)">
+        <div>
+          <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:18px;color:var(--want);letter-spacing:-.5px">WANT</div>
+          <div style="font-size:11px;color:var(--tx2);margin-top:1px">🔍 구해요 · ${wCards.reduce((a,x)=>a+wt(x.id),0)}개</div>
+        </div>
       </div>
       <div class="trade-body"><div class="trade-sets">${buildTradeSets(wCards,'want')}</div></div>
     </div>`;
   }
   if(hCards.length){
     cols+=`<div class="trade-col">
-      <div class="trade-hdr-bar" style="border-bottom:1px solid rgba(59,130,246,.3)">
-        <span style="background:rgba(59,130,246,.15);color:var(--have);border:1px solid rgba(59,130,246,.3);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">✨ ${t('tradeHave')} ${hCards.reduce((a,x)=>a+sp(x.id),0)}${t('tradeHaveUnit')}</span>
+      <div class="trade-hdr-bar" style="border-bottom:2px solid rgba(59,130,246,.4)">
+        <div>
+          <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:18px;color:var(--have);letter-spacing:-.5px">HAVE</div>
+          <div style="font-size:11px;color:var(--tx2);margin-top:1px">✨ 있어요 · ${hCards.reduce((a,x)=>a+sp(x.id),0)}개</div>
+        </div>
       </div>
       <div class="trade-body"><div class="trade-sets">${buildTradeSets(hCards,'have')}</div></div>
     </div>`;
@@ -997,7 +1028,7 @@ function renderUsage(){
     <li>왼쪽 사이드바에 탭 메뉴, 스크린샷, 테마, 설정 버튼</li>
     <li>◀/▶ 버튼으로 사이드바 접기/펼치기</li>
   </ul></div>
-  <div style="text-align:center;padding:16px;font-size:11px;color:var(--tx3)">Made with 💙 for PLLIs &nbsp;|&nbsp; @plli_ze</div>`;
+  <div style="text-align:center;padding:16px;font-size:11px;color:var(--tx3)">Made with Love for PLAVE &amp; PLLIs 💙💜💗❤️🖤</div>`;
 }
 
 /* ══════════════════════════════════
@@ -1033,7 +1064,15 @@ async function exportCollectScreenshot(){
     let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
     if(f.vis==='have')cards=cards.filter(x=>c(x.id)>0);else if(f.vis==='nothave')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
     if(!cards.length)continue;
-    secH+=`<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;margin-bottom:3px"><span style="background:${alb.color};color:#fff;padding:1px 6px;border-radius:5px;font-size:9px">${alb.shortName}</span> ${set.name}</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:3px">${cards.map(card=>{const cv=c(card.id),gv=g(card.id),st=sts(card.id);const bdr=st==='c'?'rgba(244,63,94,.5)':st==='m'?'rgba(34,197,94,.6)':st==='h'?'rgba(59,130,246,.6)':'rgba(0,0,0,.1)';return`<div style="border-radius:5px;overflow:hidden;border:1px solid ${bdr}"><div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${alb.color}22">${card.img?`<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}</div><div style="padding:2px 3px;background:rgba(0,0,0,.4);display:flex;justify-content:space-between;font-size:7px;font-weight:700"><span style="color:${st==='c'?'#f43f5e':st==='m'?'#22c55e':st==='h'?'#3b82f6':'#aaa'}">${cv}</span><span style="color:${tx2}">${gv}</span></div></div>`;}).join('')}</div></div>`;
+    secH+=`<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="background:${alb.color};color:#fff;padding:2px 7px;border-radius:6px;font-size:9px">${alb.shortName}</span><span style="color:var(--tx)">${set.name}</span></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:3px">${cards.map(card=>{const cv=c(card.id),gv=g(card.id),st=sts(card.id);const bdr=st==='c'?'rgba(244,63,94,.5)':st==='m'?'rgba(34,197,94,.6)':st==='h'?'rgba(59,130,246,.6)':'rgba(0,0,0,.1)';
+      // status label
+      let statusTx='',statusBg='';
+      if(st==='m'){statusTx=`✓${cv}`;statusBg='rgba(34,197,94,.15)';}
+      else if(st==='h'&&gv>0){statusTx=`+${cv-gv}`;statusBg='rgba(59,130,246,.15)';}
+      else if(st==='h'){statusTx=`✨${cv}`;statusBg='rgba(59,130,246,.15)';}
+      else if(st==='c'){statusTx=`−${gv-cv}`;statusBg='rgba(244,63,94,.15)';}
+      else{statusTx='';statusBg='transparent';}
+      return`<div style="border-radius:5px;overflow:hidden;border:1px solid ${bdr}"><div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${alb.color}22">${card.img?`<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}</div><div style="padding:2px 4px;background:${statusBg};font-size:8px;font-weight:800;text-align:center;color:${st==='c'?'#f43f5e':st==='m'?'#22c55e':st==='h'?'#3b82f6':'#888'};white-space:nowrap;overflow:hidden">${statusTx||'&nbsp;'}</div></div>`;}).join('')}</div></div>`;
   }
   const hdr=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid ${bd}"><div style="font-weight:800;font-size:14px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Caligo Pt.2 수집 현황</div><div style="font-size:10px;color:${tx2}">${now}</div></div>`;
   area.innerHTML=hdr+`<div style="display:grid;gap:6px">${secH}</div>`;
