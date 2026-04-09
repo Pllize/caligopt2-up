@@ -640,7 +640,7 @@
     {
       "id": "photobook",
       "name": "포토북앨범",
-      "shortName": "포북",
+      "shortName": "포토북",
       "color": "#7b5fff",
       "sets": [
         {
@@ -1342,8 +1342,8 @@
     },
     {
       "id": "idpass",
-      "name": "아이디 패스앨범",
-      "shortName": "아이디",
+      "name": "아이디패스앨범",
+      "shortName": "아이디패스",
       "color": "#c9c9c9",
       "sets": [
         {
