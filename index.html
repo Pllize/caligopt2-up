@@ -101,8 +101,8 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .pcg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
 /* few: ≤5 cards, cap width so cards don't become huge */
 .pcg.few{grid-template-columns:repeat(var(--few-cols),minmax(0,calc(var(--card-min)*1.7)));justify-content:start}
-/* flat view: auto-fill with fixed card size so large screens show many columns */
-.pcg-flat{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-min),calc(var(--card-min)*1.45)));gap:4px}
+/* flat view: auto-fill, min = card-min, max = 1fr so cards fill the container evenly */
+.pcg-flat{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-min),1fr));gap:4px}
 
 /* ── CARD TILE ── */
 .pct{border-radius:7px;overflow:hidden;background:var(--s2);border:1px solid var(--bd);transition:border-color .2s,box-shadow .2s;user-select:none;display:flex;flex-direction:column}
@@ -808,6 +808,9 @@ function renderTrade(){
 
   let cols='<div class="trade-wrap">';
   if(wCards.length){
+    const wBody=tf.flatView
+      ? buildTradeSets(wCards,'want')
+      : `<div class="trade-sets">${buildTradeSets(wCards,'want')}</div>`;
     cols+=`<div class="trade-col">
       <div class="trade-hdr-bar" style="border-bottom:2px solid rgba(244,63,94,.4)">
         <div>
@@ -815,10 +818,13 @@ function renderTrade(){
           <div style="font-size:11px;color:var(--tx2);margin-top:1px">🔍 ${wCards.reduce((a,x)=>a+wt(x.id),0)}개</div>
         </div>
       </div>
-      <div class="trade-body"><div class="trade-sets">${buildTradeSets(wCards,'want')}</div></div>
+      <div class="trade-body">${wBody}</div>
     </div>`;
   }
   if(hCards.length){
+    const hBody=tf.flatView
+      ? buildTradeSets(hCards,'have')
+      : `<div class="trade-sets">${buildTradeSets(hCards,'have')}</div>`;
     cols+=`<div class="trade-col">
       <div class="trade-hdr-bar" style="border-bottom:2px solid rgba(59,130,246,.4)">
         <div>
@@ -826,7 +832,7 @@ function renderTrade(){
           <div style="font-size:11px;color:var(--tx2);margin-top:1px">✨ ${hCards.reduce((a,x)=>a+sp(x.id),0)}개</div>
         </div>
       </div>
-      <div class="trade-body"><div class="trade-sets">${buildTradeSets(hCards,'have')}</div></div>
+      <div class="trade-body">${hBody}</div>
     </div>`;
   }
   cols+='</div>';
@@ -849,10 +855,9 @@ function buildTradeSets(cards,mode){
   const txCol=mode==='want'?'var(--want)':'var(--have)';
   const bg=mode==='want'?'var(--want-g)':'var(--have-g)';
 
-  // FLAT VIEW: all cards in one grid, no section separators
+  // FLAT VIEW: all cards in one pcg-flat grid, caller places it directly in trade-body
   if(UI.tf.flatView){
-    return`<div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:8px">
-      <div class="pcg-flat">${cards.map(card=>{
+    return`<div class="pcg-flat">${cards.map(card=>{
         const cnt=mode==='want'?wt(card.id):sp(card.id);
         return`<div class="pct" style="border-color:${bdCol}" data-id="${card.id}">
           <div class="pci" onclick="openFull('${card.id}')">
@@ -860,8 +865,7 @@ function buildTradeSets(cards,mode){
           </div>
           <div class="pc-strip" style="color:${txCol};background:${bg}">${mode==='want'?'−':'+'} ${cnt}장</div>
         </div>`;
-      }).join('')}</div>
-    </div>`;
+      }).join('')}</div>`;
   }
   let h='';
   for(const alb of DB.albumTypes){
