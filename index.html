@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" data-theme="dark">
+<html lang="ko" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
@@ -7,18 +7,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#08090f;--s1:#0e1018;--s2:#13161f;--s3:#191d28;
-  --bd:#1f2535;--bd2:#2a3347;
-  --tx:#e8edf8;--tx2:#7a8fb0;--tx3:#384560;
+  --bg:#f0f2f9;--s1:#fff;--s2:#f4f6ff;--s3:#e8ecf7;
+  --bd:#d4daf0;--bd2:#b8c2de;--tx:#141830;--tx2:#5a6a90;--tx3:#a0aecb;
   --blue:#4f8aff;--purple:#8b5cf6;
   --want:#f43f5e;--want-g:rgba(244,63,94,.12);--want-bd:rgba(244,63,94,.3);
   --have:#3b82f6;--have-g:rgba(59,130,246,.12);--have-bd:rgba(59,130,246,.3);
   --ok:#22c55e;--warn:#f59e0b;
   --r:12px;--r-sm:8px;
 }
-[data-theme="light"]{
-  --bg:#f0f2f9;--s1:#fff;--s2:#f4f6ff;--s3:#e8ecf7;
-  --bd:#d4daf0;--bd2:#b8c2de;--tx:#141830;--tx2:#5a6a90;--tx3:#a0aecb;
+[data-theme="dark"]{
+  --bg:#08090f;--s1:#0e1018;--s2:#13161f;--s3:#191d28;
+  --bd:#1f2535;--bd2:#2a3347;--tx:#e8edf8;--tx2:#7a8fb0;--tx3:#384560;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overscroll-behavior:none}
@@ -28,20 +27,17 @@ input,textarea{font-family:inherit;color:var(--tx);background:var(--s2);border:1
 input:focus,textarea:focus{border-color:var(--blue)}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
 
-/* LAYOUT */
+/* ─── LAYOUT ─── */
 .app{display:flex;flex-direction:column;height:100svh}
 .hdr{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 12px;height:48px;display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:50}
-.logo-wrap{flex-shrink:0;display:flex;align-items:baseline;gap:7px}
-.logo-main{font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;letter-spacing:-.3px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.logo-sub{font-family:'Outfit',sans-serif;font-weight:700;font-size:11px;color:var(--tx2)}
-.hdr-r{display:flex;gap:4px;margin-left:auto;flex-shrink:0}
-.abtn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm);background:var(--s2);border:1px solid var(--bd);font-size:14px}
-
-/* TABS */
-.dtabs{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 12px;display:none;flex-shrink:0}
+.logo-main{font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-sub{font-family:'Outfit',sans-serif;font-weight:700;font-size:11px;color:var(--tx2);margin-left:7px}
+.hdr-r{display:flex;gap:4px;margin-left:auto}
+.abtn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm);background:var(--s2);border:1px solid var(--bd);font-size:14px;flex-shrink:0}
+.dtabs{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 12px;display:none;flex-shrink:0;overflow-x:auto}
 .dtab{padding:9px 14px;font-size:12px;font-weight:700;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;font-family:'Outfit',sans-serif}
 .dtab.on{color:var(--blue);border-bottom-color:var(--blue)}
-.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--bd);z-index:100;padding-bottom:env(safe-area-inset-bottom,0px);display:none}
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--bd);z-index:100;padding-bottom:env(safe-area-inset-bottom,0px)}
 .bnav-inner{display:flex;height:52px}
 .btab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:9px;font-weight:700;color:var(--tx2);cursor:pointer;font-family:'Outfit',sans-serif;transition:color .15s}
 .btab.on{color:var(--blue)}
@@ -50,19 +46,28 @@ input:focus,textarea:focus{border-color:var(--blue)}
 @media(min-width:641px){.dtabs{display:flex}.bnav{display:none!important}.main{padding:12px}}
 @media(max-width:640px){.dtabs{display:none}.bnav{display:block}}
 
-/* TOP TOOLBAR */
-.toolbar{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:8px;padding:6px 8px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r)}
+/* ─── FILTER ROW ─── */
+.frow{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:8px 10px;margin-bottom:8px}
+.frow-top{display:flex;align-items:flex-start;gap:6px}
+.frow-lines{display:flex;flex-direction:column;gap:5px;flex:1}
+.frow-line{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.fp{padding:4px 10px;border-radius:14px;font-size:11px;font-weight:700;background:var(--s2);border:1.5px solid var(--bd);color:var(--tx2);cursor:pointer;transition:all .14s;white-space:nowrap;font-family:'Outfit',sans-serif}
+.fp.on-all{background:linear-gradient(135deg,var(--blue),var(--purple));border-color:transparent;color:#fff}
+.fp.on-alb{color:#fff;border-color:transparent}
+.fp.on-m{background:var(--s3);border-color:var(--blue);color:var(--blue)}
+.fsep{width:1px;height:16px;background:var(--bd);flex-shrink:0;margin:0 2px}
+.ftog{display:inline-flex;background:var(--s2);border:1px solid var(--bd);border-radius:20px;overflow:hidden;flex-shrink:0}
+.ftog-btn{padding:4px 10px;font-size:11px;font-weight:700;color:var(--tx2);cursor:pointer;white-space:nowrap;font-family:'Outfit',sans-serif}
+.ftog-btn.on{background:var(--blue);color:#fff}
+.coltog{display:inline-flex;background:var(--s2);border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+.coltog-btn{padding:4px 9px;font-size:10px;font-weight:700;color:var(--tx2);cursor:pointer;white-space:nowrap;border-right:1px solid var(--bd)}
+.coltog-btn:last-child{border-right:none}
+.coltog-btn:hover{background:var(--s3)}
+.shot-btn{padding:4px 9px;font-size:10px;font-weight:700;background:var(--s2);border:1px solid var(--bd);border-radius:8px;color:var(--tx2);cursor:pointer;white-space:nowrap;margin-top:3px}
 
-/* TOGGLE BUTTONS — single state cycling */
-.tog-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:700;border:1.5px solid var(--bd);color:var(--tx2);background:var(--s2);cursor:pointer;white-space:nowrap;font-family:'Outfit',sans-serif;transition:all .14s;flex-shrink:0}
-.tog-btn.active{background:var(--s3);border-color:var(--blue);color:var(--blue)}
-.tog-btn.filter-active{background:linear-gradient(135deg,var(--blue)22,var(--purple)22);border-color:var(--blue);color:var(--blue)}
-.tsep{width:1px;height:18px;background:var(--bd);flex-shrink:0;margin:0 2px}
-.tog-spacer{flex:1}
-
-/* SECTION */
+/* ─── SECTION ─── */
 .sets-wrap{display:grid;gap:6px;align-items:start}
-.sec-block{border-radius:var(--r);background:var(--s1);border:1px solid var(--bd);overflow:hidden;min-width:0}
+.sec-block{border-radius:var(--r);background:var(--s1);border:1px solid var(--bd);overflow:hidden}
 .sec-hdr{display:flex;align-items:center;gap:6px;padding:8px 10px;cursor:pointer;user-select:none;transition:background .12s}
 .sec-hdr:hover{background:var(--s2)}
 .sec-atag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;color:#fff;flex-shrink:0}
@@ -75,725 +80,650 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .chev.open{transform:rotate(180deg)}
 .sec-body{padding:6px 7px 8px}
 
-/* CARD GRID */
+/* ─── CARD TILE ─── */
 .pcg{display:grid;gap:4px}
-
-/* CARD TILE */
-.pct{border-radius:7px;overflow:hidden;background:var(--s2);border:1px solid var(--bd);transition:border-color .2s,box-shadow .2s;user-select:none;display:flex;flex-direction:column;position:relative}
-.pct.ng{opacity:.4}
+.pct{border-radius:7px;overflow:hidden;background:var(--s2);border:1px solid var(--bd);transition:border-color .2s,box-shadow .2s;user-select:none;position:relative;display:flex;flex-direction:column}
 .pct.sc{border-color:rgba(244,63,94,.5)}
 .pct.sm{border-color:rgba(34,197,94,.6);box-shadow:0 0 6px rgba(34,197,94,.15)}
 .pct.sh{border-color:rgba(59,130,246,.6);box-shadow:0 0 6px rgba(59,130,246,.15)}
+.pct.ng{opacity:.5}
 .pci{aspect-ratio:5/7;position:relative;overflow:hidden;cursor:pointer;background:var(--s3)}
 .pci img{width:100%;height:100%;object-fit:cover;display:block}
-.pcph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--tx3);text-align:center;padding:2px}
-.pbdg{position:absolute;top:3px;right:3px;border-radius:4px;font-size:7px;font-weight:800;padding:1px 3px;line-height:1.4;font-family:'Outfit',monospace}
-.pbdg.w{background:rgba(244,63,94,.85);color:#fff}
-.pcf{padding:4px 5px;display:flex;align-items:center;justify-content:space-between;gap:2px;flex-shrink:0}
-.pclbl{font-size:8px;font-weight:700;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%;flex-shrink:1}
-.pcc{display:flex;align-items:center;gap:2px;flex-shrink:0}
-.pcbtn{width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:5px;font-size:11px;font-weight:700;border:1px solid var(--bd);color:var(--tx2);background:var(--s3);line-height:1}
-.pcbtn:active{transform:scale(.9)}
-.pcnum{min-width:18px;text-align:center;font-size:10px;font-weight:800;color:var(--tx);font-family:'Outfit',sans-serif}
-.pcgoal{font-size:8px;font-weight:700;color:var(--tx3);font-family:'Outfit',sans-serif}
+/* placeholder: bigger, bolder */
+.pcph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--tx2);text-align:center;padding:4px;line-height:1.4;background:linear-gradient(160deg,var(--s3),var(--s2))}
+/* image overlay badges */
+.pbdg{position:absolute;top:3px;right:3px;border-radius:4px;font-size:7px;font-weight:800;padding:1px 4px;line-height:1.4;font-family:'Outfit',monospace}
+.pbdg.w{background:rgba(244,63,94,.88);color:#fff}
+.pbdg.h{background:rgba(59,130,246,.88);color:#fff}
+.pbdg.m{background:rgba(34,197,94,.88);color:#fff}
+.mdot{position:absolute;bottom:3px;left:3px;width:6px;height:6px;border-radius:50%;background:var(--warn)}
+/* +/- row overlaid on bottom of image */
+.pc-ctrl{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;background:rgba(0,0,0,.55);padding:2px 3px;gap:1px}
+.pcbtn{width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:13px;font-weight:800;color:#fff;background:rgba(255,255,255,.18);flex-shrink:0;line-height:1}
+.pcbtn:active{transform:scale(.88)}
+.pc-cnt{font-family:'Outfit',sans-serif;font-weight:800;font-size:12px;color:#fff;flex:1;text-align:center}
+/* status strip below image */
+.pc-strip{padding:3px 4px;font-size:9px;font-weight:700;text-align:center;font-family:'Outfit',sans-serif;min-height:17px;line-height:1.4;flex-shrink:0}
+/* goal number row */
+.pc-goal-row{display:flex;align-items:center;justify-content:center;gap:2px;padding:3px 4px;background:var(--s2);border-top:1px solid var(--bd);flex-shrink:0}
+.gadj{display:inline-flex;align-items:center;background:var(--s3);border:1px solid var(--bd);border-radius:9px;overflow:hidden}
+.gadj button{padding:2px 9px;font-size:13px;font-weight:800;color:var(--tx);font-family:'Outfit',sans-serif}
+.gadj-num{font-family:'Outfit',sans-serif;font-weight:800;font-size:12px;min-width:22px;text-align:center;color:var(--tx)}
 
-/* OVERLAY sheets */
+/* ─── FULLSCREEN ─── */
+.fs-ov{position:fixed;inset:0;z-index:400;background:rgba(8,9,15,.94);display:flex;flex-direction:column;align-items:center;padding:16px 16px 24px;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .2s}
+.fs-ov.open{opacity:1;pointer-events:auto}
+.fs-img-wrap{width:min(150px,42vw);flex-shrink:0}
+.fsimg{width:100%;border-radius:10px;display:block}
+.fsph-big{width:100%;aspect-ratio:5/7;display:flex;align-items:center;justify-content:center;background:var(--s2);border-radius:10px;font-size:30px}
+.fs-name{font-family:'Outfit',sans-serif;font-weight:800;font-size:16px;text-align:center;color:#fff;margin-top:10px}
+.fs-meta{font-size:11px;color:rgba(255,255,255,.5);text-align:center;margin-bottom:8px}
+.fs-chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;min-height:22px}
+/* side-by-side controls */
+.fs-controls{display:flex;gap:10px;justify-content:center;width:100%;max-width:340px;margin-bottom:10px}
+.fs-box{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:10px;padding:9px 6px}
+.fs-box-lbl{font-size:10px;color:rgba(255,255,255,.5);font-weight:700;font-family:'Outfit',sans-serif}
+.fs-box-val{font-family:'Outfit',sans-serif;font-weight:800;font-size:26px;color:#fff}
+.fs-box-btns{display:flex;gap:6px}
+.fs-box-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.15);border-radius:8px;font-size:16px;font-weight:800;color:#fff}
+.fs-box-btn:active{transform:scale(.88)}
+.fs-bottom{width:100%;max-width:340px}
+.fs-memo{width:100%;padding:7px 9px;font-size:12px;resize:none;border-radius:var(--r-sm);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#fff;margin-bottom:8px}
+.fs-memo::placeholder{color:rgba(255,255,255,.3)}
+.fs-hide-btn{width:100%;padding:8px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;border:1px solid;font-family:'Outfit',sans-serif;margin-bottom:7px;display:none}
+.fs-close{width:100%;padding:11px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--r-sm);font-size:13px;font-weight:700;color:rgba(255,255,255,.75);cursor:pointer;font-family:'Outfit',sans-serif;text-align:center}
+
+/* ─── OVERLAYS ─── */
 .ov{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s}
 .ov.open{opacity:1;pointer-events:auto}
-.ov-bg{position:absolute;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px)}
-.sheet{position:relative;width:100%;max-width:520px;margin:0 auto;background:var(--s1);border-radius:20px 20px 0 0;border-top:1px solid var(--bd);padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));max-height:92vh;overflow-y:auto;transform:translateY(100%);transition:transform .25s}
+.ov-bg{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+.sheet{position:relative;width:100%;max-width:520px;margin:0 auto;background:var(--s1);border-radius:20px 20px 0 0;border-top:1px solid var(--bd);padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));max-height:90vh;overflow-y:auto;transform:translateY(100%);transition:transform .25s}
 .ov.open .sheet{transform:translateY(0)}
 .sh-bar{width:40px;height:4px;background:var(--bd2);border-radius:2px;margin:0 auto 14px}
-.sh-ttl{font-family:'Outfit',sans-serif;font-weight:800;font-size:15px;margin-bottom:12px}
+.shdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sttl{font-family:'Outfit',sans-serif;font-weight:800;font-size:15px}
 
-/* FULLSCREEN OVERLAY */
-.fs-ov{position:fixed;inset:0;z-index:400;background:rgba(8,9,15,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
-.fs-ov.open{opacity:1;pointer-events:auto}
-.fs-img-wrap{width:min(220px,60vw);flex-shrink:0;margin-bottom:12px}
-.fsimg{width:100%;border-radius:10px;display:block}
-.fsph{width:100%;aspect-ratio:5/7;display:flex;align-items:center;justify-content:center;background:var(--s2);border-radius:10px;font-size:28px}
-.fs-name{font-family:'Outfit',sans-serif;font-weight:800;font-size:16px;text-align:center}
-.fs-meta{font-size:11px;color:var(--tx2);text-align:center;margin-top:2px;margin-bottom:10px}
-.fs-chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;min-height:24px}
-.fs-row{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:8px}
-.fs-lbl{font-size:11px;color:var(--tx2);min-width:60px;text-align:right}
-.fs-val{font-family:'Outfit',sans-serif;font-weight:800;font-size:22px;min-width:40px;text-align:center}
-.fs-adj{display:flex;align-items:center;background:var(--s2);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
-.fs-adj button{padding:8px 18px;font-size:18px;font-weight:800;color:var(--tx);font-family:'Outfit',sans-serif}
-.fs-close{position:absolute;top:16px;right:16px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--s2);border:1px solid var(--bd);font-size:16px}
-
-/* FILTER PANEL */
-.filt-section{margin-bottom:12px}
-.filt-label{font-size:10px;font-weight:700;color:var(--tx2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;font-family:'Outfit',sans-serif}
-.filt-chips{display:flex;flex-wrap:wrap;gap:5px}
-.fchip{padding:4px 10px;border-radius:14px;font-size:11px;font-weight:700;background:var(--s2);border:1.5px solid var(--bd);color:var(--tx2);cursor:pointer;transition:all .12s;font-family:'Outfit',sans-serif}
-.fchip.on{background:var(--s3);border-color:var(--blue);color:var(--blue)}
-.fchip.on-all{background:linear-gradient(135deg,var(--blue),var(--purple));border-color:transparent;color:#fff}
-
-/* SETTINGS BUTTONS */
-.btn{padding:9px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .14s}
+/* ─── SETTINGS ─── */
+.btn{padding:9px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .14s;display:inline-block}
 .btn-p{background:var(--blue);color:#fff;border:none}
 .btn-s{background:var(--s2);color:var(--tx2);border:1px solid var(--bd)}
-.btn-d{background:rgba(244,63,94,.12);color:var(--want);border:1px solid rgba(244,63,94,.3)}
-.btn-sm{padding:8px 14px;font-size:11px}
-.btn-row{display:flex;gap:8px;flex-wrap:wrap}
-.set-item{display:flex;align-items:center;justify-content:space-between;padding:10px;background:var(--s2);border-radius:var(--r-sm);border:1px solid var(--bd);margin-bottom:6px}
-.set-lbl{font-size:12px;font-weight:600}
-.set-sub{font-size:10px;color:var(--tx2);margin-top:1px}
+.btn-sm{padding:7px 12px;font-size:11px}
+.btn-full{width:100%;margin-bottom:6px;text-align:center}
+.btn-warn{background:rgba(244,63,94,.12);color:var(--want);border:1px solid rgba(244,63,94,.3);width:100%;padding:9px;border-radius:var(--r-sm);font-size:12px;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer;text-align:center}
+.desc{font-size:11px;color:var(--tx2);line-height:1.6;padding:8px;background:var(--s2);border-radius:var(--r-sm);border:1px solid var(--bd);margin-bottom:8px}
 
-/* TRADE TAB */
-.trade-section{margin-bottom:14px}
-.trade-ttl{font-family:'Outfit',sans-serif;font-weight:800;font-size:13px;margin-bottom:7px;display:flex;align-items:center;gap:6px}
-.trade-empty{padding:20px;text-align:center;color:var(--tx2);font-size:12px;background:var(--s2);border-radius:var(--r);border:1px solid var(--bd)}
+/* ─── TRADE ─── */
+.trade-wrap{display:flex;flex-direction:column;gap:12px}
+/* landscape tablet: side by side */
+@media(min-width:768px) and (orientation:landscape),(min-width:1024px){
+  .trade-wrap{flex-direction:row;align-items:flex-start}
+  .trade-col{flex:1;min-width:0}
+}
+.trade-col{flex:1;min-width:0}
+.trade-ttl-bar{padding:8px 10px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r) var(--r) 0 0}
+.trade-body{background:var(--s1);border:1px solid var(--bd);border-top:none;border-radius:0 0 var(--r) var(--r);padding:8px}
 
-/* GOAL TAB */
-.goal-alb{margin-bottom:14px}
-.goal-alb-hdr{display:flex;align-items:center;gap:6px;margin-bottom:8px}
-.goal-alb-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;color:#fff}
-.goal-alb-name{font-weight:700;font-size:13px}
-.goal-set{margin-bottom:10px}
-.goal-set-name{font-size:10px;color:var(--tx2);font-weight:600;margin-bottom:5px}
-.goal-card-row{display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--s2);border-radius:8px;border:1px solid var(--bd);margin-bottom:4px}
-.goal-thumb{width:28px;height:40px;border-radius:5px;overflow:hidden;background:var(--s3);flex-shrink:0}
-.goal-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.goal-name{flex:1;font-size:11px;font-weight:600}
-.goal-adj{display:flex;align-items:center;background:var(--s3);border:1px solid var(--bd);border-radius:10px;overflow:hidden;flex-shrink:0}
-.goal-adj button{padding:4px 12px;font-size:14px;font-weight:800;color:var(--tx);font-family:'Outfit',sans-serif}
-.goal-adj-num{font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;min-width:28px;text-align:center}
+/* ─── STATS ─── */
+.stats-bar{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.stat-chip{padding:4px 10px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);font-family:'Outfit',sans-serif;font-weight:700;font-size:11px}
+.stat-chip span{color:var(--blue)}
 
-/* SUMMARY STATS */
-.stats-bar{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-.stat-chip{padding:5px 10px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);font-family:'Outfit',sans-serif;font-weight:700;font-size:11px;flex-shrink:0}
-.stat-chip span{color:var(--blue);font-size:13px}
+/* ─── WIZARD ─── */
+.wiz-chip{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;border:1.5px solid var(--bd);color:var(--tx2);background:var(--s2);cursor:pointer;font-family:'Outfit',sans-serif}
 
-/* TOAST */
-#tw{position:fixed;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 8px);left:50%;transform:translateX(-50%);z-index:500;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:5px}
-.toast{background:var(--tx);color:var(--bg);padding:7px 16px;border-radius:20px;font-size:12px;font-weight:700;animation:tin .2s,tout .3s 1.8s forwards;white-space:nowrap}
-@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes tout{to{opacity:0}}
-
-/* SHOT AREA */
-#shot-area{position:fixed;left:-9999px;top:0;min-width:360px}
-
-/* SCROLL TOP */
-.scroll-top-btn{position:fixed;right:12px;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 12px);width:36px;height:36px;border-radius:50%;background:var(--blue);color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;border:none;opacity:0;pointer-events:none;transition:opacity .2s;z-index:200;box-shadow:0 2px 10px rgba(79,138,255,.3)}
-.scroll-top-btn.vis{opacity:1;pointer-events:auto}
-
-/* USAGE TAB */
+/* ─── USAGE ─── */
 .use-sec{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px}
 .use-sec h3{font-family:'Outfit',sans-serif;font-weight:700;font-size:13px;margin-bottom:8px;color:var(--blue)}
-.use-sec p{font-size:12px;line-height:1.7;color:var(--tx2)}
 .use-sec ul{padding-left:14px;font-size:12px;line-height:2;color:var(--tx2)}
 
-/* Wizard chips */
-.wiz-chip{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;border:1.5px solid var(--bd);color:var(--tx2);background:var(--s2);cursor:pointer;transition:all .14s;font-family:'Outfit',sans-serif}
-
-/* Notice */
-.notice-body{font-size:12px;line-height:1.8;color:var(--tx2);white-space:pre-wrap;max-height:300px;overflow-y:auto;padding:10px;background:var(--s2);border-radius:var(--r-sm);border:1px solid var(--bd)}
+/* ─── MISC ─── */
+.tw{position:fixed;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 8px);left:50%;transform:translateX(-50%);z-index:500;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:5px}
+.toast{background:var(--tx);color:var(--bg);padding:7px 16px;border-radius:20px;font-size:12px;font-weight:700;animation:tin .2s,tout .3s 1.8s forwards;white-space:nowrap}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes tout{to{opacity:0}}
+.scroll-top-btn{position:fixed;right:12px;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 10px);width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;z-index:200;box-shadow:0 2px 10px rgba(79,138,255,.35)}
+.scroll-top-btn.vis{opacity:1;pointer-events:auto}
+#shot-area{position:fixed;left:-9999px;top:0;font-family:'Noto Sans KR',sans-serif}
 </style>
 </head>
 <body>
 <div class="app">
-  <!-- HEADER -->
   <div class="hdr">
-    <div class="logo-wrap">
-      <span class="logo-main">Caligo Pt.2</span>
-      <span class="logo-sub">드볼관리기</span>
-    </div>
+    <span class="logo-main">Caligo Pt.2</span><span class="logo-sub">드볼관리기</span>
     <div class="hdr-r">
-      <button class="abtn" id="theme-btn" onclick="toggleTheme()" title="테마">🌙</button>
-      <button class="abtn" onclick="showSettings()" title="설정">⚙️</button>
+      <button class="abtn" id="theme-btn" onclick="toggleTheme()">☀️</button>
+      <button class="abtn" onclick="showSettings()">⚙️</button>
     </div>
   </div>
-
-  <!-- DESKTOP TABS -->
   <div class="dtabs" id="dtabs"></div>
-
-  <!-- MAIN -->
-  <div class="main" id="main">
-    <div id="page-content"></div>
-  </div>
-
-  <!-- MOBILE BOTTOM NAV -->
+  <div class="main" id="main"><div id="page-content"></div></div>
   <div class="bnav"><div class="bnav-inner" id="bnav"></div></div>
 </div>
 
-<!-- SCROLL TOP -->
 <button class="scroll-top-btn" id="scroll-top-btn" onclick="document.getElementById('main').scrollTo({top:0,behavior:'smooth'})">↑</button>
 
-<!-- FULLSCREEN OVERLAY -->
+<!-- FULLSCREEN -->
 <div class="fs-ov" id="fsov">
-  <button class="fs-close" onclick="closeFull()">✕</button>
   <div class="fs-img-wrap"><div id="fs-img"></div></div>
   <div class="fs-name" id="fs-name"></div>
   <div class="fs-meta" id="fs-meta"></div>
   <div class="fs-chips" id="fs-chips"></div>
-  <div class="fs-row">
-    <span class="fs-lbl">수집</span>
-    <div class="fs-adj">
-      <button onclick="fsAdj(-1)">−</button>
-      <span class="fs-val" id="fs-coll">0</span>
-      <button onclick="fsAdj(+1)">+</button>
+  <div class="fs-controls">
+    <div class="fs-box">
+      <div class="fs-box-lbl">수집</div>
+      <div class="fs-box-val" id="fs-coll">0</div>
+      <div class="fs-box-btns">
+        <button class="fs-box-btn" onclick="fsAdj(-1)">−</button>
+        <button class="fs-box-btn" onclick="fsAdj(+1)">+</button>
+      </div>
+    </div>
+    <div class="fs-box">
+      <div class="fs-box-lbl">목표</div>
+      <div class="fs-box-val" id="fs-goal">0</div>
+      <div class="fs-box-btns">
+        <button class="fs-box-btn" onclick="fsGoal(-1)">−</button>
+        <button class="fs-box-btn" onclick="fsGoal(+1)">+</button>
+      </div>
     </div>
   </div>
-  <div class="fs-row">
-    <span class="fs-lbl">목표</span>
-    <div class="fs-adj">
-      <button onclick="fsGoal(-1)">−</button>
-      <span class="fs-val" id="fs-goal">0</span>
-      <button onclick="fsGoal(+1)">+</button>
-    </div>
-  </div>
-  <div style="margin-top:8px;padding:0 16px;width:100%;max-width:400px">
-    <button id="fs-hide-btn" onclick="toggleHide()" style="display:none"></button>
-    <textarea id="fs-memo" placeholder="메모..." rows="2" style="width:100%;margin-top:6px;padding:7px;font-size:12px;resize:none;border-radius:var(--r-sm)" oninput="saveMemo()"></textarea>
+  <div class="fs-bottom">
+    <button class="fs-hide-btn" id="fs-hide-btn" onclick="toggleHide()"></button>
+    <textarea class="fs-memo" id="fs-memo" placeholder="메모..." rows="2" oninput="saveMemo()"></textarea>
+    <button class="fs-close" onclick="closeFull()">✕ 닫기</button>
   </div>
 </div>
 
-<!-- FILTER PANEL OVERLAY -->
-<div class="ov" id="filt-ov">
-  <div class="ov-bg" onclick="closeSheet('filt-ov')"></div>
-  <div class="sheet">
-    <div class="sh-bar"></div>
-    <div class="sh-ttl">🔍 필터 설정</div>
-    <div id="filt-body"></div>
-    <div style="display:flex;gap:8px;margin-top:14px">
-      <button class="btn btn-s btn-sm" onclick="resetFilters()" style="flex:1">초기화</button>
-      <button class="btn btn-p btn-sm" onclick="applyFilters()" style="flex:2">적용하기</button>
-    </div>
-  </div>
-</div>
-
-<!-- SETTINGS OVERLAY -->
+<!-- SETTINGS -->
 <div class="ov" id="set-ov">
   <div class="ov-bg" onclick="closeSheet('set-ov')"></div>
   <div class="sheet">
     <div class="sh-bar"></div>
-    <div class="sh-ttl">⚙️ 설정</div>
-    <div class="set-item">
-      <div><div class="set-lbl">백업 내보내기</div><div class="set-sub">수집·목표 데이터를 JSON으로 저장</div></div>
-      <button class="btn btn-s btn-sm" onclick="exportState()">저장</button>
-    </div>
-    <div class="set-item">
-      <div><div class="set-lbl">백업 불러오기</div><div class="set-sub">JSON 파일에서 데이터 복원</div></div>
-      <button class="btn btn-s btn-sm" onclick="document.getElementById('import-inp').click()">불러오기</button>
-      <input type="file" id="import-inp" accept=".json" onchange="importState(this)" style="display:none">
-    </div>
-    <div class="set-item">
-      <div><div class="set-lbl">목표 일괄 설정</div><div class="set-sub">마법사로 빠르게 목표 설정</div></div>
-      <button class="btn btn-p btn-sm" onclick="closeSheet('set-ov');showWizard()">마법사</button>
-    </div>
-    <div class="set-item" style="border-color:rgba(244,63,94,.3);background:rgba(244,63,94,.05)">
-      <div><div class="set-lbl" style="color:var(--want)">초기화</div><div class="set-sub">모든 수집·목표·메모 삭제</div></div>
-      <button class="btn btn-d btn-sm" onclick="resetState()">초기화</button>
+    <div class="shdr"><span class="sttl">⚙️ 설정</span><button onclick="closeSheet('set-ov')" style="font-size:16px;color:var(--tx2)">✕</button></div>
+    <div class="desc"><b>💾 데이터 백업이란?</b><br>목표·수집 개수·메모를 파일로 저장해요. 브라우저 데이터가 지워져도 복원할 수 있어요.</div>
+    <button class="btn btn-p btn-full btn-sm" onclick="exportState()">💾 지금 백업하기</button>
+    <button class="btn btn-s btn-full btn-sm" onclick="document.getElementById('st-inp').click()">📂 백업 파일로 복원하기</button>
+    <input type="file" id="st-inp" accept=".json" style="display:none" onchange="importState(this)">
+    <div class="desc" style="margin-top:6px"><b>⚠️ 주의</b><br>복원하면 현재 데이터가 덮어씌워져요.</div>
+    <hr style="border:none;border-top:1px solid var(--bd);margin:10px 0">
+    <button class="btn-warn" onclick="resetState()">⚠️ 전체 초기화</button>
+    <div style="display:flex;justify-content:flex-end;margin-top:12px">
+      <button class="btn btn-s btn-sm" onclick="closeSheet('set-ov')">닫기</button>
     </div>
   </div>
 </div>
 
-<!-- WIZARD OVERLAY -->
+<!-- WIZARD -->
 <div class="ov" id="wiz-ov">
   <div class="ov-bg" onclick="closeSheet('wiz-ov')"></div>
   <div class="sheet">
     <div class="sh-bar"></div>
-    <div class="sh-ttl" id="wiz-ttl">🎯 목표 설정 마법사</div>
+    <div class="shdr"><span class="sttl" id="wiz-ttl">🎯 빠른 목표 설정</span><button onclick="closeSheet('wiz-ov')" style="font-size:16px;color:var(--tx2)">✕</button></div>
     <div id="wiz-body"></div>
     <div id="wiz-foot" style="display:flex;gap:8px;margin-top:14px"></div>
   </div>
 </div>
 
-<!-- SCREENSHOT AREA -->
+<div class="tw" id="tw"></div>
 <div id="shot-area"></div>
 
-<!-- TOAST WRAPPER -->
-<div id="tw"></div>
-
 <script>
-/* ══════════════════════════════════
-   STATE & DB
-══════════════════════════════════ */
-let DB = null;
-let ST = {goals:{},collected:{},memos:{},hidden:{}};
-let UI = {
-  tab:'collect',
-  theme:'dark',
-  col:{},  // collapsed sections: {sectionKey: true}
-  // Filter state
-  flt_cardType:[],  // [] = all
-  flt_member:[],
-  flt_unit:[],
-  flt_mmmm:[],
-  flt_album:[],     // album ids
-  // Card visibility toggle: 'all' | 'have' | 'nothave'
-  cardVis:'all',
-  // Collapse state: 'mixed' | 'expanded' | 'collapsed'
-  collapseAll: false,
-  noticeVer:0
-};
-let fsId = null;
-let wiz = {};
-
-const TABS = [
-  {id:'collect',label:'수집',ico:'📦'},
-  {id:'trade',label:'교환',ico:'🔄'},
-  {id:'goals',label:'목표',ico:'🎯'},
-  {id:'usage',label:'사용법',ico:'📖'},
-];
+/* ════════════════════════════════════
+   CONSTANTS
+════════════════════════════════════ */
+const DB_KEY='plave_poca_db_v3', ST_KEY='plave_poca_st_v2', UI_KEY='plave_poca_ui_v5';
 const MEMBERS = ['예준','노아','밤비','은호','하민'];
-const CARD_TYPES = ['Individual','Unit','All','MMMM'];
-const UNITS = ['맛탕즈','베리즈','댕댕즈','예라인','쁜라인','노라인','냥냥즈','야타즈','댄라즈','댕냥즈'];
-const MMMS = ['몌무','뫄','미므','므모','먀미'];
-
-/* ══ STORAGE ══ */
-function saveST(){try{localStorage.setItem('poca_st',JSON.stringify(ST));}catch(e){}}
-function saveUI(){try{localStorage.setItem('poca_ui',JSON.stringify(UI));}catch(e){}}
-function saveDB(){try{if(DB)localStorage.setItem('poca_db',JSON.stringify(DB));}catch(e){}}
-function loadST(){try{const d=localStorage.getItem('poca_st');if(d){ST=JSON.parse(d);ST.goals=ST.goals||{};ST.collected=ST.collected||{};ST.memos=ST.memos||{};ST.hidden=ST.hidden||{};}}catch(e){}}
-function loadUI(){try{const d=localStorage.getItem('poca_ui');if(d){const u=JSON.parse(d);UI={...UI,...u};}}catch(e){}}
-function loadDB(){
-  try{
-    const d=localStorage.getItem('poca_db');
-    if(d){DB=JSON.parse(d);return;}
-  }catch(e){}
-  // Use inline DB (will be replaced by fetch)
-  DB=null;
-}
-
-/* ══ HELPERS ══ */
-const g = id => (ST.goals[id]||0);
-const c = id => (ST.collected[id]||0);
-const mo = id => (ST.memos[id]||'');
-const hid = id => !!(ST.hidden[id]);
-// spare = collected - goal (if goal>0, spare = c-g; if no goal, spare = c)
-const sp = id => { const cv=c(id),gv=g(id); return gv>0?Math.max(0,cv-gv):cv; };
-const wt = id => { const cv=c(id),gv=g(id); return gv>0?Math.max(0,gv-cv):0; };
-const sts = id => { // 'c'=want, 'm'=met, 'h'=have-spare, 'n'=none
-  const cv=c(id),gv=g(id);
-  if(gv>0&&cv<gv)return'c';
-  if(gv>0&&cv>=gv&&cv>gv)return'h';
-  if(gv>0&&cv===gv)return'm';
-  if(cv>0)return'h';
-  return'n';
+const MMMS    = ['몌무','뫄','미므','므모','먀미'];
+// member → units they appear in
+const MU = {
+  '예준':['맛탕즈','예라인','야타즈','댄라즈'],
+  '노아': ['베리즈','노라인','야타즈','쁜라인'],
+  '밤비': ['댕댕즈','쁜라인','댄라즈','냥냥즈','댕냥즈'],
+  '은호': ['맛탕즈','댕댕즈','노라인','댕냥즈'],
+  '하민': ['베리즈','예라인','냥냥즈'],
 };
-function setGoal(id,v){if(v<0)v=0;if(v===0)delete ST.goals[id];else ST.goals[id]=v;saveST();}
+const TABS=[
+  {id:'collect',label:'수집',ico:'📦'},
+  {id:'trade',  label:'교환',ico:'🔄'},
+  {id:'goals',  label:'목표',ico:'🎯'},
+  {id:'usage',  label:'사용법',ico:'📖'},
+];
+
+/* ════════════════════════════════════
+   STATE
+════════════════════════════════════ */
+let DB=null;
+let ST={goals:{},collected:{},memos:{},hidden:{}};
+let UI={
+  col:{},mgl:{},
+  cAlbs:[],cMembers:[],flt:'all',
+  mAlbs:[],mMembers:[],mflt:'all',
+  theme:'light'
+};
+let curTab='collect', fsId=null, wiz={};
+
+/* ════════════════════════════════════
+   STORAGE
+════════════════════════════════════ */
+function loadDB(){const s=localStorage.getItem(DB_KEY);if(s)try{DB=JSON.parse(s);}catch(e){}}
+function saveDB(){if(DB)try{localStorage.setItem(DB_KEY,JSON.stringify(DB));}catch(e){}}
+function loadST(){const s=localStorage.getItem(ST_KEY);if(s)try{ST=JSON.parse(s);}catch(e){}ST.goals=ST.goals||{};ST.collected=ST.collected||{};ST.memos=ST.memos||{};ST.hidden=ST.hidden||{};}
+function saveST(){try{localStorage.setItem(ST_KEY,JSON.stringify(ST));}catch(e){}}
+function loadUI(){
+  const s=localStorage.getItem(UI_KEY);
+  if(s)try{Object.assign(UI,JSON.parse(s));}catch(e){}
+  ['col','mgl'].forEach(k=>{UI[k]=UI[k]||{};});
+  ['cAlbs','cMembers','mAlbs','mMembers'].forEach(k=>{if(!Array.isArray(UI[k]))UI[k]=[];});
+  UI.theme=UI.theme||'light';
+}
+function saveUI(){try{localStorage.setItem(UI_KEY,JSON.stringify(UI));}catch(e){}}
+
+/* ════════════════════════════════════
+   HELPERS
+════════════════════════════════════ */
+const g  = id => ST.goals[id]||0;
+const c  = id => ST.collected[id]||0;
+const mo = id => ST.memos[id]||'';
+const hid= id => !!ST.hidden[id];
+const sp = id => {const cv=c(id),gv=g(id);return gv>0?Math.max(0,cv-gv):cv;};
+const wt = id => g(id)>0?Math.max(0,g(id)-c(id)):0;
+function sts(id){
+  const gv=g(id),cv=c(id);
+  if(!gv&&!cv)return'n';
+  if(!gv&&cv>0)return'h';
+  if(cv<gv)return'c';
+  if(cv===gv)return'm';
+  return'h'; // cv>gv
+}
 function allCards(){
   if(!DB)return[];
   const r=[];
-  for(const alb of DB.albumTypes)
-    for(const set of alb.sets)
-      for(const card of set.cards)
-        r.push({...card,aId:alb.id,sId:set.id});
+  for(const a of DB.albumTypes)
+    for(const s of a.sets)
+      for(const card of s.cards)
+        r.push({...card,aId:a.id,aN:a.name,aS:a.shortName,aC:a.color,sId:s.id,sN:s.name});
   return r;
 }
 function findCard(id){
   if(!DB)return null;
-  for(const alb of DB.albumTypes)
-    for(const set of alb.sets)
-      for(const card of set.cards)
-        if(card.id===id)return{card,alb,set};
+  for(const a of DB.albumTypes)
+    for(const s of a.sets)
+      for(const card of s.cards)
+        if(card.id===id)return{card,alb:a,set:s};
   return null;
 }
 function isLS(){return window.innerWidth>window.innerHeight;}
 
-/* ══ FILTER LOGIC ══ */
-function filterCard(card){
-  const {flt_cardType,flt_member,flt_unit,flt_mmmm} = UI;
-  if(flt_cardType.length){if(!flt_cardType.includes(card.cardType))return false;}
-  if(flt_member.length&&card.cardType==='Individual'){if(!flt_member.includes(card.member))return false;}
-  if(flt_unit.length&&card.cardType==='Unit'){if(!flt_unit.includes(card.unit))return false;}
-  if(flt_mmmm.length&&card.cardType==='MMMM'){if(!flt_mmmm.includes(card.mmmm))return false;}
-  return true;
+/* ════════════════════════════════════
+   STATUS / STRIP
+════════════════════════════════════ */
+function stripHtml(id){
+  const cv=c(id),gv=g(id),s_=sp(id),w_=wt(id),st=sts(id);
+  if(st==='m')return`✓ 달성 (${cv}/${gv})`;
+  if(st==='h')return`✨ 있어요 +${s_}`;
+  if(st==='c')return`🔍 없어요 −${w_}`;
+  if(cv>0&&!gv)return`✨ ${cv}장`;
+  return'';
 }
-function filterAlbum(albId){
-  const {flt_album} = UI;
-  if(!flt_album.length)return true;
-  return flt_album.includes(albId);
-}
-function hasActiveFilter(){
-  return UI.flt_cardType.length||UI.flt_member.length||UI.flt_unit.length||UI.flt_mmmm.length||UI.flt_album.length;
-}
-function resetFilters(){
-  UI.flt_cardType=[];UI.flt_member=[];UI.flt_unit=[];UI.flt_mmmm=[];UI.flt_album=[];
-  saveUI();renderFilterPanel();
-}
-function applyFilters(){
-  // read from panel checkboxes
-  ['flt_cardType','flt_member','flt_unit','flt_mmmm','flt_album'].forEach(key=>{
-    const boxes=document.querySelectorAll(`[data-fk="${key}"]`);
-    UI[key]=[];
-    boxes.forEach(b=>{if(b.classList.contains('on'))UI[key].push(b.dataset.fv);});
-  });
-  saveUI();
-  closeSheet('filt-ov');
-  renderCur();
+function stripStyle(id){
+  const st=sts(id),cv=c(id);
+  if(st==='m')return'color:var(--ok);background:rgba(34,197,94,.1)';
+  if(st==='h')return'color:var(--have);background:var(--have-g)';
+  if(st==='c')return'color:var(--want);background:var(--want-g)';
+  if(cv>0)return'color:var(--have);background:var(--have-g)';
+  return'color:var(--tx3);background:transparent';
 }
 
-/* ══ VISIBILITY TOGGLE ══ */
-function cycleCardVis(){
-  if(UI.cardVis==='all')UI.cardVis='have';
-  else if(UI.cardVis==='have')UI.cardVis='nothave';
-  else UI.cardVis='all';
-  saveUI();renderCur();
-}
-function visLabel(){
-  if(UI.cardVis==='have')return'✨ 있는것';
-  if(UI.cardVis==='nothave')return'🔍 없는것';
-  return'👁 전체';
-}
-function cardVisFilter(card){
-  if(UI.cardVis==='have')return c(card.id)>0;
-  if(UI.cardVis==='nothave')return c(card.id)===0;
-  return true;
-}
-
-/* ══ COLLAPSE TOGGLE ══ */
-function toggleCollapseAll(){
-  UI.collapseAll=!UI.collapseAll;
-  saveUI();renderCur();
-}
-function collapseLabel(){
-  return UI.collapseAll?'▶ 펼치기':'▼ 접기';
-}
-function isSectionOpen(key){
-  if(UI.col[key]!==undefined)return!UI.col[key];
-  return!UI.collapseAll;
-}
-function toggleSection(key){
-  // Individual override
-  UI.col[key]=isSectionOpen(key);
-  saveUI();renderCur();
-}
-
-/* ══ TABS ══ */
-function switchTab(id){
-  UI.tab=id;saveUI();
-  document.querySelectorAll('.dtab,.btab').forEach(el=>{
-    el.classList.toggle('on',el.dataset.tab===id);
-  });
-  renderCur();
+/* ════════════════════════════════════
+   CARD TILE HTML
+════════════════════════════════════ */
+function cardTileHTML(card, showGoalRow){
+  const cv=c(card.id),gv=g(card.id),s_=sp(card.id),w_=wt(card.id),st=sts(card.id);
+  const hasMemo=mo(card.id).trim().length>0;
+  let cls='pct';
+  if(st==='c')cls+=' sc';
+  else if(st==='m')cls+=' sm';
+  else if(st==='h')cls+=' sh';
+  else if(st==='n')cls+=' ng';
+  let bdg='';
+  if(s_>0)bdg=`<div class="pbdg h">+${s_}</div>`;
+  else if(w_>0)bdg=`<div class="pbdg w">−${w_}</div>`;
+  else if(st==='m')bdg=`<div class="pbdg m">✓</div>`;
+  return `<div class="${cls}" data-id="${card.id}">
+    <div class="pci" onclick="openFull('${card.id}')">
+      ${card.img
+        ?`<img src="${card.img}" alt="${card.name}" loading="lazy">`
+        :`<div class="pcph">${card.name}</div>`}
+      ${bdg}${hasMemo?'<div class="mdot"></div>':''}
+      <div class="pc-ctrl">
+        <button class="pcbtn" onclick="subC('${card.id}',event)">−</button>
+        <span class="pc-cnt">${cv}</span>
+        <button class="pcbtn" onclick="addC('${card.id}',event)">+</button>
+      </div>
+    </div>
+    <div class="pc-strip" style="${stripStyle(card.id)}">${stripHtml(card.id)}</div>
+    ${showGoalRow?`<div class="pc-goal-row"><div class="gadj">
+      <button onclick="goalAdj('${card.id}',-1)">−</button>
+      <span class="gadj-num" data-gid="${card.id}">${gv}</span>
+      <button onclick="goalAdj('${card.id}',+1)">+</button>
+    </div></div>`:''}
+  </div>`;
 }
 
-/* ══ RENDER ══ */
-function renderCur(){
-  if(!DB){document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--tx2)">DB 로딩 중...</div>';return;}
-  const t=UI.tab;
-  if(t==='collect')renderCollect();
-  else if(t==='trade')renderTrade();
-  else if(t==='goals')renderGoals();
-  else if(t==='usage')renderUsage();
+/* patch tile without re-render */
+function patchTile(id){
+  const tile=document.querySelector(`.pct[data-id="${id}"]`);
+  if(!tile)return;
+  const cv=c(id),gv=g(id),s_=sp(id),w_=wt(id),st=sts(id);
+  tile.classList.remove('sc','sm','sh','ng');
+  if(st==='c')tile.classList.add('sc');
+  else if(st==='m')tile.classList.add('sm');
+  else if(st==='h')tile.classList.add('sh');
+  else if(st==='n')tile.classList.add('ng');
+  const cnt=tile.querySelector('.pc-cnt');if(cnt)cnt.textContent=cv;
+  const strip=tile.querySelector('.pc-strip');
+  if(strip){strip.innerHTML=stripHtml(id);strip.setAttribute('style',stripStyle(id));}
+  // badge
+  const oldBdg=tile.querySelector('.pbdg');if(oldBdg)oldBdg.remove();
+  let bdgHtml='';
+  if(s_>0)bdgHtml=`<div class="pbdg h">+${s_}</div>`;
+  else if(w_>0)bdgHtml=`<div class="pbdg w">−${w_}</div>`;
+  else if(st==='m')bdgHtml=`<div class="pbdg m">✓</div>`;
+  if(bdgHtml){const pci=tile.querySelector('.pci');if(pci)pci.insertAdjacentHTML('beforeend',bdgHtml);}
+  // goal num
+  const gn=tile.querySelector(`[data-gid="${id}"]`);if(gn)gn.textContent=gv;
 }
 
+/* ════════════════════════════════════
+   ACTIONS
+════════════════════════════════════ */
+function addC(id,e){
+  if(e)e.stopPropagation();
+  ST.collected[id]=(ST.collected[id]||0)+1;saveST();patchTile(id);
+  const g0=g(id),c0=c(id);
+  if(g0>0&&c0===g0)toast('🎉 달성!');else if(g0>0&&c0>g0)toast(`✨ +${c0-g0}`);
+}
+function subC(id,e){
+  if(e)e.stopPropagation();
+  ST.collected[id]=Math.max(0,(ST.collected[id]||0)-1);saveST();patchTile(id);
+}
+function setGoalById(id,n){
+  if(n<0)n=0;if(n===0)delete ST.goals[id];else ST.goals[id]=n;saveST();
+}
+function goalAdj(id,d){
+  setGoalById(id,g(id)+d);patchTile(id);
+  const gn=document.querySelector(`[data-gid="${id}"]`);if(gn)gn.textContent=g(id);
+}
+function addSetGoal(sid,d){
+  if(!DB)return;
+  for(const a of DB.albumTypes)for(const s of a.sets)if(s.id===sid){
+    for(const card of s.cards)ST.goals[card.id]=Math.max(0,(ST.goals[card.id]||0)+d);break;
+  }
+  saveST();renderGoals();toast(d>0?'전체+1 ✓':'전체−1');
+}
+function toggleHide(){
+  if(!fsId)return;
+  const isH=hid(fsId);
+  if(!confirm(isH?'다시 있어요 목록에 표시할까요?':'있어요 목록에서 숨길까요? (수집 수는 유지됩니다)'))return;
+  if(isH)delete ST.hidden[fsId];else ST.hidden[fsId]=true;
+  saveST();updFull();renderCur();toast(isH?'있어요에 표시됩니다':'있어요에서 숨겼어요');
+}
+function saveMemo(){
+  if(!fsId)return;
+  const v=document.getElementById('fs-memo').value;
+  if(v)ST.memos[fsId]=v;else delete ST.memos[fsId];saveST();
+}
+function colSec(k){UI.col[k]=!UI.col[k];saveUI();renderCur();}
+function collapseAll(){if(!DB)return;for(const a of DB.albumTypes)for(const s of a.sets)UI.col[s.id]=true;saveUI();renderCur();toast('모두 접음');}
+function expandAll(){UI.col={};saveUI();renderCur();toast('모두 펼침');}
+function mColSec(k){UI.mgl[k]=!UI.mgl[k];saveUI();renderGoals();}
+function colAllGoals(){if(!DB)return;for(const a of DB.albumTypes)for(const s of a.sets)UI.mgl[s.id]=true;saveUI();renderGoals();}
+function expAllGoals(){UI.mgl={};saveUI();renderGoals();}
+function resetAllGoals(){if(!confirm('모든 목표를 0으로 초기화할까요?'))return;ST.goals={};saveST();renderGoals();toast('목표 초기화 완료');}
+
+/* ════════════════════════════════════
+   FILTER ROW
+════════════════════════════════════ */
+function filterRowHTML(cAlbs, cMems, flt, fnAlb, fnMem, fnFlt, rightCtrl=''){
+  return `<div class="frow"><div class="frow-top">
+    <div class="frow-lines">
+      <div class="frow-line">
+        <button class="fp${!cAlbs.length?' on-all':''}" onclick="${fnAlb}(null)">전체</button>
+        ${DB.albumTypes.map(a=>`<button class="fp${cAlbs.includes(a.id)?' on-alb':''}" onclick="${fnAlb}('${a.id}')" style="${cAlbs.includes(a.id)?`background:${a.color};border-color:transparent;color:#fff`:`border-color:${a.color}55;color:${a.color}`}">${a.shortName}</button>`).join('')}
+      </div>
+      <div class="frow-line">
+        ${MEMBERS.map(m=>`<button class="fp${cMems.includes(m)?' on-m':''}" onclick="${fnMem}('${m}')">${m}</button>`).join('')}
+        <div class="fsep"></div>
+        <div class="ftog">
+          <span class="ftog-btn${flt==='all'?' on':''}" onclick="${fnFlt}('all')">모두</span>
+          <span class="ftog-btn${flt==='h'?' on':''}" onclick="${fnFlt}('h')">있는것만</span>
+          <span class="ftog-btn${flt==='n'?' on':''}" onclick="${fnFlt}('n')">없는것만</span>
+        </div>
+      </div>
+    </div>
+    ${rightCtrl}
+  </div></div>`;
+}
+
+/* filter helper: does a card match the current member list? */
+function cardMatchesMems(card, mems){
+  if(!mems.length)return true;
+  if(mems.includes(card.name))return true; // Individual / MMMM
+  if(card.member&&mems.includes(card.member))return true;
+  if(card.unit){for(const m of mems)if(MU[m]&&MU[m].includes(card.unit))return true;}
+  return false;
+}
+
+/* ════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════ */
 function renderNav(){
-  const dt=document.getElementById('dtabs');
-  const bn=document.getElementById('bnav');
-  dt.innerHTML=TABS.map(t=>`<div class="dtab${UI.tab===t.id?' on':''}" data-tab="${t.id}" onclick="switchTab('${t.id}')">${t.label}</div>`).join('');
-  bn.innerHTML=TABS.map(t=>`<div class="btab${UI.tab===t.id?' on':''} btab-inner" data-tab="${t.id}" onclick="switchTab('${t.id}')"><div class="btab-ico">${t.ico}</div>${t.label}</div>`).join('');
+  document.getElementById('dtabs').innerHTML=TABS.map(t=>`<div class="dtab${curTab===t.id?' on':''}" data-v="${t.id}" onclick="goTab('${t.id}')">${t.label}</div>`).join('');
+  document.getElementById('bnav').innerHTML=TABS.map(t=>`<div class="btab${curTab===t.id?' on':''}" data-v="${t.id}" onclick="goTab('${t.id}')"><div class="btab-ico">${t.ico}</div>${t.label}</div>`).join('');
+}
+function goTab(v){
+  curTab=v;
+  document.querySelectorAll('[data-v]').forEach(el=>el.classList.toggle('on',el.dataset.v===v));
+  renderCur();
+}
+function renderCur(){
+  if(!DB){document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--tx2)">📦 DB 로딩 중...</div>';return;}
+  if(curTab==='collect')renderCollect();
+  else if(curTab==='trade')renderTrade();
+  else if(curTab==='goals')renderGoals();
+  else renderUsage();
 }
 
-/* ── COLLECT ── */
+/* ════════════════════════════════════
+   COLLECT TAB
+════════════════════════════════════ */
 function renderCollect(){
-  const all=allCards();
-  const totalCards=all.length;
-  const haveCards=all.filter(c2=>c(c2.id)>0).length;
-  const goalCards=all.filter(c2=>g(c2.id)>0).length;
-  const metCards=all.filter(c2=>g(c2.id)>0&&c(c2.id)>=g(c2.id)).length;
+  const el=document.getElementById('page-content');
+  const nMem=UI.cMembers.length||5;
+  const minW=Math.max(nMem*54+28, 120);
 
-  let html=`<div class="stats-bar">
-    <div class="stat-chip">전체 <span>${totalCards}</span></div>
-    <div class="stat-chip">수집 <span>${haveCards}</span></div>
-    <div class="stat-chip">목표 <span>${metCards}/${goalCards}</span></div>
+  const colCtrl=`<div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end;flex-shrink:0;margin-left:6px">
+    <div class="coltog"><span class="coltog-btn" onclick="collapseAll()">접기</span><span class="coltog-btn" onclick="expandAll()">펼치기</span></div>
+    <button class="shot-btn" onclick="exportCollectScreenshot()">📸</button>
   </div>`;
 
-  // Toolbar
-  const filtActive=hasActiveFilter();
-  html+=`<div class="toolbar">
-    <button class="tog-btn${filtActive?' filter-active':''}" onclick="openFilterPanel()">
-      🔍 필터${filtActive?' ●':''}
-    </button>
-    <div class="tsep"></div>
-    <button class="tog-btn${UI.cardVis!=='all'?' active':''}" onclick="cycleCardVis()">${visLabel()}</button>
-    <div class="tsep"></div>
-    <button class="tog-btn" onclick="toggleCollapseAll()">${collapseLabel()}</button>
-    <div class="tog-spacer"></div>
-    <button class="abtn" onclick="exportCollectScreenshot()" title="스크린샷">📸</button>
-  </div>`;
+  const allC=allCards();
+  const haveC=allC.filter(x=>c(x.id)>0).length;
+  const metC=allC.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)).length;
+  const goalC=allC.filter(x=>g(x.id)>0).length;
 
-  html+='<div class="sets-wrap">';
-  for(const alb of DB.albumTypes){
-    if(!filterAlbum(alb.id))continue;
+  const albums=UI.cAlbs.length?DB.albumTypes.filter(a=>UI.cAlbs.includes(a.id)):DB.albumTypes;
+  let secs='';
+  for(const alb of albums){
     for(const set of alb.sets){
-      let cards=set.cards.filter(c2=>filterCard(c2)&&cardVisFilter(c2));
+      let cards=set.cards.filter(card=>cardMatchesMems(card,UI.cMembers));
+      if(UI.flt==='h')cards=cards.filter(x=>c(x.id)>0);
+      else if(UI.flt==='n')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
       if(!cards.length)continue;
-      const key=`${alb.id}_${set.id}`;
-      const open=isSectionOpen(key);
-      const total=set.cards.length;
-      const have=set.cards.filter(c2=>c(c2.id)>0).length;
-      const pct=total>0?Math.round(have/total*100):0;
-      const cols=Math.min(cards.length,5);
-      html+=`<div class="sec-block">
-        <div class="sec-hdr" onclick="toggleSection('${key}')">
+      const isC=UI.col[set.id];
+      const t2=set.cards.filter(x=>g(x.id)>0).length;
+      const m2=set.cards.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)).length;
+      const pct=t2?Math.round(m2/t2*100):0;
+      secs+=`<div class="sec-block">
+        <div class="sec-hdr" onclick="colSec('${set.id}')">
           <span class="sec-atag" style="background:${alb.color}">${alb.shortName}</span>
           <span class="sec-name">${set.name}</span>
-          <div class="sec-pw">
-            <span class="sec-pct">${have}/${total}</span>
-            <div class="sec-pb"><div class="sec-pbf" style="width:${pct}%;background:${alb.color}"></div></div>
-          </div>
-          <span class="chev${open?' open':''}">▼</span>
-        </div>`;
-      if(open){
-        html+=`<div class="sec-body"><div class="pcg" style="grid-template-columns:repeat(${cols},1fr)">`;
-        for(const card of cards){
-          const cv=c(card.id),gv=g(card.id),st=sts(card.id);
-          const cls=st==='c'?'sc':st==='m'?'sm':st==='h'?'sh':'';
-          html+=`<div class="pct${cls?' '+cls:''}${cv===0&&gv===0?' ng':''}">
-            <div class="pci" onclick="openFull('${card.id}')">
-              ${card.img?`<img loading="lazy" src="${card.img}" alt="${card.name}">`:`<div class="pcph">${card.name}</div>`}
-              ${wt(card.id)>0?`<div class="pbdg w">−${wt(card.id)}</div>`:''}
-            </div>
-            <div class="pcf">
-              <span class="pclbl">${card.name}</span>
-              <div class="pcc">
-                <button class="pcbtn" onclick="adj('${card.id}',-1)">−</button>
-                <span class="pcnum">${cv}</span>
-                <button class="pcbtn" onclick="adj('${card.id}',+1)">+</button>
-              </div>
-            </div>
-          </div>`;
-        }
-        html+='</div></div>';
-      }
-      html+='</div>';
+          ${t2>0?`<div class="sec-pw"><span class="sec-pct">${m2}/${t2}</span><div class="sec-pb"><div class="sec-pbf" style="width:${pct}%;background:${alb.color}"></div></div></div>`:''}
+          <span class="chev${isC?'':' open'}">▼</span>
+        </div>
+        ${isC?'':`<div class="sec-body"><div class="pcg" style="grid-template-columns:repeat(${cards.length},1fr)">
+          ${cards.map(card=>cardTileHTML(card,false)).join('')}
+        </div></div>`}
+      </div>`;
     }
   }
-  html+='</div>';
-  document.getElementById('page-content').innerHTML=html;
-}
 
-function adj(id,d){
-  ST.collected[id]=Math.max(0,(ST.collected[id]||0)+d);
-  saveST();
-  const el=document.querySelector(`[onclick="adj('${id}',-1)"]`);
-  if(el){
-    const num=el.parentNode.querySelector('.pcnum');
-    if(num)num.textContent=ST.collected[id];
-    const tile=el.closest('.pct');
-    if(tile){
-      const cv=c(id),gv=g(id),st=sts(id);
-      tile.classList.remove('sc','sm','sh');
-      if(st==='c')tile.classList.add('sc');
-      else if(st==='m')tile.classList.add('sm');
-      else if(st==='h')tile.classList.add('sh');
-      tile.classList.toggle('ng',cv===0&&gv===0);
-    }
-  }
-  if(d>0){const gv=g(id);if(gv>0&&c(id)===gv)toast('🎉 목표 달성!');}
+  el.innerHTML=
+    `<div class="stats-bar">
+      <div class="stat-chip">전체 <span>${allC.length}</span></div>
+      <div class="stat-chip">수집 <span>${haveC}</span></div>
+      <div class="stat-chip">목표달성 <span>${metC}/${goalC}</span></div>
+    </div>`+
+    filterRowHTML(UI.cAlbs,UI.cMembers,UI.flt,'setCAl','setCM','setFlt',colCtrl)+
+    `<div class="sets-wrap" style="grid-template-columns:repeat(auto-fill,minmax(${minW}px,1fr))">${secs}</div>`;
 }
+function setCAl(id){if(id===null)UI.cAlbs=[];else{const i=UI.cAlbs.indexOf(id);if(i>=0)UI.cAlbs.splice(i,1);else UI.cAlbs.push(id);}saveUI();renderCollect();}
+function setCM(m){if(!m)return;const i=UI.cMembers.indexOf(m);if(i>=0)UI.cMembers.splice(i,1);else UI.cMembers.push(m);saveUI();renderCollect();}
+function setFlt(f){UI.flt=f;saveUI();renderCollect();}
 
-/* ── TRADE ── */
+/* ════════════════════════════════════
+   TRADE TAB
+════════════════════════════════════ */
 function renderTrade(){
+  const el=document.getElementById('page-content');
   const all=allCards();
   const wCards=all.filter(x=>wt(x.id)>0);
   const hCards=all.filter(x=>sp(x.id)>0&&!hid(x.id));
-  let html='';
+
   if(!wCards.length&&!hCards.length){
-    html='<div class="trade-empty">수집 정보를 입력하면 교환 현황이 자동으로 표시돼요.<br>목표보다 적게 갖고 있으면 🔍 구해요에, 더 많으면 ✨ 있어요에 나타나요.</div>';
-  } else {
-    if(wCards.length){
-      html+=`<div class="trade-section">
-        <div class="trade-ttl"><span style="background:rgba(244,63,94,.15);color:var(--want);border:1px solid rgba(244,63,94,.3);padding:3px 10px;border-radius:12px;font-size:12px">🔍 구해요 ${wCards.reduce((a,x)=>a+wt(x.id),0)}개</span></div>`;
-      html+=buildTradeGrid(wCards,'want');
-      html+='</div>';
-    }
-    if(hCards.length){
-      html+=`<div class="trade-section">
-        <div class="trade-ttl"><span style="background:rgba(59,130,246,.15);color:var(--have);border:1px solid rgba(59,130,246,.3);padding:3px 10px;border-radius:12px;font-size:12px">✨ 있어요 ${hCards.reduce((a,x)=>a+sp(x.id),0)}개</span></div>`;
-      html+=buildTradeGrid(hCards,'have');
-      html+='</div>';
-    }
+    el.innerHTML=`<div style="padding:20px;text-align:center;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx2);font-size:12px;line-height:1.8">
+      수집 정보를 입력하면 교환 현황이 자동으로 표시돼요.<br>목표보다 적으면 🔍 구해요, 더 많으면 ✨ 있어요에 나타나요.
+    </div>`;
+    return;
   }
-  if(wCards.length||hCards.length){
-    html+=`<div style="margin-top:12px;text-align:center">
-      <button class="btn btn-s btn-sm" onclick="exportScreenshot()">📸 교환 스크린샷 저장</button>
+
+  const shotBtn=`<div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+    <button class="shot-btn" onclick="exportScreenshot()">📸 교환 스크린샷 저장</button>
+  </div>`;
+
+  let cols='<div class="trade-wrap">';
+  if(wCards.length){
+    cols+=`<div class="trade-col">
+      <div class="trade-ttl-bar" style="border-bottom:1px solid rgba(244,63,94,.3)">
+        <span style="background:rgba(244,63,94,.15);color:var(--want);border:1px solid rgba(244,63,94,.3);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">🔍 구해요 ${wCards.reduce((a,x)=>a+wt(x.id),0)}개</span>
+      </div>
+      <div class="trade-body">${tradeBodyHTML(wCards,'want')}</div>
     </div>`;
   }
-  document.getElementById('page-content').innerHTML=html;
+  if(hCards.length){
+    cols+=`<div class="trade-col">
+      <div class="trade-ttl-bar" style="border-bottom:1px solid rgba(59,130,246,.3)">
+        <span style="background:rgba(59,130,246,.15);color:var(--have);border:1px solid rgba(59,130,246,.3);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">✨ 있어요 ${hCards.reduce((a,x)=>a+sp(x.id),0)}개</span>
+      </div>
+      <div class="trade-body">${tradeBodyHTML(hCards,'have')}</div>
+    </div>`;
+  }
+  cols+='</div>';
+  el.innerHTML=shotBtn+cols;
 }
-
-function buildTradeGrid(cards,mode){
+function tradeBodyHTML(cards, mode){
   if(!DB||!cards.length)return'';
   let h='<div class="sets-wrap">';
   for(const alb of DB.albumTypes){
-    const ac=cards.filter(x=>x.aId===alb.id);
-    if(!ac.length)continue;
+    const ac=cards.filter(x=>x.aId===alb.id);if(!ac.length)continue;
     const sids=[...new Set(ac.map(x=>x.sId))];
     for(const sid of sids){
       const sc=ac.filter(x=>x.sId===sid);
-      const set=alb.sets.find(s=>s.id===sid);
-      if(!set)continue;
-      const cols=Math.min(sc.length,5);
+      const set=alb.sets.find(s=>s.id===sid);if(!set)continue;
+      const bdCol=mode==='want'?'rgba(244,63,94,.45)':'rgba(59,130,246,.45)';
+      const txCol=mode==='want'?'var(--want)':'var(--have)';
+      const bg=mode==='want'?'var(--want-g)':'var(--have-g)';
+      const nc=Math.min(sc.length,5);
       h+=`<div class="sec-block">
-        <div class="sec-hdr" style="cursor:default">
+        <div class="sec-hdr" style="cursor:default;padding:6px 10px">
           <span class="sec-atag" style="background:${alb.color}">${alb.shortName}</span>
           <span class="sec-name">${set.name}</span>
         </div>
-        <div class="sec-body"><div class="pcg" style="grid-template-columns:repeat(${cols},1fr)">`;
-      for(const card of sc){
-        const cnt=mode==='want'?wt(card.id):sp(card.id);
-        const col=mode==='want'?'rgba(244,63,94,.6)':'rgba(59,130,246,.6)';
-        const bg=mode==='want'?'var(--want)':'var(--have)';
-        h+=`<div class="pct" style="border-color:${col}">
-          <div class="pci" onclick="openFull('${card.id}')">
-            ${card.img?`<img loading="lazy" src="${card.img}" alt="${card.name}">`:`<div class="pcph">${card.name}</div>`}
-          </div>
-          <div class="pcf">
-            <span class="pclbl">${card.name}</span>
-            <span style="font-family:'Outfit',sans-serif;font-weight:800;font-size:11px;color:${bg}">${mode==='want'?'−':'+'}${cnt}</span>
-          </div>
-        </div>`;
-      }
-      h+='</div></div></div>';
+        <div class="sec-body"><div class="pcg" style="grid-template-columns:repeat(${nc},1fr)">
+          ${sc.map(card=>{
+            const cnt=mode==='want'?wt(card.id):sp(card.id);
+            return `<div class="pct" style="border-color:${bdCol}" data-id="${card.id}">
+              <div class="pci" onclick="openFull('${card.id}')">
+                ${card.img?`<img src="${card.img}" alt="${card.name}" loading="lazy">`:`<div class="pcph">${card.name}</div>`}
+              </div>
+              <div class="pc-strip" style="color:${txCol};background:${bg}">${mode==='want'?'−':'+'} ${cnt}장</div>
+            </div>`;
+          }).join('')}
+        </div></div>
+      </div>`;
     }
   }
   h+='</div>';
   return h;
 }
 
-/* ── GOALS ── */
+/* ════════════════════════════════════
+   GOALS TAB
+════════════════════════════════════ */
 function renderGoals(){
-  if(!DB){document.getElementById('page-content').innerHTML='';return;}
-  let html=`<div class="toolbar">
-    <button class="btn btn-p btn-sm" onclick="showWizard()">🎯 마법사로 일괄 설정</button>
-    <div class="tog-spacer"></div>
-    <button class="btn btn-s btn-sm" onclick="clearAllGoals()">전체 초기화</button>
+  const el=document.getElementById('page-content');
+  const mAlbs=UI.mAlbs, mMems=UI.mMembers, mflt=UI.mflt;
+  const nMem=mMems.length||5;
+  const minW=Math.max(nMem*54+28, 120);
+
+  const colCtrl=`<div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end;flex-shrink:0;margin-left:6px">
+    <div class="coltog"><span class="coltog-btn" onclick="colAllGoals()">접기</span><span class="coltog-btn" onclick="expAllGoals()">펼치기</span></div>
+    <button class="shot-btn" onclick="resetAllGoals()">🗑</button>
   </div>`;
-  for(const alb of DB.albumTypes){
-    html+=`<div class="goal-alb">
-      <div class="goal-alb-hdr">
-        <span class="goal-alb-badge" style="background:${alb.color}">${alb.shortName}</span>
-        <span class="goal-alb-name">${alb.name}</span>
-      </div>`;
+
+  const albums=mAlbs.length?DB.albumTypes.filter(a=>mAlbs.includes(a.id)):DB.albumTypes;
+  let secs='';
+  for(const alb of albums){
     for(const set of alb.sets){
-      if(!set.cards.length)continue;
-      html+=`<div class="goal-set"><div class="goal-set-name">${set.name}</div>`;
-      for(const card of set.cards){
-        const gv=g(card.id);
-        html+=`<div class="goal-card-row">
-          <div class="goal-thumb">${card.img?`<img loading="lazy" src="${card.img}" alt="${card.name}">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--tx3)">${card.name}</div>`}</div>
-          <span class="goal-name">${card.name}</span>
-          <div class="goal-adj">
-            <button onclick="setGoal('${card.id}',${gv}-1);renderGoals()">−</button>
-            <span class="goal-adj-num">${gv}</span>
-            <button onclick="setGoal('${card.id}',${gv}+1);renderGoals()">+</button>
-          </div>
-        </div>`;
-      }
-      html+='</div>';
+      let cards=set.cards.filter(card=>cardMatchesMems(card,mMems));
+      if(mflt==='h')cards=cards.filter(x=>g(x.id)>0);
+      else if(mflt==='n')cards=cards.filter(x=>!g(x.id));
+      if(!cards.length)continue;
+      const isC=UI.mgl[set.id];
+      const t2=cards.length;
+      const m2=cards.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)).length;
+      const pct=t2?Math.round(m2/t2*100):0;
+      secs+=`<div class="sec-block">
+        <div class="sec-hdr" onclick="mColSec('${set.id}')">
+          <span class="sec-atag" style="background:${alb.color}">${alb.shortName}</span>
+          <span class="sec-name">${set.name}</span>
+          <div class="sec-pw"><span class="sec-pct">${m2}/${t2}</span><div class="sec-pb"><div class="sec-pbf" style="width:${pct}%;background:${alb.color}"></div></div></div>
+          <span class="chev${isC?'':' open'}">▼</span>
+        </div>
+        ${isC?'':`<div class="sec-body"><div class="pcg" style="grid-template-columns:repeat(${cards.length},1fr)">
+          ${cards.map(card=>cardTileHTML(card,true)).join('')}
+        </div></div>`}
+      </div>`;
     }
-    html+='</div>';
   }
-  document.getElementById('page-content').innerHTML=html;
-}
 
-function clearAllGoals(){
-  if(!confirm('모든 목표를 초기화할까요?'))return;
-  ST.goals={};saveST();renderGoals();toast('목표 초기화 완료');
+  el.innerHTML=
+    `<div style="margin-bottom:8px"><button class="btn btn-p btn-sm" onclick="showWizard()">🎯 마법사로 일괄 설정</button></div>`+
+    filterRowHTML(mAlbs,mMems,mflt,'setMAl','setMM','setMFlt',colCtrl)+
+    `<div class="sets-wrap" style="grid-template-columns:repeat(auto-fill,minmax(${minW}px,1fr))">${secs}</div>`;
 }
+function setMAl(id){if(id===null)UI.mAlbs=[];else{const i=UI.mAlbs.indexOf(id);if(i>=0)UI.mAlbs.splice(i,1);else UI.mAlbs.push(id);}saveUI();renderGoals();}
+function setMM(m){if(!m)return;const i=UI.mMembers.indexOf(m);if(i>=0)UI.mMembers.splice(i,1);else UI.mMembers.push(m);saveUI();renderGoals();}
+function setMFlt(f){UI.mflt=f;saveUI();renderGoals();}
 
-/* ── USAGE ── */
-function renderUsage(){
-  document.getElementById('page-content').innerHTML=`
-  <div class="use-sec">
-    <h3>📦 수집 탭</h3>
-    <ul>
-      <li><b>카드 이미지 클릭</b>: 상세 보기에서 수량 조정, 목표 설정, 메모 입력</li>
-      <li><b>− / + 버튼</b>: 카드 타일에서 바로 수집 수 조정</li>
-      <li><b>필터 버튼</b>: 카드 종류(개인/유닛 등), 멤버, 유닛, MMMM 기준 필터</li>
-      <li><b>있는것/없는것 버튼</b>: 수집 유무로 표시 카드 전환</li>
-      <li><b>접기/펼치기 버튼</b>: 전체 섹션 일괄 접기·펼치기 토글</li>
-    </ul>
-  </div>
-  <div class="use-sec">
-    <h3>🔄 교환 탭</h3>
-    <ul>
-      <li><b>🔍 구해요</b>: 목표 설정 후 수집이 부족한 카드 자동 표시</li>
-      <li><b>✨ 있어요</b>: 목표보다 더 많이 갖고 있는 카드 자동 표시</li>
-      <li><b>교환 스크린샷</b>: 교환 현황을 이미지로 저장</li>
-    </ul>
-  </div>
-  <div class="use-sec">
-    <h3>🎯 목표 탭</h3>
-    <ul>
-      <li>각 카드별로 목표 수량을 개별 설정</li>
-      <li><b>마법사</b>: 앨범·멤버를 선택해 동일 목표를 일괄 적용</li>
-    </ul>
-  </div>
-  <div class="use-sec">
-    <h3>⚙️ 설정</h3>
-    <ul>
-      <li><b>백업 내보내기</b>: JSON 파일로 수집 데이터 저장</li>
-      <li><b>백업 불러오기</b>: 저장된 JSON으로 데이터 복원</li>
-      <li><b>테마</b>: 헤더 🌙/☀️ 버튼으로 다크/라이트 전환</li>
-    </ul>
-  </div>
-  <div style="text-align:center;padding:16px;font-size:11px;color:var(--tx3)">
-    Made with 💙 for PLLIs &nbsp;|&nbsp; @plli_ze
-  </div>`;
-}
-
-/* ══ FILTER PANEL ══ */
-function openFilterPanel(){
-  renderFilterPanel();
-  document.getElementById('filt-ov').classList.add('open');
-}
-function renderFilterPanel(){
-  const {flt_cardType,flt_member,flt_unit,flt_mmmm,flt_album}=UI;
-  if(!DB){document.getElementById('filt-body').innerHTML='';return;}
-  let h='';
-  // Album
-  h+=`<div class="filt-section">
-    <div class="filt-label">앨범</div>
-    <div class="filt-chips">`;
-  for(const alb of DB.albumTypes){
-    const on=flt_album.includes(alb.id);
-    h+=`<div class="fchip${on?' on':''}" data-fk="flt_album" data-fv="${alb.id}" onclick="toggleFchip(this)">${alb.shortName}</div>`;
-  }
-  h+='</div></div>';
-  // Card Type
-  h+=`<div class="filt-section">
-    <div class="filt-label">카드 종류</div>
-    <div class="filt-chips">
-      ${CARD_TYPES.map(ct=>`<div class="fchip${flt_cardType.includes(ct)?' on':''}" data-fk="flt_cardType" data-fv="${ct}" onclick="toggleFchip(this)">${ct==='Individual'?'개인':ct==='Unit'?'유닛':ct==='All'?'단체':'MMMM'}</div>`).join('')}
-    </div>
-  </div>`;
-  // Member
-  h+=`<div class="filt-section">
-    <div class="filt-label">멤버</div>
-    <div class="filt-chips">
-      ${MEMBERS.map(m=>`<div class="fchip${flt_member.includes(m)?' on':''}" data-fk="flt_member" data-fv="${m}" onclick="toggleFchip(this)">${m}</div>`).join('')}
-    </div>
-  </div>`;
-  // Unit
-  h+=`<div class="filt-section">
-    <div class="filt-label">유닛</div>
-    <div class="filt-chips">
-      ${UNITS.map(u=>`<div class="fchip${flt_unit.includes(u)?' on':''}" data-fk="flt_unit" data-fv="${u}" onclick="toggleFchip(this)">${u}</div>`).join('')}
-    </div>
-  </div>`;
-  // MMMM
-  h+=`<div class="filt-section">
-    <div class="filt-label">MMMM</div>
-    <div class="filt-chips">
-      ${MMMS.map(m=>`<div class="fchip${flt_mmmm.includes(m)?' on':''}" data-fk="flt_mmmm" data-fv="${m}" onclick="toggleFchip(this)">${m}</div>`).join('')}
-    </div>
-  </div>`;
-  document.getElementById('filt-body').innerHTML=h;
-}
-function toggleFchip(el){el.classList.toggle('on');}
-
-/* ══ FULLSCREEN ══ */
+/* ════════════════════════════════════
+   FULLSCREEN
+════════════════════════════════════ */
 function openFull(id){
   const r=findCard(id);if(!r)return;
   fsId=id;const{card,alb,set}=r;
-  document.getElementById('fs-img').innerHTML=card.img?`<img class="fsimg" src="${card.img}" alt="${card.name}">`:`<div class="fsph">📷</div>`;
+  document.getElementById('fs-img').innerHTML=card.img
+    ?`<img class="fsimg" src="${card.img}" alt="${card.name}">`
+    :`<div class="fsph-big">📷</div>`;
   document.getElementById('fs-name').textContent=card.name;
   document.getElementById('fs-meta').textContent=`${alb.name} · ${set.name}`;
   updFull();
@@ -816,43 +746,28 @@ function updFull(){
   if(hb){
     if(s_>0){
       const isH=hid(fsId);
-      hb.style.cssText=`display:block;background:none;border:1px solid ${isH?'var(--ok)':'var(--want)'};color:${isH?'var(--ok)':'var(--want)'};width:100%;padding:8px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif`;
+      hb.style.cssText=`display:block;background:none;border-color:${isH?'var(--ok)':'var(--want)'};color:${isH?'var(--ok)':'var(--want)'};width:100%;padding:8px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;margin-bottom:7px`;
       hb.textContent=isH?'👁 있어요에 다시 표시하기':'🚫 있어요에서 숨기기';
-    } else {
-      hb.style.display='none';
-    }
+    }else{hb.style.display='none';}
   }
 }
 function closeFull(){document.getElementById('fsov').classList.remove('open');fsId=null;}
 function fsAdj(d){
   if(!fsId)return;
   ST.collected[fsId]=Math.max(0,(ST.collected[fsId]||0)+d);
-  saveST();updFull();renderCur();
-  if(d>0){const gv=g(fsId),cv=c(fsId);if(gv>0&&cv===gv)toast('🎉 목표 달성!');}
+  saveST();updFull();patchTile(fsId);
+  if(d>0){const gv=g(fsId),cv=c(fsId);if(gv>0&&cv===gv)toast('🎉 달성!');}
 }
 function fsGoal(d){
   if(!fsId)return;
-  setGoal(fsId,g(fsId)+d);
-  updFull();
-}
-function toggleHide(){
-  if(!fsId)return;
-  const isH=hid(fsId);
-  if(!confirm(isH?'다시 있어요에 표시할까요?':'있어요 목록에서 숨길까요?\n(수집 수는 유지됩니다)'))return;
-  if(isH)delete ST.hidden[fsId];else ST.hidden[fsId]=true;
-  saveST();updFull();renderCur();
-  toast(isH?'있어요에 표시됩니다':'있어요에서 숨겼어요');
-}
-function saveMemo(){
-  if(!fsId)return;
-  const v=document.getElementById('fs-memo').value;
-  if(v)ST.memos[fsId]=v;else delete ST.memos[fsId];
-  saveST();
+  setGoalById(fsId,g(fsId)+d);updFull();patchTile(fsId);
 }
 
-/* ══ WIZARD ══ */
+/* ════════════════════════════════════
+   WIZARD
+════════════════════════════════════ */
 function showWizard(){
-  wiz={step:1,albums:['poca','photobook','inventory','idpass'],inclUnpo:false,members:[...MEMBERS],count:1};
+  wiz={step:1,albums:['poca','photobook','inventory','idpass'],inclUnpo:false,members:[...MEMBERS],inclAll:false,inclMmmm:false,count:1};
   renderWizStep();
   document.getElementById('wiz-ov').classList.add('open');
 }
@@ -860,84 +775,118 @@ function renderWizStep(){
   const body=document.getElementById('wiz-body'),foot=document.getElementById('wiz-foot');
   document.getElementById('wiz-ttl').textContent=wiz.step===1?'🎯 Step 1/2 — 앨범 선택':'🎯 Step 2/2 — 멤버 & 수량';
   if(wiz.step===1){
-    const albs=[{id:'poca',name:'포카앨범',color:'#4f7eff'},{id:'photobook',name:'포토북앨범',color:'#7b5fff'},{id:'inventory',name:'인벤토리앨범',color:'#ec4899'},{id:'idpass',name:'아이디 패스앨범',color:'#c9c9c9'}];
     body.innerHTML=`<p style="font-size:12px;color:var(--tx2);margin-bottom:12px">수집할 앨범을 선택하세요 (복수 선택 가능)</p>
       <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px">
-        ${albs.map(a=>`<button class="wiz-chip" onclick="wizToggleAlb('${a.id}')" style="${wiz.albums.includes(a.id)?`background:${a.color};border-color:${a.color};color:#fff`:`border-color:${a.color}55;color:${a.color};background:none`}">${a.name}</button>`).join('')}
+        ${DB.albumTypes.filter(a=>a.id!=='unpo').map(a=>`<button class="wiz-chip" onclick="wizToggleAlb('${a.id}');renderWizStep()" style="${wiz.albums.includes(a.id)?`background:${a.color};border-color:${a.color};color:#fff`:`border-color:${a.color}55;color:${a.color};background:none`}">${a.name}</button>`).join('')}
       </div>
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)">
-        <input type="checkbox" ${wiz.inclUnpo?'checked':''} onchange="wiz.inclUnpo=this.checked" style="width:16px;height:16px">
+        <input type="checkbox" ${wiz.inclUnpo?'checked':''} onchange="wiz.inclUnpo=this.checked" style="width:15px;height:15px">
         <span style="font-size:12px;font-weight:600">미공포 포함 <span style="font-size:11px;font-weight:400;color:var(--tx2)">(메이크스타, 무신사, HMV 등)</span></span>
       </label>`;
     foot.innerHTML=`<button class="btn btn-s btn-sm" onclick="closeSheet('wiz-ov')" style="flex:1">나중에</button><button class="btn btn-p btn-sm" onclick="wizNext()" style="flex:2">다음 →</button>`;
-  } else {
-    body.innerHTML=`<p style="font-size:12px;color:var(--tx2);margin-bottom:12px">수집할 멤버와 목표 수량을 설정하세요.</p>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px">
-        ${MEMBERS.map(m=>`<button class="wiz-chip" onclick="wizToggleMember('${m}');renderWizStep()" style="${wiz.members.includes(m)?'background:var(--blue);border-color:var(--blue);color:#fff':'border-color:var(--bd);color:var(--tx2);background:none'}">${m}</button>`).join('')}
+  }else{
+    body.innerHTML=`<p style="font-size:12px;color:var(--tx2);margin-bottom:10px">멤버를 선택하면 해당 멤버의 <b>유닛 카드도 함께 자동 포함</b>돼요.</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+        ${MEMBERS.map(m=>`<button class="wiz-chip" onclick="wizToggleMember('${m}');renderWizStep()" style="${wiz.members.includes(m)?'background:var(--blue);border-color:var(--blue);color:#fff':'background:none'}">${m}</button>`).join('')}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)">
+          <input type="checkbox" id="wiz-all" ${wiz.inclAll?'checked':''} onchange="wiz.inclAll=this.checked" style="width:15px;height:15px">
+          <span style="font-size:12px;font-weight:600">단체(All) 카드 포함</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)">
+          <input type="checkbox" id="wiz-mmmm" ${wiz.inclMmmm?'checked':''} onchange="wiz.inclMmmm=this.checked" style="width:15px;height:15px">
+          <span style="font-size:12px;font-weight:600">MMMM 카드 포함 <span style="font-weight:400;color:var(--tx2)">(몌무·뫄·미므·므모·먀미)</span></span>
+        </label>
       </div>
       <div style="text-align:center">
-        <p style="font-size:11px;color:var(--tx2);margin-bottom:12px">선택한 멤버 전체에 동일하게 적용</p>
+        <p style="font-size:11px;color:var(--tx2);margin-bottom:10px">선택한 카드 전체에 적용할 수량</p>
         <div style="display:inline-flex;align-items:center;background:var(--s2);border:1px solid var(--bd);border-radius:14px;overflow:hidden">
-          <button onclick="if(wiz.count>0)wiz.count--;renderWizStep()" style="padding:12px 22px;font-size:22px;font-weight:800;border-right:1px solid var(--bd);color:var(--tx)">−</button>
-          <span style="font-family:'Outfit',sans-serif;font-weight:800;font-size:32px;min-width:64px;text-align:center;padding:0 8px">${wiz.count}</span>
-          <button onclick="wiz.count++;renderWizStep()" style="padding:12px 22px;font-size:22px;font-weight:800;border-left:1px solid var(--bd);color:var(--tx)">+</button>
+          <button onclick="if(wiz.count>0)wiz.count--;renderWizStep()" style="padding:10px 20px;font-size:20px;font-weight:800;border-right:1px solid var(--bd);color:var(--tx)">−</button>
+          <span style="font-family:'Outfit',sans-serif;font-weight:800;font-size:28px;min-width:52px;text-align:center">${wiz.count}</span>
+          <button onclick="wiz.count++;renderWizStep()" style="padding:10px 20px;font-size:20px;font-weight:800;border-left:1px solid var(--bd);color:var(--tx)">+</button>
         </div>
-        <div style="font-size:12px;color:var(--tx2);margin-top:8px">장 / 멤버</div>
+        <div style="font-size:11px;color:var(--tx2);margin-top:6px">장</div>
       </div>`;
     foot.innerHTML=`<button class="btn btn-s btn-sm" onclick="wizPrev()" style="flex:1">← 이전</button><button class="btn btn-p btn-sm" onclick="wizApply()" style="flex:2">설정 완료 ✓</button>`;
   }
 }
-function wizToggleAlb(id){const i=wiz.albums.indexOf(id);if(i>=0)wiz.albums.splice(i,1);else wiz.albums.push(id);renderWizStep();}
+function wizToggleAlb(id){const i=wiz.albums.indexOf(id);if(i>=0)wiz.albums.splice(i,1);else wiz.albums.push(id);}
 function wizToggleMember(m){const i=wiz.members.indexOf(m);if(i>=0)wiz.members.splice(i,1);else wiz.members.push(m);}
 function wizNext(){if(!wiz.albums.length){toast('앨범을 선택해주세요');return;}wiz.step=2;renderWizStep();}
 function wizPrev(){wiz.step=1;renderWizStep();}
 function wizApply(){
-  if(!wiz.members.length){toast('멤버를 선택해주세요');return;}
+  if(!wiz.members.length&&!wiz.inclAll&&!wiz.inclMmmm){toast('멤버 또는 카드 종류를 선택해주세요');return;}
   const albs=[...wiz.albums,...(wiz.inclUnpo?['unpo']:[])];
+  const relevantUnits=new Set();
+  for(const m of wiz.members)if(MU[m])MU[m].forEach(u=>relevantUnits.add(u));
+  let count=0;
   for(const alb of DB.albumTypes){
     if(!albs.includes(alb.id))continue;
-    for(const set of alb.sets)
-      for(const card of set.cards)
-        if(wiz.members.includes(card.member)||wiz.members.includes(card.name))
-          ST.goals[card.id]=wiz.count;
+    for(const set of alb.sets)for(const card of set.cards){
+      const ct=card.cardType;
+      if(ct==='Individual'&&(wiz.members.includes(card.member)||wiz.members.includes(card.name))){ST.goals[card.id]=wiz.count;count++;}
+      else if(ct==='Unit'&&relevantUnits.has(card.unit)){ST.goals[card.id]=wiz.count;count++;}
+      else if(ct==='All'&&wiz.inclAll){ST.goals[card.id]=wiz.count;count++;}
+      else if(ct==='MMMM'&&wiz.inclMmmm){ST.goals[card.id]=wiz.count;count++;}
+    }
   }
-  saveST();closeSheet('wiz-ov');renderCur();toast('🎉 목표 설정 완료!');
+  saveST();closeSheet('wiz-ov');renderCur();
+  setTimeout(()=>{
+    const unitList=[...relevantUnits].join(', ');
+    const lines=[
+      `✅ 목표 설정 완료!`,``,
+      `적용 카드 수: ${count}장`,
+      `멤버: ${wiz.members.length?wiz.members.join(', '):'없음'}`,
+      unitList?`유닛 (자동포함): ${unitList}`:'',
+      wiz.inclAll?'단체 카드 포함':'',
+      wiz.inclMmmm?'MMMM 카드 포함':'',
+      ``,`목표 탭에서 개별 조정할 수 있어요.`,`목표 탭으로 이동할까요?`
+    ].filter(Boolean);
+    if(confirm(lines.join('\n')))goTab('goals');
+  },150);
 }
 
-/* ══ SCREENSHOT ══ */
+/* ════════════════════════════════════
+   USAGE TAB
+════════════════════════════════════ */
+function renderUsage(){
+  document.getElementById('page-content').innerHTML=`
+  <div class="use-sec"><h3>📦 수집 탭</h3><ul>
+    <li><b>카드 이미지 클릭</b>: 상세 보기 — 수집/목표 나란히 조정, 메모</li>
+    <li><b>카드 하단 − / + 버튼</b>: 카드에서 바로 수집 수 조정</li>
+    <li><b>카드 아래 상태 표시줄</b>: ✓달성 / ✨있어요 / 🔍없어요 자동 표시</li>
+    <li><b>앨범·멤버 필터</b>: 원하는 앨범/멤버만 보기 (유닛 카드도 멤버 필터 적용)</li>
+    <li><b>접기/펼치기</b>: 전체 섹션 일괄 토글</li>
+  </ul></div>
+  <div class="use-sec"><h3>🔄 교환 탭</h3><ul>
+    <li><b>🔍 구해요</b>: 목표보다 수집 부족 카드 자동 표시</li>
+    <li><b>✨ 있어요</b>: 목표보다 더 많이 보유한 카드 자동 표시</li>
+    <li>태블릿 가로모드에서 구해요 / 있어요 나란히 표시</li>
+  </ul></div>
+  <div class="use-sec"><h3>🎯 목표 탭</h3><ul>
+    <li>수집창과 동일한 필터 사용, 카드 그리드 뷰</li>
+    <li>각 카드 하단에서 목표 수량 조정</li>
+    <li><b>마법사</b>: 멤버 선택 시 해당 유닛 카드도 자동 포함, 단체/MMMM 선택 가능</li>
+    <li>설정 완료 후 확인 창에서 적용 내역 확인 가능</li>
+  </ul></div>
+  <div class="use-sec"><h3>⚙️ 설정</h3><ul>
+    <li><b>백업/복원</b>: JSON 파일로 데이터 관리</li>
+    <li><b>테마</b>: 헤더 ☀️/🌙 버튼으로 전환 (기본: 라이트)</li>
+  </ul></div>
+  <div style="text-align:center;padding:16px;font-size:11px;color:var(--tx3)">Made with 💙 for PLLIs &nbsp;|&nbsp; @plli_ze</div>`;
+}
+
+/* ════════════════════════════════════
+   SCREENSHOT
+════════════════════════════════════ */
 async function loadH2C(){
   if(window.html2canvas)return;
   return new Promise((res,rej)=>{
     const s=document.createElement('script');
     s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-    s.onload=res;s.onerror=rej;
-    document.head.appendChild(s);
+    s.onload=res;s.onerror=rej;document.head.appendChild(s);
   });
-}
-function buildShotGrid(cards,mode,bg,tx2){
-  if(!cards.length)return`<div style="color:${tx2};font-size:11px;padding:10px">없음</div>`;
-  let h='';
-  for(const alb of DB.albumTypes){
-    const ac=cards.filter(x=>x.aId===alb.id);if(!ac.length)continue;
-    const sids=[...new Set(ac.map(x=>x.sId))];
-    h+=`<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:${alb.color};margin-bottom:3px">${alb.name}</div>`;
-    for(const sid of sids){
-      const sc=ac.filter(x=>x.sId===sid);
-      h+=`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-bottom:5px">`;
-      for(const card of sc){
-        const cnt=mode==='w'?wt(card.id):sp(card.id);
-        h+=`<div style="border-radius:5px;overflow:hidden;border:1px solid ${mode==='w'?'rgba(244,63,94,.4)':'rgba(59,130,246,.4)'}">
-          <div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${alb.color}22">
-            ${card.img?`<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}
-          </div>
-          <div style="padding:2px 3px;background:${mode==='w'?'rgba(244,63,94,.1)':'rgba(59,130,246,.1)'};font-size:8px;font-weight:800;color:${mode==='w'?'#f43f5e':'#3b82f6'};text-align:center">${mode==='w'?'−':'+'} ${cnt}</div>
-        </div>`;
-      }
-      h+='</div>';
-    }
-    h+='</div>';
-  }
-  return h;
 }
 async function exportScreenshot(){
   toast('스크린샷 준비 중...');
@@ -947,16 +896,46 @@ async function exportScreenshot(){
   const hCards=all.filter(x=>sp(x.id)>0&&!hid(x.id));
   if(!wCards.length&&!hCards.length){toast('교환할 카드가 없어요');return;}
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
-  const bg=dark?'#08090f':'#f0f2f9';const tx2=dark?'#7a8fb0':'#5a6a90';
-  const bd=dark?'#1f2535':'#d4daf0';const now=new Date().toLocaleDateString('ko-KR');
+  const bg=dark?'#08090f':'#f0f2f9',tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
+  const now=new Date().toLocaleDateString('ko-KR');
+  const lscape=isLS(),w=lscape?720:360;
   const area=document.getElementById('shot-area');
-  area.style.cssText=`position:fixed;left:-9999px;top:0;width:360px;background:${bg};padding:12px;font-family:'Noto Sans KR',sans-serif;color:${dark?'#e8edf8':'#141830'}`;
+  area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:12px;color:${dark?'#e8edf8':'#141830'}`;
   const hdr=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid ${bd}"><div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Caligo Pt.2 드볼관리기</div><div style="font-size:10px;color:${tx2}">${now}</div></div>`;
-  area.innerHTML=hdr+
-    (wCards.length?`<div style="background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);border-radius:8px;padding:10px;margin-bottom:10px"><div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;color:#f43f5e;margin-bottom:7px">🔍 구해요 ${wCards.reduce((a,x)=>a+wt(x.id),0)}개</div>${buildShotGrid(wCards,'w',bg,tx2)}</div>`:'')+
-    (hCards.length?`<div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:10px"><div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;color:#3b82f6;margin-bottom:7px">✨ 있어요 ${hCards.reduce((a,x)=>a+sp(x.id),0)}개</div>${buildShotGrid(hCards,'h',bg,tx2)}</div>`:'');
+  const buildGrid=(cards,mode)=>{
+    let h='';
+    for(const alb of DB.albumTypes){
+      const ac=cards.filter(x=>x.aId===alb.id);if(!ac.length)continue;
+      h+=`<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:${alb.color};margin-bottom:3px">${alb.name}</div>`;
+      const sids=[...new Set(ac.map(x=>x.sId))];
+      for(const sid of sids){
+        const sc=ac.filter(x=>x.sId===sid);
+        h+=`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-bottom:4px">`;
+        for(const card of sc){
+          const cnt=mode==='w'?wt(card.id):sp(card.id);
+          h+=`<div style="border-radius:5px;overflow:hidden;border:1px solid ${mode==='w'?'rgba(244,63,94,.4)':'rgba(59,130,246,.4)'}">
+            <div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${alb.color}22">${card.img?`<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}</div>
+            <div style="padding:2px 3px;background:${mode==='w'?'rgba(244,63,94,.1)':'rgba(59,130,246,.1)'};font-size:8px;font-weight:800;color:${mode==='w'?'#f43f5e':'#3b82f6'};text-align:center">${mode==='w'?'−':'+'} ${cnt}</div>
+          </div>`;
+        }
+        h+='</div>';
+      }
+      h+='</div>';
+    }
+    return h;
+  };
+  if(lscape){
+    area.innerHTML=`${hdr}<div style="display:flex;gap:10px">
+      ${wCards.length?`<div style="flex:1;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);border-radius:8px;padding:8px"><div style="font-weight:800;font-size:13px;color:#f43f5e;margin-bottom:6px">🔍 구해요</div>${buildGrid(wCards,'w')}</div>`:''}
+      ${hCards.length?`<div style="flex:1;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:8px"><div style="font-weight:800;font-size:13px;color:#3b82f6;margin-bottom:6px">✨ 있어요</div>${buildGrid(hCards,'h')}</div>`:''}
+    </div>`;
+  }else{
+    area.innerHTML=hdr+
+      (wCards.length?`<div style="background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);border-radius:8px;padding:10px;margin-bottom:10px"><div style="font-weight:800;font-size:14px;color:#f43f5e;margin-bottom:7px">🔍 구해요</div>${buildGrid(wCards,'w')}</div>`:'')+
+      (hCards.length?`<div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:10px"><div style="font-weight:800;font-size:14px;color:#3b82f6;margin-bottom:7px">✨ 있어요</div>${buildGrid(hCards,'h')}</div>`:'');
+  }
   try{
-    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:360});
+    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:w});
     const link=document.createElement('a');link.download=`교환_${now.replace(/\./g,'')}.png`;link.href=canvas.toDataURL('image/png');link.click();
     toast('📸 저장 완료!');
   }catch(e){toast('실패: '+e.message);}
@@ -966,117 +945,84 @@ async function exportCollectScreenshot(){
   toast('스크린샷 준비 중...');
   try{await loadH2C();}catch(e){toast('라이브러리 로드 실패');return;}
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
-  const bg=dark?'#08090f':'#f0f2f9';const tx2=dark?'#7a8fb0':'#5a6a90';
-  const bd=dark?'#1f2535':'#d4daf0';const now=new Date().toLocaleDateString('ko-KR');
+  const bg=dark?'#08090f':'#f0f2f9',tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
+  const now=new Date().toLocaleDateString('ko-KR');
+  const lscape=isLS(),w=lscape?720:360;
   const area=document.getElementById('shot-area');
-  area.style.cssText=`position:fixed;left:-9999px;top:0;width:360px;background:${bg};padding:12px;font-family:'Noto Sans KR',sans-serif;color:${dark?'#e8edf8':'#141830'}`;
+  area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:12px;color:${dark?'#e8edf8':'#141830'}`;
+  const albums=UI.cAlbs.length?DB.albumTypes.filter(a=>UI.cAlbs.includes(a.id)):DB.albumTypes;
   let secH='';
-  for(const alb of DB.albumTypes){
-    for(const set of alb.sets){
-      const cards=set.cards.filter(c2=>filterCard(c2));
-      if(!cards.length)continue;
-      secH+=`<div style="margin-bottom:8px">
-        <div style="font-size:10px;font-weight:700;margin-bottom:3px"><span style="background:${alb.color};color:#fff;padding:1px 6px;border-radius:5px;font-size:9px">${alb.shortName}</span> ${set.name}</div>
-        <div style="display:grid;grid-template-columns:repeat(${Math.min(cards.length,5)},1fr);gap:3px">
-          ${cards.map(card=>{
-            const cv=c(card.id),gv=g(card.id),st=sts(card.id);
-            const bdr=st==='c'?'rgba(244,63,94,.5)':st==='m'?'rgba(34,197,94,.6)':st==='h'?'rgba(59,130,246,.6)':'rgba(255,255,255,.1)';
-            return`<div style="border-radius:5px;overflow:hidden;border:1px solid ${bdr}">
-              <div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${alb.color}22">${card.img?`<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}</div>
-              <div style="padding:2px 3px;background:rgba(0,0,0,.5);display:flex;justify-content:space-between;font-size:7px;font-family:'Outfit',monospace;font-weight:700">
-                <span style="color:${st==='c'?'#f43f5e':st==='m'?'#22c55e':st==='h'?'#3b82f6':'#7a8fb0'}">${cv}</span><span style="color:${tx2}">${gv}</span>
-              </div>
-            </div>`;
-          }).join('')}
-        </div>
-      </div>`;
-    }
+  for(const alb of albums)for(const set of alb.sets){
+    let cards=set.cards.filter(card=>cardMatchesMems(card,UI.cMembers));
+    if(UI.flt==='h')cards=cards.filter(x=>c(x.id)>0);
+    else if(UI.flt==='n')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
+    if(!cards.length)continue;
+    secH+=`<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;margin-bottom:3px"><span style="background:${alb.color};color:#fff;padding:1px 6px;border-radius:5px;font-size:9px">${alb.shortName}</span> ${set.name}</div>
+      <div style="display:grid;grid-template-columns:repeat(${Math.min(cards.length,5)},1fr);gap:3px">
+        ${cards.map(card=>{const cv=c(card.id),gv=g(card.id),st=sts(card.id);
+          const bdr=st==='c'?'rgba(244,63,94,.5)':st==='m'?'rgba(34,197,94,.6)':st==='h'?'rgba(59,130,246,.6)':'rgba(0,0,0,.1)';
+          return`<div style="border-radius:5px;overflow:hidden;border:1px solid ${bdr}">
+            <div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${alb.color}22">${card.img?`<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}</div>
+            <div style="padding:2px 3px;background:rgba(0,0,0,.4);display:flex;justify-content:space-between;font-size:7px;font-weight:700">
+              <span style="color:${st==='c'?'#f43f5e':st==='m'?'#22c55e':st==='h'?'#3b82f6':'#aaa'}">${cv}</span><span style="color:${tx2}">${gv}</span>
+            </div>
+          </div>`;}).join('')}
+      </div>
+    </div>`;
   }
-  const hdr=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid ${bd}"><div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Caligo Pt.2 수집 현황</div><div style="font-size:10px;color:${tx2}">${now}</div></div>`;
+  const hdr=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid ${bd}"><div style="font-weight:800;font-size:14px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Caligo Pt.2 수집 현황</div><div style="font-size:10px;color:${tx2}">${now}</div></div>`;
   area.innerHTML=hdr+`<div style="display:grid;gap:6px">${secH}</div>`;
   try{
-    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:360});
+    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:w});
     const link=document.createElement('a');link.download=`수집_${now.replace(/\./g,'')}.png`;link.href=canvas.toDataURL('image/png');link.click();
     toast('📸 저장 완료!');
   }catch(e){toast('실패: '+e.message);}
   area.innerHTML='';
 }
 
-/* ══ SETTINGS ══ */
+/* ════════════════════════════════════
+   SETTINGS / THEME
+════════════════════════════════════ */
 function showSettings(){document.getElementById('set-ov').classList.add('open');}
 function closeSheet(id){document.getElementById(id).classList.remove('open');}
 function importState(inp){
   if(!inp.files[0])return;
   const r=new FileReader();
   r.onload=e=>{
-    try{
-      ST=JSON.parse(e.target.result);
-      ST.goals=ST.goals||{};ST.collected=ST.collected||{};ST.memos=ST.memos||{};ST.hidden=ST.hidden||{};
-      saveST();closeSheet('set-ov');renderCur();toast('복원 완료 ✓');
-    }catch(e){toast('파일 오류');}
+    try{ST=JSON.parse(e.target.result);ST.goals=ST.goals||{};ST.collected=ST.collected||{};ST.memos=ST.memos||{};ST.hidden=ST.hidden||{};saveST();closeSheet('set-ov');renderCur();toast('복원 완료 ✓');}
+    catch(e){toast('파일 오류');}
   };
   r.readAsText(inp.files[0]);
 }
-function exportState(){
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([JSON.stringify(ST,null,2)],{type:'application/json'}));
-  a.download=`포카백업_${new Date().toISOString().split('T')[0]}.json`;
-  a.click();
-  toast('백업 파일 저장됨 ✓');
-}
-function resetState(){
-  if(!confirm('모든 수집·목표·메모를 초기화할까요?'))return;
-  ST={goals:{},collected:{},memos:{},hidden:{}};
-  saveST();closeSheet('set-ov');renderCur();toast('초기화 완료');
-}
-function applyTheme(t){
-  document.documentElement.setAttribute('data-theme',t);
-  const b=document.getElementById('theme-btn');
-  if(b)b.textContent=t==='dark'?'🌙':'☀️';
-}
-function toggleTheme(){
-  UI.theme=UI.theme==='dark'?'light':'dark';
-  applyTheme(UI.theme);saveUI();
-}
+function exportState(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(ST,null,2)],{type:'application/json'}));a.download=`포카백업_${new Date().toISOString().split('T')[0]}.json`;a.click();toast('백업 파일 저장됨 ✓');}
+function resetState(){if(!confirm('모든 수집·목표·메모를 초기화할까요?'))return;ST={goals:{},collected:{},memos:{},hidden:{}};saveST();closeSheet('set-ov');renderCur();toast('초기화 완료');}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);const b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'🌙':'☀️';}
+function toggleTheme(){UI.theme=UI.theme==='dark'?'light':'dark';applyTheme(UI.theme);saveUI();}
+function toast(msg){const w=document.getElementById('tw');const el=document.createElement('div');el.className='toast';el.textContent=msg;w.appendChild(el);setTimeout(()=>el.remove(),2100);}
 
-/* ══ TOAST ══ */
-function toast(msg){
-  const w=document.getElementById('tw');
-  const el=document.createElement('div');
-  el.className='toast';el.textContent=msg;
-  w.appendChild(el);
-  setTimeout(()=>el.remove(),2100);
-}
-
-/* ══ INIT ══ */
+/* ════════════════════════════════════
+   INIT
+════════════════════════════════════ */
 function init(){
   loadST();loadUI();
-  applyTheme(UI.theme||'dark');
+  applyTheme(UI.theme||'light');
   renderNav();
-  // Show loading state
   document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--tx2);font-size:13px">📦 DB 로딩 중...</div>';
-  // Load DB
   fetch('./poca_db.json')
     .then(r=>r.json())
     .then(d=>{
-      DB=d;
-      saveDB();
-      renderCur();
-      // Auto wizard for new users
+      DB=d;saveDB();renderCur();
       const hasGoal=Object.values(ST.goals).some(v=>v>0);
       if(!hasGoal)setTimeout(showWizard,600);
     })
     .catch(()=>{
-      // Try from localStorage
       loadDB();
-      if(DB){renderCur();}
-      else{document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--want)">⚠️ poca_db.json을 같은 폴더에 두고 웹서버로 열어주세요.</div>';}
+      if(DB)renderCur();
+      else document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--want)">⚠️ poca_db.json을 같은 폴더에 두고 웹서버로 열어주세요.</div>';
     });
-  // Scroll top button
   document.getElementById('main').addEventListener('scroll',function(){
     const btn=document.getElementById('scroll-top-btn');
-    if(!btn)return;
-    btn.classList.toggle('vis',this.scrollTop>200);
+    if(btn)btn.classList.toggle('vis',this.scrollTop>200);
   },{passive:true});
 }
 init();
