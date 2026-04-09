@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PLAVE 포카 어드민</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0f1e;--sur:#131726;--sur2:#1a2035;--sur3:#202840;--bd:#252e4a;--bd2:#303d60;--tx:#dce6f8;--tx2:#7e96c4;--tx3:#4a5e8a;--ac:#4f7eff;--ac-g:rgba(79,126,255,.15);--ok:#22c55e;--warn:#f59e0b;--err:#ef4444;--pk:#a855f7;--r:10px;--r-sm:6px;--sh:0 4px 24px rgba(0,0,0,.6)}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);font-size:13px;line-height:1.5}
+button{cursor:pointer;font-family:inherit;font-size:12px;border:none;outline:none}
+input,select,textarea{font-family:inherit;font-size:12px;color:var(--tx);background:var(--sur2);border:1px solid var(--bd);border-radius:var(--r-sm);padding:6px 10px;outline:none;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--ac)}
+textarea{resize:vertical;min-height:44px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+
+.app{display:flex;flex-direction:column;min-height:100vh}
+.hdr{background:var(--sur);border-bottom:1px solid var(--bd);padding:0 14px;height:48px;display:flex;align-items:center;justify-content:space-between;gap:8px;position:sticky;top:0;z-index:50}
+.hdr-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;background:linear-gradient(135deg,var(--warn),var(--err));-webkit-background-clip:text;-webkit-text-fill-color:transparent;flex-shrink:0}
+.hdr-acts{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.main{display:flex;flex:1;overflow:hidden;height:calc(100vh - 48px)}
+.sidebar{width:220px;flex-shrink:0;background:var(--sur);border-right:1px solid var(--bd);overflow-y:auto;padding:10px}
+.content{flex:1;overflow-y:auto;padding:14px}
+
+.btn{display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:var(--r-sm);font-weight:600;font-size:12px;cursor:pointer;white-space:nowrap;transition:all .15s;border:none}
+.btn-p{background:var(--ac);color:#fff}.btn-p:hover{filter:brightness(1.1)}
+.btn-s{background:var(--sur2);color:var(--tx);border:1px solid var(--bd)}.btn-s:hover{border-color:var(--ac)}
+.btn-d{background:transparent;color:var(--err);border:1px solid rgba(239,68,68,.3)}.btn-d:hover{background:rgba(239,68,68,.08)}
+.btn-ok{background:var(--ok);color:#fff}
+.btn-sm{padding:4px 8px;font-size:11px}
+.iBtn{width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--r-sm);font-size:12px;cursor:pointer;transition:all .12s}
+.iBtn:hover{border-color:var(--ac)}
+
+/* SIDEBAR */
+.sb-sec{font-size:9px;font-weight:700;color:var(--tx3);letter-spacing:.8px;padding:8px 6px 4px;text-transform:uppercase}
+.sb-alb{padding:6px 10px;border-radius:var(--r-sm);cursor:pointer;margin-bottom:2px;display:flex;align-items:center;gap:7px;font-size:12px;transition:all .12s}
+.sb-alb:hover{background:var(--sur2)}.sb-alb.on{background:var(--ac-g);color:var(--ac)}
+.sb-set{padding:4px 8px 4px 25px;border-radius:var(--r-sm);cursor:pointer;font-size:11px;color:var(--tx2);margin-bottom:1px;transition:all .12s}
+.sb-set:hover{background:var(--sur2);color:var(--tx)}.sb-set.on{background:var(--sur2);color:var(--ac)}
+.sb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* CARDS */
+.card{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px;flex-wrap:wrap}
+.card-ttl{font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px}
+.fg{margin-bottom:10px}
+.fl{display:block;font-size:10px;font-weight:700;color:var(--tx2);margin-bottom:4px}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* CARD ITEMS */
+.card-item{background:var(--sur2);border:1px solid var(--bd);border-radius:var(--r-sm);padding:10px;margin-bottom:8px;transition:border-color .12s}
+.card-item:hover{border-color:var(--bd2)}
+.card-item-top{display:flex;align-items:flex-start;gap:9px}
+.card-item-body{flex:1;min-width:0}
+.card-item-acts{display:flex;gap:3px;flex-shrink:0;align-items:flex-start}
+.crd-img{width:40px;height:56px;border-radius:4px;overflow:hidden;flex-shrink:0;background:var(--sur3);border:1px solid var(--bd);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--tx3);text-align:center;line-height:1.3;transition:border-color .12s}
+.crd-img:hover{border-color:var(--ac)}
+.crd-img img{width:100%;height:100%;object-fit:cover}
+
+/* TYPE BADGE */
+.type-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:.3px}
+.tb-ind{background:rgba(79,126,255,.2);color:#7ba4ff;border:1px solid rgba(79,126,255,.3)}
+.tb-all{background:rgba(34,197,94,.2);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
+.tb-unit{background:rgba(168,85,247,.2);color:#c084fc;border:1px solid rgba(168,85,247,.3)}
+.tb-mmmm{background:rgba(245,158,11,.2);color:#fbbf24;border:1px solid rgba(245,158,11,.3)}
+
+/* CARD META */
+.card-meta-row{display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap}
+
+/* TYPE SELECTOR */
+.type-sel-row{display:flex;gap:6px;flex-wrap:wrap}
+.type-sel-btn{padding:5px 12px;border-radius:var(--r-sm);font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--bd);background:var(--sur3);color:var(--tx2);transition:all .12s}
+.type-sel-btn:hover{border-color:var(--ac);color:var(--tx)}
+.type-sel-btn.on-ind{background:rgba(79,126,255,.2);color:#7ba4ff;border-color:rgba(79,126,255,.5)}
+.type-sel-btn.on-all{background:rgba(34,197,94,.2);color:#4ade80;border-color:rgba(34,197,94,.5)}
+.type-sel-btn.on-unit{background:rgba(168,85,247,.2);color:#c084fc;border-color:rgba(168,85,247,.5)}
+.type-sel-btn.on-mmmm{background:rgba(245,158,11,.2);color:#fbbf24;border-color:rgba(245,158,11,.5)}
+
+/* MEMBER CHIPS */
+.chip-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.chip{padding:5px 10px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .12s;user-select:none;text-align:center;line-height:1.3}
+.chip-inactive{background:var(--sur3);color:var(--tx3);border-color:var(--bd)}
+.chip-inactive:hover{border-color:var(--bd2);color:var(--tx2)}
+.chip-yejun-on{background:#f59e0b;color:#000;border-color:#f59e0b}
+.chip-noah-on{background:#06b6d4;color:#000;border-color:#06b6d4}
+.chip-bamby-on{background:#ec4899;color:#fff;border-color:#ec4899}
+.chip-eunho-on{background:#22c55e;color:#000;border-color:#22c55e}
+.chip-hamin-on{background:#a855f7;color:#fff;border-color:#a855f7}
+
+/* UNIT GRID */
+.unit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:4px;margin-top:6px}
+.unit-opt{padding:6px 8px;border-radius:var(--r-sm);font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--sur3);color:var(--tx3);transition:all .12s;text-align:center}
+.unit-opt:hover{border-color:var(--pk);color:var(--tx)}
+.unit-opt.on{background:rgba(168,85,247,.2);color:#c084fc;border-color:rgba(168,85,247,.5)}
+.unit-sub{font-size:9px;color:inherit;opacity:.7;display:block;margin-top:2px}
+
+/* MMMM GRID */
+.mmmm-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:6px}
+.mmmm-opt{padding:6px 4px;border-radius:var(--r-sm);font-size:10px;font-weight:700;cursor:pointer;border:1px solid var(--bd);background:var(--sur3);color:var(--tx3);transition:all .12s;text-align:center}
+.mmmm-opt:hover{border-color:var(--warn);color:var(--tx)}
+.mmmm-opt.on{background:rgba(245,158,11,.2);color:#fbbf24;border-color:rgba(245,158,11,.5)}
+.mmmm-sub{font-size:9px;display:block;margin-top:2px;opacity:.7}
+
+/* MEMO */
+.memo-textarea{font-size:11px;color:var(--tx2);background:var(--bg);border:1px dashed var(--bd);border-radius:var(--r-sm);padding:6px 9px;min-height:40px;resize:vertical;width:100%}
+.memo-textarea:focus{border-color:var(--ac);color:var(--tx)}
+.memo-textarea::placeholder{color:var(--tx3)}
+
+/* COLOR PICKER */
+.color-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+.col-opt{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s}
+.col-opt.on{border-color:#fff;transform:scale(1.15)}
+
+/* SET OVERVIEW */
+.set-ov{background:var(--sur2);border:1px solid var(--bd);border-radius:var(--r-sm);padding:9px 11px;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sec-ttl{font-size:11px;font-weight:700;color:var(--tx2);margin:14px 0 7px;padding-bottom:4px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+
+/* MODAL */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .2s}
+.ov.open{opacity:1;pointer-events:all}
+.modal{background:var(--sur);border:1px solid var(--bd2);border-radius:var(--r);width:100%;max-width:460px;max-height:90vh;display:flex;flex-direction:column;box-shadow:var(--sh)}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.modal-ttl{font-weight:700;font-size:13px}
+.modal-body{overflow-y:auto;padding:14px;flex:1}
+.modal-foot{display:flex;justify-content:flex-end;gap:6px;padding:10px 14px;border-top:1px solid var(--bd);flex-shrink:0}
+
+.toast-wrap{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:500;pointer-events:none}
+.toast{background:var(--sur3);border:1px solid var(--bd2);border-radius:20px;padding:7px 14px;font-size:12px;font-weight:600;white-space:nowrap;animation:tIn .2s ease,tOut .3s ease 1.7s forwards;margin-bottom:5px}
+@keyframes tIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes tOut{to{opacity:0}}
+.empty{text-align:center;padding:30px;color:var(--tx2)}
+
+/* LOCK SCREEN */
+.lock-screen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.lock-box{background:var(--sur);border:1px solid var(--bd2);border-radius:var(--r);padding:32px 28px;width:100%;max-width:320px;text-align:center;box-shadow:var(--sh)}
+.lock-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;background:linear-gradient(135deg,var(--warn),var(--err));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.lock-sub{font-size:11px;color:var(--tx3);margin-bottom:24px}
+.lock-digits{display:flex;justify-content:center;gap:10px;margin-bottom:18px}
+.lock-digit{width:48px;height:56px;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--tx);transition:border-color .15s}
+.lock-digit.filled{border-color:var(--ac);color:var(--ac)}
+.lock-digit.active{border-color:var(--warn);box-shadow:0 0 0 2px rgba(245,158,11,.2)}
+.lock-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.lock-key{height:48px;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--r-sm);font-size:18px;font-weight:600;color:var(--tx);cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center}
+.lock-key:hover{background:var(--sur3);border-color:var(--ac);color:var(--ac)}
+.lock-key:active{transform:scale(.95)}
+.lock-key.del{font-size:14px;color:var(--tx3)}
+.lock-key.del:hover{color:var(--err);border-color:var(--err)}
+.lock-err{font-size:11px;color:var(--err);min-height:16px;animation:shake .3s ease}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* GITHUB SETTINGS */
+.gh-status{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;white-space:nowrap}
+.gh-ok{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
+.gh-no{background:rgba(100,100,120,.15);color:var(--tx3);border:1px solid var(--bd)}
+.gh-err{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+.spin{display:inline-block;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:640px){
+  .main{flex-direction:column;height:auto;overflow:visible}
+  .sidebar{width:100%;border-right:none;border-bottom:1px solid var(--bd);overflow:visible}
+  .content{padding:10px}
+  .mmmm-grid{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+<!-- LOCK SCREEN -->
+<div class="lock-screen" id="lock-screen">
+  <div class="lock-box">
+    <div class="lock-logo">🔐 POCA ADMIN</div>
+    <div class="lock-sub">관리자 비밀번호를 입력하세요</div>
+    <div class="lock-digits" id="lock-digits">
+      <div class="lock-digit active" id="ld-0"></div>
+      <div class="lock-digit" id="ld-1"></div>
+      <div class="lock-digit" id="ld-2"></div>
+      <div class="lock-digit" id="ld-3"></div>
+    </div>
+    <div class="lock-keypad">
+      <div class="lock-key" onclick="lockKey('1')">1</div>
+      <div class="lock-key" onclick="lockKey('2')">2</div>
+      <div class="lock-key" onclick="lockKey('3')">3</div>
+      <div class="lock-key" onclick="lockKey('4')">4</div>
+      <div class="lock-key" onclick="lockKey('5')">5</div>
+      <div class="lock-key" onclick="lockKey('6')">6</div>
+      <div class="lock-key" onclick="lockKey('7')">7</div>
+      <div class="lock-key" onclick="lockKey('8')">8</div>
+      <div class="lock-key" onclick="lockKey('9')">9</div>
+      <div class="lock-key del" onclick="lockKey('clear')">✕</div>
+      <div class="lock-key" onclick="lockKey('0')">0</div>
+      <div class="lock-key del" onclick="lockKey('del')">⌫</div>
+    </div>
+    <div class="lock-err" id="lock-err"></div>
+  </div>
+</div>
+
+<div class="app" id="app-wrap" style="display:none">
+  <header class="hdr">
+    <div class="hdr-logo">⚙️ POCA ADMIN</div>
+    <div class="hdr-acts">
+      <span style="font-size:10px;color:var(--tx3)" id="db-info"></span>
+      <button class="btn btn-ok btn-sm" id="gh-save-btn" onclick="saveToGitHub()">☁️ GitHub 저장</button>
+      <span class="gh-status gh-no" id="gh-status">GitHub 미설정</span>
+      <button class="btn btn-ok btn-sm" onclick="saveExport()">💾 로컬 저장</button>
+      <button class="btn btn-s btn-sm" onclick="document.getElementById('imp-inp').click()">📥 DB 가져오기</button>
+      <button class="btn btn-s btn-sm" onclick="openGhSettings()">⚙️ GitHub</button>
+      <button class="btn btn-s btn-sm" onclick="window.open('index.html')">🔗 메인</button>
+      <input type="file" id="imp-inp" accept=".json" style="display:none" onchange="handleImport(this)">
+    </div>
+  </header>
+  <div class="main">
+    <div class="sidebar" id="sidebar"></div>
+    <div class="content" id="content">
+      <div class="empty" style="padding-top:60px"><div style="font-size:32px;margin-bottom:10px">⚙️</div>왼쪽에서 앨범을 선택하세요</div>
+    </div>
+  </div>
+</div><!-- /app-wrap -->
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<!-- Image modal -->
+<div class="ov" id="img-modal" onclick="if(event.target===this)closeModal('img-modal')">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-ttl" id="img-modal-ttl">이미지 설정</span>
+      <button onclick="closeModal('img-modal')" style="background:none;border:none;font-size:16px;color:var(--tx2);cursor:pointer">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="img-preview" style="width:100px;height:140px;border-radius:8px;overflow:hidden;margin:0 auto 12px;background:var(--sur2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;color:var(--tx3);font-size:11px"></div>
+      <label style="cursor:pointer">
+        <input type="file" accept="image/*" id="img-file" onchange="previewImg(this)" style="display:none">
+        <div class="btn btn-p" style="width:100%;justify-content:center">📷 이미지 선택</div>
+      </label>
+      <div style="font-size:10px;color:var(--tx3);margin-top:8px">이미지는 base64로 DB에 저장돼요.</div>
+      <div style="margin-top:10px"><button class="btn btn-d btn-sm" onclick="clearImg()">🗑 이미지 제거</button></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-s btn-sm" onclick="closeModal('img-modal')">취소</button>
+      <button class="btn btn-p btn-sm" onclick="applyImg()">적용</button>
+    </div>
+  </div>
+</div>
+
+<!-- GitHub Settings Modal -->
+<div class="ov" id="gh-modal" onclick="if(event.target===this)closeModal('gh-modal')">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-hdr">
+      <span class="modal-ttl">⚙️ GitHub 연동 설정</span>
+      <button onclick="closeModal('gh-modal')" style="background:none;border:none;font-size:16px;color:var(--tx2);cursor:pointer">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label class="fl">GitHub Personal Access Token (PAT)</label>
+        <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="ghDirty()">
+        <div style="font-size:10px;color:var(--tx3);margin-top:4px">repo 권한만 있으면 됩니다. 브라우저에만 저장됩니다.</div>
+      </div>
+      <div class="fg">
+        <label class="fl">GitHub 사용자명</label>
+        <input type="text" id="gh-owner" placeholder="your-username" oninput="ghDirty()">
+      </div>
+      <div class="fg">
+        <label class="fl">Repository 이름</label>
+        <input type="text" id="gh-repo" placeholder="poca-collection" oninput="ghDirty()">
+      </div>
+      <div class="fg">
+        <label class="fl">Branch</label>
+        <input type="text" id="gh-branch" placeholder="main" oninput="ghDirty()">
+      </div>
+      <div class="fg">
+        <label class="fl">DB 파일 경로 (repo 안 경로)</label>
+        <input type="text" id="gh-path" placeholder="poca_db.json" oninput="ghDirty()">
+      </div>
+      <div id="gh-test-result" style="font-size:11px;min-height:16px;margin-top:4px"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-s btn-sm" onclick="testGhConnection()">🔍 연결 테스트</button>
+      <button class="btn btn-s btn-sm" onclick="closeModal('gh-modal')">취소</button>
+      <button class="btn btn-p btn-sm" onclick="saveGhSettings()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- Card Detail Modal -->
+<div class="ov" id="card-modal" onclick="if(event.target===this)closeModal('card-modal')">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-hdr">
+      <span class="modal-ttl" id="card-modal-ttl">카드 상세 편집</span>
+      <button onclick="closeModal('card-modal')" style="background:none;border:none;font-size:16px;color:var(--tx2);cursor:pointer">✕</button>
+    </div>
+    <div class="modal-body" id="card-modal-body"></div>
+    <div class="modal-foot">
+      <button class="btn btn-s btn-sm" onclick="closeModal('card-modal')">닫기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── LOCK SCREEN ───────────────────────────────────────
+const ADMIN_PW = '0312';
+const SESSION_KEY = 'poca_admin_auth';
+let lockInput = '';
+
+function lockKey(k){
+  const err = document.getElementById('lock-err');
+  err.textContent = '';
+  if(k === 'clear'){ lockInput = ''; }
+  else if(k === 'del'){ lockInput = lockInput.slice(0,-1); }
+  else if(lockInput.length < 4){ lockInput += k; }
+
+  // update digits
+  for(let i=0;i<4;i++){
+    const d = document.getElementById('ld-'+i);
+    d.textContent = lockInput[i] ? '●' : '';
+    d.className = 'lock-digit' +
+      (lockInput[i] ? ' filled' : '') +
+      (lockInput.length === i ? ' active' : '');
+  }
+
+  if(lockInput.length === 4){
+    if(lockInput === ADMIN_PW){
+      sessionStorage.setItem(SESSION_KEY,'1');
+      document.getElementById('lock-screen').style.display='none';
+      document.getElementById('app-wrap').style.display='flex';
+      document.getElementById('app-wrap').style.flexDirection='column';
+      init();
+    } else {
+      err.textContent = '비밀번호가 틀렸습니다 ✕';
+      lockInput = '';
+      for(let i=0;i<4;i++){
+        const d = document.getElementById('ld-'+i);
+        d.textContent=''; d.className='lock-digit'+(i===0?' active':'');
+      }
+      // shake effect
+      const box = document.querySelector('.lock-box');
+      box.style.animation='none'; box.offsetHeight;
+      box.style.animation='shake .3s ease';
+    }
+  }
+}
+
+// keyboard support for lock screen
+document.addEventListener('keydown', e => {
+  if(document.getElementById('lock-screen').style.display === 'none') return;
+  if(e.key >= '0' && e.key <= '9') lockKey(e.key);
+  else if(e.key === 'Backspace') lockKey('del');
+  else if(e.key === 'Escape') lockKey('clear');
+});
+
+function checkSession(){
+  if(sessionStorage.getItem(SESSION_KEY)==='1'){
+    document.getElementById('lock-screen').style.display='none';
+    document.getElementById('app-wrap').style.cssText='display:flex;flex-direction:column;min-height:100vh';
+    return true;
+  }
+  return false;
+}
+
+// ── GITHUB API ─────────────────────────────────────────
+const GH_KEY = 'poca_gh_cfg';
+
+function loadGhCfg(){
+  try{ return JSON.parse(localStorage.getItem(GH_KEY))||{}; }catch(e){ return {}; }
+}
+function saveGhSettings(){
+  const cfg = {
+    token:  document.getElementById('gh-token').value.trim(),
+    owner:  document.getElementById('gh-owner').value.trim(),
+    repo:   document.getElementById('gh-repo').value.trim(),
+    branch: document.getElementById('gh-branch').value.trim()||'main',
+    path:   document.getElementById('gh-path').value.trim()||'poca_db.json',
+  };
+  localStorage.setItem(GH_KEY, JSON.stringify(cfg));
+  updateGhStatus();
+  closeModal('gh-modal');
+  toast('GitHub 설정 저장됨');
+}
+function openGhSettings(){
+  const cfg = loadGhCfg();
+  document.getElementById('gh-token').value  = cfg.token||'';
+  document.getElementById('gh-owner').value  = cfg.owner||'';
+  document.getElementById('gh-repo').value   = cfg.repo||'';
+  document.getElementById('gh-branch').value = cfg.branch||'main';
+  document.getElementById('gh-path').value   = cfg.path||'poca_db.json';
+  document.getElementById('gh-test-result').textContent = '';
+  document.getElementById('gh-modal').classList.add('open');
+}
+function ghDirty(){ document.getElementById('gh-test-result').textContent=''; }
+
+async function testGhConnection(){
+  const cfg = {
+    token:  document.getElementById('gh-token').value.trim(),
+    owner:  document.getElementById('gh-owner').value.trim(),
+    repo:   document.getElementById('gh-repo').value.trim(),
+    branch: document.getElementById('gh-branch').value.trim()||'main',
+    path:   document.getElementById('gh-path').value.trim()||'poca_db.json',
+  };
+  const el = document.getElementById('gh-test-result');
+  if(!cfg.token||!cfg.owner||!cfg.repo){ el.style.color='var(--err)'; el.textContent='필수 항목을 입력하세요'; return; }
+  el.style.color='var(--tx2)'; el.textContent='⏳ 연결 중...';
+  try{
+    const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path}?ref=${cfg.branch}`;
+    const r = await fetch(url,{headers:{Authorization:`token ${cfg.token}`,'Accept':'application/vnd.github.v3+json'}});
+    if(r.status===200){ el.style.color='var(--ok)'; el.textContent='✅ 연결 성공! 파일을 찾았습니다.'; }
+    else if(r.status===404){ el.style.color='var(--warn)'; el.textContent='⚠️ 파일 없음 (첫 저장 시 자동 생성됩니다)'; }
+    else if(r.status===401){ el.style.color='var(--err)'; el.textContent='❌ 인증 실패 — Token을 확인하세요'; }
+    else{ el.style.color='var(--err)'; el.textContent=`❌ 오류 ${r.status}`; }
+  }catch(e){ el.style.color='var(--err)'; el.textContent='❌ 네트워크 오류: '+e.message; }
+}
+
+function updateGhStatus(){
+  const cfg = loadGhCfg();
+  const el = document.getElementById('gh-status');
+  if(!el) return;
+  if(cfg.token && cfg.owner && cfg.repo){
+    el.className='gh-status gh-ok'; el.textContent=`☁️ ${cfg.owner}/${cfg.repo}`;
+  } else {
+    el.className='gh-status gh-no'; el.textContent='GitHub 미설정';
+  }
+}
+
+async function saveToGitHub(){
+  const cfg = loadGhCfg();
+  if(!cfg.token||!cfg.owner||!cfg.repo){
+    toast('⚙️ GitHub 설정을 먼저 해주세요'); openGhSettings(); return;
+  }
+  saveDB();
+  const btn = document.getElementById('gh-save-btn');
+  btn.disabled=true; btn.textContent='⏳ 저장 중...';
+  try{
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(DB,null,2))));
+    const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path}`;
+    // get current SHA (needed for update)
+    let sha = null;
+    try{
+      const r = await fetch(`${url}?ref=${cfg.branch||'main'}`,{headers:{Authorization:`token ${cfg.token}`,'Accept':'application/vnd.github.v3+json'}});
+      if(r.ok){ const j=await r.json(); sha=j.sha; }
+    }catch(e){}
+
+    const body = {
+      message:`[admin] DB update ${new Date().toLocaleString('ko-KR')}`,
+      content,
+      branch: cfg.branch||'main',
+    };
+    if(sha) body.sha = sha;
+
+    const res = await fetch(url,{
+      method:'PUT',
+      headers:{Authorization:`token ${cfg.token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
+      body:JSON.stringify(body)
+    });
+    if(res.ok){
+      toast('✅ GitHub 저장 완료! Vercel 재배포 시작됩니다');
+      btn.textContent='☁️ GitHub 저장';
+    } else {
+      const j = await res.json();
+      toast('❌ 저장 실패: '+(j.message||res.status));
+      btn.textContent='☁️ GitHub 저장';
+    }
+  }catch(e){
+    toast('❌ 오류: '+e.message);
+    btn.textContent='☁️ GitHub 저장';
+  }
+  btn.disabled=false;
+}
+
+// ── CONSTANTS ──────────────────────────────────────────
+
+const ALBUM_PRESETS = [
+  { key:'POCAALBUM',  ko:'포카',      en:'POCAALBUM',  color:'#4f7eff' },
+  { key:'PHOTOBOOK',  ko:'포토북',    en:'PHOTOBOOK',  color:'#7b5fff' },
+  { key:'INVENTORY',  ko:'인벤토리',  en:'INVENTORY',  color:'#06b6d4' },
+  { key:'IDPASS',     ko:'아이디패스', en:'IDPASS',     color:'#a855f7' },
+  { key:'EXCLUSIVE',  ko:'미공포',    en:'EXCLUSIVE',  color:'#f59e0b' },
+];
+
+const MEMBERS = [
+  { ko:'예준', en:'Yejun', colorOn:'#f59e0b', dark:true },
+  { ko:'노아',  en:'Noah',  colorOn:'#06b6d4', dark:true },
+  { ko:'밤비', en:'Bamby', colorOn:'#ec4899', dark:false },
+  { ko:'은호', en:'Eunho', colorOn:'#22c55e', dark:true },
+  { ko:'하민', en:'Hamin', colorOn:'#a855f7', dark:false },
+];
+
+const UNITS = [
+  { ko:'맛탕즈', members:['예준','노아'] },
+  { ko:'베리즈', members:['예준','밤비'] },
+  { ko:'댕댕즈', members:['예준','은호'] },
+  { ko:'예라인', members:['예준','하민'] },
+  { ko:'쁜라인', members:['노아','밤비'] },
+  { ko:'노라인', members:['노아','은호'] },
+  { ko:'냥냥즈', members:['노아','하민'] },
+  { ko:'야타즈', members:['밤비','은호'] },
+  { ko:'댄라즈', members:['밤비','하민'] },
+  { ko:'댕냥즈', members:['은호','하민'] },
+];
+
+const MMMM_LIST = [
+  { ko:'몌무', en:'Meymu' },
+  { ko:'뫄',   en:'Moi'   },
+  { ko:'미므', en:'Miimu' },
+  { ko:'므모', en:'Muhmo' },
+  { ko:'먀미', en:'Meowmi'},
+];
+
+const CARD_TYPES = [
+  { key:'Individual', ko:'개인', en:'Individual', cls:'on-ind' },
+  { key:'All',        ko:'단체', en:'All',        cls:'on-all' },
+  { key:'Unit',       ko:'유닛', en:'Unit',       cls:'on-unit' },
+  { key:'MMMM',       ko:'므메미무', en:'MMMM',   cls:'on-mmmm' },
+];
+
+// ── DB ─────────────────────────────────────────────────
+
+const DB_KEY = 'plave_poca_db_v3';
+const DEF_DB = {
+  meta: { title:'PLAVE 포카 DB', version:'3.0.0' },
+  albumTypes: [
+    { id:'poca',      name:'포카',      albumType:'POCAALBUM', shortName:'포카',    color:'#4f7eff', sets:[] },
+    { id:'photobook', name:'포토북',    albumType:'PHOTOBOOK', shortName:'포북',    color:'#7b5fff', sets:[] },
+    { id:'inventory', name:'인벤토리',  albumType:'INVENTORY', shortName:'인벤',    color:'#06b6d4', sets:[] },
+    { id:'idpass',    name:'아이디패스', albumType:'IDPASS',   shortName:'아이디',  color:'#a855f7', sets:[] },
+    { id:'exclusive', name:'미공포',    albumType:'EXCLUSIVE', shortName:'미공포',  color:'#f59e0b', sets:[] },
+  ]
+};
+
+let DB = null, selAlb = null, selSet = null;
+let imgAlb = null, imgSet = null, imgCard = null, imgPending = null;
+let editAlb = null, editSet = null, editCard = null;
+
+function loadDB(){
+  const s = localStorage.getItem(DB_KEY);
+  if(s){ DB = JSON.parse(s); return; }
+  const legacy = localStorage.getItem('plave_poca_db_v2');
+  DB = legacy ? migrateDB(JSON.parse(legacy)) : JSON.parse(JSON.stringify(DEF_DB));
+}
+function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }
+function genId(p){ return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5); }
+function fAlb(id){ return DB.albumTypes.find(a=>a.id===id); }
+function fSet(ai,si){ const a=fAlb(ai); return a?a.sets.find(s=>s.id===si):null; }
+function fCard(ai,si,ci){ const s=fSet(ai,si); return s?s.cards.find(c=>c.id===ci):null; }
+
+function newCard(name, type, member, unit, mmmm){
+  return { id:genId('c'), name:name||'카드', img:null,
+    cardType:type||'Individual', member:member||null,
+    unit:unit||null, mmmm:mmmm||null, memo:'' };
+}
+
+function migrateDB(old){
+  const n = JSON.parse(JSON.stringify(old));
+  n.meta = n.meta||{}; n.meta.version = '3.0.0';
+  for(const alb of n.albumTypes){
+    if(!alb.albumType) alb.albumType = 'POCAALBUM';
+    for(const set of (alb.sets||[])){
+      for(const card of (set.cards||[])){
+        if(!card.cardType){
+          const m = MEMBERS.find(m=>m.ko===card.name);
+          card.cardType = m ? 'Individual' : 'All';
+          card.member = m ? m.ko : null;
+          card.unit = null; card.mmmm = null;
+        }
+        if(card.memo===undefined) card.memo = '';
+      }
+    }
+  }
+  return n;
+}
+
+// ── HELPERS ────────────────────────────────────────────
+
+function getTypeCls(ct){
+  return {Individual:'tb-ind',All:'tb-all',Unit:'tb-unit',MMMM:'tb-mmmm'}[ct]||'tb-ind';
+}
+function getTypeLabel(card){
+  switch(card.cardType){
+    case'Individual': return card.member||'개인';
+    case'All': return '단체';
+    case'Unit': return card.unit||'유닛';
+    case'MMMM': return card.mmmm||'므메미무';
+    default: return card.cardType||'?';
+  }
+}
+function getTypeEnLabel(card){
+  switch(card.cardType){
+    case'Individual':{
+      const m=MEMBERS.find(m=>m.ko===card.member);
+      return m?m.en:(card.member||'Individual');
+    }
+    case'All': return 'All';
+    case'Unit':{
+      const u=UNITS.find(u=>u.ko===card.unit);
+      if(!u) return card.unit||'Unit';
+      return u.members.map(mk=>{const m=MEMBERS.find(m=>m.ko===mk);return m?m.en:mk;}).join(' & ');
+    }
+    case'MMMM':{
+      const mm=MMMM_LIST.find(m=>m.ko===card.mmmm);
+      return mm?mm.en:(card.mmmm||'MMMM');
+    }
+    default: return card.cardType||'?';
+  }
+}
+function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toast(msg){
+  const w=document.getElementById('toast-wrap');
+  const el=document.createElement('div'); el.className='toast'; el.textContent=msg;
+  w.appendChild(el); setTimeout(()=>el.remove(),2200);
+}
+
+// ── SIDEBAR ────────────────────────────────────────────
+
+function renderSidebar(){
+  let h = `<div class="sb-sec">앨범 종류</div>`;
+  for(const a of DB.albumTypes){
+    const preset = ALBUM_PRESETS.find(p=>p.key===a.albumType);
+    const tag = preset ? `<span style="font-size:9px;color:var(--tx3);flex-shrink:0">${preset.en}</span>` : '';
+    h += `<div class="sb-alb${selAlb===a.id&&!selSet?' on':''}" onclick="selAlbum('${a.id}')">
+      <span class="sb-dot" style="background:${a.color}"></span>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escH(a.name)}</span>
+      ${tag}
+    </div>`;
+    if(selAlb===a.id){
+      for(const s of a.sets)
+        h += `<div class="sb-set${selSet===s.id?' on':''}" onclick="selSetFn('${a.id}','${s.id}')">${escH(s.name)} <span style="opacity:.5">(${s.cards.length})</span></div>`;
+      h += `<div style="padding:3px 6px 3px 24px"><button class="btn btn-s btn-sm" style="font-size:10px" onclick="addSet('${a.id}')">+ 세트</button></div>`;
+    }
+  }
+  h += `<div style="margin-top:8px;padding:6px"><button class="btn btn-s btn-sm" style="width:100%;justify-content:center" onclick="addAlbum()">+ 앨범 추가</button></div>`;
+  document.getElementById('sidebar').innerHTML = h;
+  const el = document.getElementById('db-info');
+  if(el){ let t=0; DB.albumTypes.forEach(a=>a.sets.forEach(s=>t+=s.cards.length)); el.textContent=`총 ${t}장`; }
+}
+
+// ── ALBUM VIEW ─────────────────────────────────────────
+
+function renderAlbumView(){
+  const a = fAlb(selAlb); if(!a) return;
+  const COLORS = ['#4f7eff','#7b5fff','#06b6d4','#a855f7','#22c55e','#f59e0b','#ef4444','#ec4899','#14b8a6'];
+  const presetOpts = ALBUM_PRESETS.map(p=>`<option value="${p.key}"${a.albumType===p.key?' selected':''}>${p.ko} (${p.en})</option>`).join('');
+  let h = `<div class="card">
+    <div class="card-hdr">
+      <div class="card-ttl">
+        <span style="width:10px;height:10px;border-radius:50%;background:${a.color};display:inline-block"></span>앨범 편집
+      </div>
+      <button class="btn btn-d btn-sm" onclick="delAlbum('${a.id}')">🗑 삭제</button>
+    </div>
+    <div class="fr2">
+      <div class="fg"><label class="fl">앨범 이름</label>
+        <input value="${escH(a.name)}" oninput="updAlb('${a.id}','name',this.value)"></div>
+      <div class="fg"><label class="fl">짧은 이름 (뱃지)</label>
+        <input value="${escH(a.shortName||'')}" oninput="updAlb('${a.id}','shortName',this.value)" maxlength="8"></div>
+    </div>
+    <div class="fg"><label class="fl">앨범 타입</label>
+      <select style="width:100%" onchange="updAlb('${a.id}','albumType',this.value);renderSidebar()">
+        ${presetOpts}
+        <option value=""${!a.albumType?' selected':''}>-- 직접 지정 --</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">색상</label>
+      <div class="color-row">
+        ${COLORS.map(c=>`<div class="col-opt${a.color===c?' on':''}" style="background:${c}" onclick="updAlb('${a.id}','color','${c}');renderAlbumView();renderSidebar()"></div>`).join('')}
+        <input type="color" value="${a.color}" oninput="updAlb('${a.id}','color',this.value);renderSidebar()" style="width:28px;height:22px;padding:0 2px;border-radius:4px;cursor:pointer;flex-shrink:0">
+      </div>
+    </div>
+  </div>
+  <div class="sec-ttl">세트 목록 <button class="btn btn-p btn-sm" onclick="addSet('${a.id}')">+ 세트 추가</button></div>`;
+  for(const s of a.sets){
+    const imgCnt = s.cards.filter(c=>c.img).length;
+    h += `<div class="set-ov"><div>
+      <span style="font-weight:700;font-size:12px">${escH(s.name)}</span>
+      <span style="font-size:10px;color:var(--tx2);margin-left:8px">${s.cards.length}종 · 이미지 ${imgCnt}/${s.cards.length}</span>
+    </div><div style="display:flex;gap:4px">
+      <button class="btn btn-s btn-sm" onclick="selSetFn('${a.id}','${s.id}')">✏️ 편집</button>
+      <button class="btn btn-d btn-sm" onclick="delSet('${a.id}','${s.id}')">🗑</button>
+    </div></div>`;
+  }
+  if(!a.sets.length) h += `<div class="empty" style="padding:20px"><button class="btn btn-p btn-sm" onclick="addSet('${a.id}')">+ 세트 추가</button></div>`;
+  document.getElementById('content').innerHTML = h;
+}
+
+// ── SET VIEW ───────────────────────────────────────────
+
+function renderSetView(){
+  const a = fAlb(selAlb), s = fSet(selAlb,selSet); if(!s) return;
+  let h = `<div class="card">
+    <div class="card-hdr">
+      <div class="card-ttl">
+        <span style="width:9px;height:9px;border-radius:50%;background:${a.color};display:inline-block"></span>
+        <span style="color:${a.color};font-size:11px">${escH(a.name)}</span> / 세트 편집
+      </div>
+      <button class="btn btn-d btn-sm" onclick="delSet('${a.id}','${s.id}')">🗑 삭제</button>
+    </div>
+    <div class="fg"><label class="fl">세트 이름</label>
+      <input value="${escH(s.name)}" oninput="updSet('${a.id}','${s.id}','name',this.value)">
+    </div>
+  </div>
+  <div class="sec-ttl">
+    <span>포토카드 <span style="color:var(--tx3)">(${s.cards.length}종)</span></span>
+    <div style="display:flex;gap:4px;flex-wrap:wrap">
+      <button class="btn btn-s btn-sm" onclick="quickAdd5('${a.id}','${s.id}')">👥 개인 5종 추가</button>
+      <button class="btn btn-s btn-sm" onclick="quickAddAll('${a.id}','${s.id}')">🎴 단체 추가</button>
+      <button class="btn btn-p btn-sm" onclick="addCard('${a.id}','${s.id}')">+ 빈 카드</button>
+    </div>
+  </div>
+  <div style="font-size:10px;color:var(--tx3);margin-bottom:10px">📷 클릭 → 이미지 설정 &nbsp;·&nbsp; ✏️ 클릭 → 타입·메모 편집</div>`;
+
+  for(let i=0; i<s.cards.length; i++){
+    const card = s.cards[i];
+    const lbl = getTypeLabel(card);
+    const enLbl = getTypeEnLabel(card);
+    const tbCls = getTypeCls(card.cardType);
+    const hasMemo = card.memo && card.memo.trim();
+    h += `<div class="card-item">
+      <div class="card-item-top">
+        <div class="crd-img" onclick="openImgModal('${a.id}','${s.id}','${card.id}')" title="이미지 설정">
+          ${card.img ? `<img src="${card.img}" alt="${escH(card.name)}">` : `<span>📷<br>없음</span>`}
+        </div>
+        <div class="card-item-body">
+          <input value="${escH(card.name)}" oninput="updCard('${a.id}','${s.id}','${card.id}','name',this.value)" style="font-size:12px;padding:4px 8px;font-weight:600">
+          <div class="card-meta-row">
+            <span class="type-badge ${tbCls}">${lbl}</span>
+            <span style="font-size:9px;color:var(--tx3)">${enLbl}</span>
+          </div>
+          ${hasMemo ? `<div style="font-size:10px;color:var(--tx2);margin-top:4px;padding:3px 7px;background:var(--bg);border-left:2px solid var(--bd2);border-radius:0 4px 4px 0;line-height:1.4">💬 ${escH(card.memo)}</div>` : ''}
+        </div>
+        <div class="card-item-acts">
+          <button class="iBtn" title="상세 편집" onclick="openCardModal('${a.id}','${s.id}','${card.id}')">✏️</button>
+          <button class="iBtn" onclick="moveCard('${a.id}','${s.id}','${card.id}',-1)" ${i===0?'disabled style="opacity:.3"':''}>↑</button>
+          <button class="iBtn" onclick="moveCard('${a.id}','${s.id}','${card.id}',1)" ${i===s.cards.length-1?'disabled style="opacity:.3"':''}>↓</button>
+          <button class="iBtn btn-d" onclick="delCard('${a.id}','${s.id}','${card.id}')">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }
+  if(!s.cards.length) h += `<div class="empty" style="padding:20px">
+    <div style="margin-bottom:10px;color:var(--tx3)">카드가 없어요</div>
+    <button class="btn btn-p btn-sm" onclick="quickAdd5('${a.id}','${s.id}')">👥 개인 5종 추가</button>
+  </div>`;
+  document.getElementById('content').innerHTML = h;
+}
+
+// ── CARD MODAL ─────────────────────────────────────────
+
+function openCardModal(ai,si,ci){
+  editAlb=ai; editSet=si; editCard=ci;
+  const card = fCard(ai,si,ci); if(!card) return;
+  document.getElementById('card-modal-ttl').textContent = `카드 편집: ${card.name}`;
+  buildCardModal(card);
+  document.getElementById('card-modal').classList.add('open');
+}
+
+function buildCardModal(card){
+  // Type buttons
+  const typeBtns = CARD_TYPES.map(t=>{
+    const on = card.cardType===t.key;
+    return `<button class="type-sel-btn${on?' '+t.cls:''}" onclick="setCardType('${t.key}')">${t.ko}<br><span style="font-size:9px;opacity:.65;font-weight:400">${t.en}</span></button>`;
+  }).join('');
+
+  // Sub-selector based on type
+  let subHtml = '';
+  if(card.cardType==='Individual'){
+    subHtml = `<div style="margin-top:8px"><label class="fl">멤버 선택</label>
+      <div class="chip-row">
+        ${MEMBERS.map(m=>{
+          const on = card.member===m.ko;
+          const style = on ? `background:${m.colorOn};color:${m.dark?'#000':'#fff'};border-color:${m.colorOn}` : '';
+          return `<span class="chip ${on?'':'chip-inactive'}" style="${style}" onclick="setCardMember('${m.ko}')">${m.ko}<br><span style="font-size:9px;opacity:.75">${m.en}</span></span>`;
+        }).join('')}
+      </div>
+    </div>`;
+  } else if(card.cardType==='All'){
+    subHtml = `<div style="margin-top:8px;padding:8px;background:var(--sur3);border-radius:var(--r-sm);font-size:11px;color:var(--tx2)">
+      🎴 단체 (All) — 멤버 전체 포함
+    </div>`;
+  } else if(card.cardType==='Unit'){
+    subHtml = `<div style="margin-top:8px"><label class="fl">유닛 선택</label>
+      <div class="unit-grid">
+        ${UNITS.map(u=>{
+          const on = card.unit===u.ko;
+          const enMembers = u.members.map(mk=>{const m=MEMBERS.find(m=>m.ko===mk);return m?m.en:mk;}).join(' & ');
+          return `<div class="unit-opt${on?' on':''}" onclick="setCardUnit('${u.ko}')">
+            ${u.ko}<span class="unit-sub">${enMembers}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  } else if(card.cardType==='MMMM'){
+    subHtml = `<div style="margin-top:8px"><label class="fl">므메미무 선택</label>
+      <div class="mmmm-grid">
+        ${MMMM_LIST.map(m=>{
+          const on = card.mmmm===m.ko;
+          return `<div class="mmmm-opt${on?' on':''}" onclick="setCardMMMM('${m.ko}')">
+            ${m.ko}<span class="mmmm-sub">${m.en}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  const enInfo = getTypeEnLabel(card);
+  document.getElementById('card-modal-body').innerHTML = `
+    <div class="fg"><label class="fl">카드 이름</label>
+      <input id="cm-name" value="${escH(card.name)}" oninput="updEditField('name',this.value)">
+    </div>
+    <div class="fg"><label class="fl">카드 타입</label>
+      <div class="type-sel-row">${typeBtns}</div>
+      ${subHtml}
+    </div>
+    <div class="fg"><label class="fl">메모 💬</label>
+      <textarea class="memo-textarea" placeholder="예: 랜덤 포카 SSR · 홀로그램 · 한정 특전 등 특징을 적어주세요" oninput="updEditField('memo',this.value)">${escH(card.memo||'')}</textarea>
+    </div>
+    <div style="font-size:10px;color:var(--tx3);padding:6px 8px;background:var(--sur2);border-radius:var(--r-sm);display:flex;gap:10px;flex-wrap:wrap">
+      <span><span style="color:var(--tx2)">EN:</span> ${enInfo}</span>
+      <span><span style="color:var(--tx2)">ID:</span> ${card.id}</span>
+    </div>`;
+}
+
+function setCardType(type){
+  const card = fCard(editAlb,editSet,editCard); if(!card) return;
+  card.cardType = type;
+  if(type==='Individual'){ card.unit=null; card.mmmm=null; }
+  else if(type==='All'){ card.member=null; card.unit=null; card.mmmm=null; }
+  else if(type==='Unit'){ card.member=null; card.mmmm=null; }
+  else if(type==='MMMM'){ card.member=null; card.unit=null; }
+  saveDB(); buildCardModal(card); renderSetView();
+}
+function setCardMember(m){
+  const card = fCard(editAlb,editSet,editCard); if(!card) return;
+  card.member = m;
+  const isAutoName = !card.name || MEMBERS.some(mb=>mb.ko===card.name) || UNITS.some(u=>u.ko===card.name) || MMMM_LIST.some(mm=>mm.ko===card.name) || card.name==='단체';
+  if(isAutoName) card.name = m;
+  saveDB(); buildCardModal(card); renderSetView();
+  const inp = document.getElementById('cm-name'); if(inp) inp.value = card.name;
+}
+function setCardUnit(u){
+  const card = fCard(editAlb,editSet,editCard); if(!card) return;
+  card.unit = u;
+  const isAutoName = !card.name || MEMBERS.some(mb=>mb.ko===card.name) || UNITS.some(un=>un.ko===card.name) || MMMM_LIST.some(mm=>mm.ko===card.name) || card.name==='단체';
+  if(isAutoName) card.name = u;
+  saveDB(); buildCardModal(card); renderSetView();
+  const inp = document.getElementById('cm-name'); if(inp) inp.value = card.name;
+}
+function setCardMMMM(m){
+  const card = fCard(editAlb,editSet,editCard); if(!card) return;
+  card.mmmm = m;
+  const isAutoName = !card.name || MEMBERS.some(mb=>mb.ko===card.name) || UNITS.some(u=>u.ko===card.name) || MMMM_LIST.some(mm=>mm.ko===card.name) || card.name==='단체';
+  if(isAutoName) card.name = m;
+  saveDB(); buildCardModal(card); renderSetView();
+  const inp = document.getElementById('cm-name'); if(inp) inp.value = card.name;
+}
+function updEditField(k,v){
+  const card = fCard(editAlb,editSet,editCard); if(!card) return;
+  card[k] = v; saveDB();
+  if(k==='name') renderSetView();
+  if(k==='memo') renderSetView();
+}
+
+// ── CRUD ───────────────────────────────────────────────
+
+function addAlbum(){
+  const id = genId('alb');
+  DB.albumTypes.push({ id, name:'새 앨범', albumType:'POCAALBUM', shortName:'신규', color:'#4f7eff', sets:[] });
+  saveDB(); selAlb=id; selSet=null; renderSidebar(); renderAlbumView(); toast('앨범 추가됨');
+}
+function updAlb(ai,k,v){ const a=fAlb(ai); if(a){a[k]=v;saveDB();} }
+function delAlbum(ai){
+  if(!confirm('이 앨범을 삭제할까요?')) return;
+  DB.albumTypes = DB.albumTypes.filter(a=>a.id!==ai);
+  saveDB(); selAlb=null; selSet=null; renderSidebar();
+  document.getElementById('content').innerHTML = '<div class="empty">앨범을 선택하세요</div>'; toast('삭제 완료');
+}
+function addSet(ai){
+  const a = fAlb(ai); if(!a) return;
+  const id = genId('set');
+  const cards = MEMBERS.map(m => newCard(m.ko,'Individual',m.ko,null,null));
+  a.sets.push({ id, name:`${String.fromCharCode(65+a.sets.length)}세트`, cards });
+  saveDB(); selSet=id; renderSidebar(); renderSetView(); toast('세트 추가됨 (개인 5종 자동 포함)');
+}
+function updSet(ai,si,k,v){ const s=fSet(ai,si); if(s){s[k]=v;saveDB();} }
+function delSet(ai,si){
+  if(!confirm('이 세트를 삭제할까요?')) return;
+  const a=fAlb(ai); if(a){ a.sets=a.sets.filter(s=>s.id!==si); saveDB(); selSet=null; renderSidebar(); renderAlbumView(); toast('삭제 완료'); }
+}
+function addCard(ai,si){
+  const s = fSet(ai,si); if(!s) return;
+  s.cards.push(newCard(`카드${s.cards.length+1}`,'Individual',null,null,null));
+  saveDB(); renderSetView();
+}
+function quickAdd5(ai,si){
+  const s = fSet(ai,si); if(!s) return;
+  MEMBERS.forEach(m => s.cards.push(newCard(m.ko,'Individual',m.ko,null,null)));
+  saveDB(); renderSetView(); toast('개인 5종 추가됨');
+}
+function quickAddAll(ai,si){
+  const s = fSet(ai,si); if(!s) return;
+  s.cards.push(newCard('단체','All',null,null,null));
+  saveDB(); renderSetView(); toast('단체 카드 추가됨');
+}
+function updCard(ai,si,ci,k,v){ const c=fCard(ai,si,ci); if(c){c[k]=v;saveDB();} }
+function delCard(ai,si,ci){
+  if(!confirm('삭제?')) return;
+  const s=fSet(ai,si); if(s){ s.cards=s.cards.filter(c=>c.id!==ci); saveDB(); renderSetView(); }
+}
+function moveCard(ai,si,ci,d){
+  const s = fSet(ai,si); if(!s) return;
+  const i = s.cards.findIndex(c=>c.id===ci); if(i<0) return;
+  const ni = i+d; if(ni<0||ni>=s.cards.length) return;
+  [s.cards[i],s.cards[ni]] = [s.cards[ni],s.cards[i]];
+  saveDB(); renderSetView();
+}
+
+// ── IMAGE MODAL ────────────────────────────────────────
+
+function openImgModal(ai,si,ci){
+  imgAlb=ai; imgSet=si; imgCard=ci; imgPending=null;
+  const card = fCard(ai,si,ci); if(!card) return;
+  document.getElementById('img-modal-ttl').textContent = `${card.name} 이미지`;
+  const prev = document.getElementById('img-preview');
+  prev.innerHTML = card.img ? `<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">` : `<span>이미지 없음</span>`;
+  document.getElementById('img-file').value = '';
+  document.getElementById('img-modal').classList.add('open');
+}
+function closeModal(id){ document.getElementById(id).classList.remove('open'); imgPending=null; }
+function previewImg(inp){
+  if(!inp.files[0]) return;
+  const r = new FileReader();
+  r.onload = e=>{ imgPending=e.target.result; document.getElementById('img-preview').innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`; };
+  r.readAsDataURL(inp.files[0]);
+}
+function applyImg(){
+  const c = fCard(imgAlb,imgSet,imgCard); if(!c) return;
+  if(imgPending!==null) c.img = imgPending;
+  saveDB(); closeModal('img-modal'); renderSetView(); toast('이미지 저장됨 ✓');
+}
+function clearImg(){
+  const c = fCard(imgAlb,imgSet,imgCard);
+  if(c){ c.img=null; saveDB(); renderSetView(); }
+  closeModal('img-modal'); toast('이미지 제거됨');
+}
+
+// ── IMPORT / EXPORT ────────────────────────────────────
+
+function saveExport(){
+  saveDB();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(DB,null,2)],{type:'application/json'}));
+  a.download = 'poca_db.json'; a.click(); toast('DB 저장·내보내기 완료 ✓');
+}
+function handleImport(inp){
+  if(!inp.files[0]) return;
+  const r = new FileReader();
+  r.onload = e=>{
+    try{
+      let d = JSON.parse(e.target.result);
+      const needsMigration = d.albumTypes && d.albumTypes.some(a=>a.sets.some(s=>s.cards.some(c=>!c.cardType)));
+      if(needsMigration){ d=migrateDB(d); toast('구 DB → v3 자동 변환 완료'); }
+      DB=d; saveDB(); renderSidebar();
+      document.getElementById('content').innerHTML='<div class="empty" style="padding-top:40px"><div style="font-size:28px;margin-bottom:8px">✅</div><div>DB 가져오기 완료!</div></div>';
+      toast('DB 가져오기 완료');
+    }catch(e){ toast('파싱 오류!'); }
+  };
+  r.readAsText(inp.files[0]);
+}
+
+// ── INIT ───────────────────────────────────────────────
+
+function selAlbum(id){ selAlb=id; selSet=null; renderSidebar(); renderAlbumView(); }
+function selSetFn(ai,si){ selAlb=ai; selSet=si; renderSidebar(); renderSetView(); }
+
+function init(){
+  loadDB(); renderSidebar(); updateGhStatus();
+  fetch('./poca_db.json').then(r=>r.json()).then(d=>{
+    const needsMigration = d.albumTypes && d.albumTypes.some(a=>a.sets.some(s=>s.cards.some(c=>!c.cardType)));
+    DB = needsMigration ? migrateDB(d) : d;
+    saveDB(); renderSidebar(); toast('poca_db.json 로드됨');
+  }).catch(()=>{});
+}
+
+// Entry point — check session first, otherwise show lock
+if(!checkSession()){
+  // lock screen is already visible, init() called after successful unlock
+}
+</script>
+</body>
+</html>

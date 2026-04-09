@@ -1006,7 +1006,7 @@
       "id": "inventory",
       "name": "인벤토리앨범",
       "shortName": "인벤",
-      "color": "#06b6d4",
+      "color": "#ec4899",
       "sets": [
         {
           "id": "inv_A",
@@ -1344,7 +1344,7 @@
       "id": "idpass",
       "name": "아이디 패스앨범",
       "shortName": "아이디",
-      "color": "#a855f7",
+      "color": "#c9c9c9",
       "sets": [
         {
           "id": "idp_A",
