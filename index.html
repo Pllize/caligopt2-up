@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<title>Caligo Pt.2 포토카드 수집 트래커</title>
+<title>${t('tradeShotHdr')}</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -363,19 +363,43 @@ const T={
     setTtl:'⚙️ 설정',setBackupBtn:'💾 지금 백업하기',setRestoreBtn:'📂 백업 파일로 복원하기',setResetBtn:'⚠️ 전체 초기화',setCloseBtn:'닫기',
     wizTtl:'🎯 빠른 목표 설정',
     statAll:'전체',statColl:'수집',statGoal:'달성',
-    filtAlbums:'앨범',filtMembers:'멤버 (개인 카드)',filtUnits:'유닛 카드',filtMmms:'MMMM',filtExcUnits:'유닛 카드 제외',filtExcAll:'단체 카드 제외',filtExcMmmm:'MMMM 카드 제외',
+    filtAlbums:'앨범',filtMembers:'멤버 (개인 카드)',filtUnits:'유닛 카드',filtMmms:'MMMM',
+    filtExcUnits:'유닛 카드 제외',filtExcAll:'단체 카드 제외',filtExcMmmm:'MMMM 카드 제외',
+    filtViewMode:'보기 방식',filtFlatView:'📋 카드만 나열 (세트 구분 없음)',filtExcOpts:'제외 옵션',
+    filtBtn:'🔍 필터',
+    tradeFlatBtn:'📋 카드 나열',
+    shotPlain:'📷 보이는 대로 찍기',shotMeta:'📋 카드 정보 포함해서 찍기',
     visAll:'👁 전체',visHave:'✨ 있는것',visNot:'🔍 없는것',
     collBtn:'▼ 접기',expandBtn:'▶ 펼치기',shotBtn:'📸',goalReset:'🗑',
-    tradeWant:'🔍 구해요',tradeHave:'✨ 있어요',tradeWantUnit:'개',tradeHaveUnit:'개',
-    tradeFilt:'앨범 필터',
+    tradeWant:'구해요',tradeHave:'있어요',tradeWantSub:'🔍',tradeHaveSub:'✨',tradeUnit:'개',
+    tradeFilt:'앨범 필터',tradeShot:'교환 스크린샷',
+    noGoalHint:'설정된 목표가 없어요. <b>목표</b> 탭에서 수집 목표를 설정해보세요!',noGoalGo:'이동',
+    noGoalTtl:'아직 설정된 목표가 없어요',noGoalDesc:'마법사를 통해 목표를 설정해보세요.<br>목표를 설정하면 수집·교환 현황을 트래킹할 수 있어요.',
+    noGoalBtn:'🎯 마법사로 목표 설정하기',
+    wizStep1:'🎯 Step 1/2 — 앨범 선택',wizStep2:'🎯 Step 2/2 — 멤버 & 수량',
+    wizAlbDesc:'수집할 앨범을 선택하세요',wizInclUnpo:'미공포 포함',
+    wizMemDesc:'멤버 선택 시 해당 유닛 카드도 자동 포함돼요.',wizAutoUnit:'자동 포함 유닛: ',
+    wizInclAll:'단체(All) 카드 포함',wizInclMmmm:'MMMM 카드 포함',wizQtyLabel:'수량',wizQtyUnit:'장',
     wizNext:'다음 →',wizPrev:'← 이전',wizApply:'설정 완료 ✓',wizLater:'나중에',
+    wizWarnAlb:'앨범을 선택해주세요',wizWarnMem:'멤버 또는 카드 종류를 선택해주세요',
     applyDone:'✅ 목표 설정 완료!\n\n적용된 카드: {count}장\n멤버: {members}\n{units}{all}{mmmm}\n목표 탭으로 이동할까요?',
+    applyUnitLabel:'유닛 (자동포함): ',applyInclAll:'단체 카드 포함\n',applyInclMmmm:'MMMM 카드 포함\n',
     reportPlaceholder:'제보 내용을 입력해 주세요 (카드명, 수정 내용 등)...',
-    reportSend:'제보 보내기 →',
-    reportEmpty:'내용을 입력해 주세요.',
+    reportSend:'제보 보내기 →',reportEmpty:'내용을 입력해 주세요.',
     reportSent:'✅ 제보가 전송됐어요! 검수 후 등록/수정 예정이에요. 감사합니다 💙',
     reportFail:'전송 실패. 직접 이메일로 보내주세요: pllize0312@gmail.com',
     memoPlaceholder:'메모...',
+    hideBtn:'🚫 있어요에서 숨기기',showBtn:'👁 있어요에 다시 표시',
+    hideConfirm:'있어요 목록에서 숨길까요? (수집 수는 유지됩니다)',showConfirm:'다시 있어요 목록에 표시할까요?',
+    hideToast:'있어요에서 숨겼어요',showToast:'있어요에 표시됩니다',
+    goalResetConfirm:'모든 목표를 0으로 초기화할까요?',goalResetToast:'목표 초기화 완료',
+    tradeEmpty:'수집 정보를 입력하면 교환 현황이 자동으로 표시돼요.\n목표보다 적으면 🔍 구해요, 더 많으면 ✨ 있어요에 나타나요.',
+    resetConfirm:'모든 수집·목표·메모를 초기화할까요?',resetToast:'초기화 완료',
+    backupToast:'백업 파일 저장됨 ✓',restoreToast:'복원 완료 ✓',restoreErr:'파일 오류',
+    achToast:'🎉 달성!',
+    shotReady:'스크린샷 준비 중...',shotDone:'📸 저장 완료!',shotFail:'실패: ',shotLib:'라이브러리 로드 실패',shotEmpty:'교환할 카드가 없어요',
+    colShotHdr:'Caligo Pt.2 수집 현황',tradeShotHdr:'Caligo Pt.2 포토카드 수집 트래커',
+    collapseAll:'모두 접음',expandAll:'모두 펼침',
   },
   en:{
     appSub:'Photocard Collection Tracker',
@@ -386,19 +410,43 @@ const T={
     setTtl:'⚙️ Settings',setBackupBtn:'💾 Backup Now',setRestoreBtn:'📂 Restore from Backup',setResetBtn:'⚠️ Reset All Data',setCloseBtn:'Close',
     wizTtl:'🎯 Quick Target Setup',
     statAll:'Total',statColl:'Collected',statGoal:'Goal',
-    filtAlbums:'Albums',filtMembers:'Members (Individual)',filtUnits:'Unit Cards',filtMmms:'MMMM',filtExcUnits:'Exclude Units',filtExcAll:'Exclude Group',filtExcMmmm:'Exclude MMMM',
+    filtAlbums:'Albums',filtMembers:'Members (Individual)',filtUnits:'Unit Cards',filtMmms:'MMMM',
+    filtExcUnits:'Exclude Units',filtExcAll:'Exclude Group',filtExcMmmm:'Exclude MMMM',
+    filtViewMode:'View Mode',filtFlatView:'📋 FLAT VIEW (no set grouping)',filtExcOpts:'Exclude Options',
+    filtBtn:'🔍 FILTER',
+    tradeFlatBtn:'📋 FLAT VIEW',
+    shotPlain:'📷 Screenshot as-is',shotMeta:'📋 Include card info',
     visAll:'👁 All',visHave:'✨ Have',visNot:'🔍 Need',
     collBtn:'▼ Collapse',expandBtn:'▶ Expand',shotBtn:'📸',goalReset:'🗑',
-    tradeWant:'🔍 Wanted',tradeHave:'✨ For Trade',tradeWantUnit:'',tradeHaveUnit:'',
-    tradeFilt:'Album Filter',
+    tradeWant:'WANT',tradeHave:'HAVE',tradeWantSub:'🔍',tradeHaveSub:'✨',tradeUnit:'',
+    tradeFilt:'Album Filter',tradeShot:'Exchange Screenshot',
+    noGoalHint:'No targets set. Go to <b>Target</b> tab to set collection goals!',noGoalGo:'Go',
+    noGoalTtl:'No targets set yet',noGoalDesc:'Set your collection targets to track progress.',
+    noGoalBtn:'🎯 Quick Target Setup',
+    wizStep1:'🎯 Step 1/2 — Select Albums',wizStep2:'🎯 Step 2/2 — Members & Qty',
+    wizAlbDesc:'Select albums to collect',wizInclUnpo:'Include unreleased',
+    wizMemDesc:'Selecting a member auto-includes their unit cards.',wizAutoUnit:'Auto-included units: ',
+    wizInclAll:'Include group (All) cards',wizInclMmmm:'Include MMMM cards',wizQtyLabel:'Quantity',wizQtyUnit:'',
     wizNext:'Next →',wizPrev:'← Back',wizApply:'Confirm ✓',wizLater:'Later',
-    applyDone:'✅ Target set!\n\nCards: {count}\nMembers: {members}\n{units}{all}{mmmm}\nGo to Target tab?',
+    wizWarnAlb:'Please select at least one album',wizWarnMem:'Please select members or card types',
+    applyDone:'✅ Targets set!\n\nCards: {count}\nMembers: {members}\n{units}{all}{mmmm}\nGo to Target tab?',
+    applyUnitLabel:'Units (auto): ',applyInclAll:'Group cards included\n',applyInclMmmm:'MMMM cards included\n',
     reportPlaceholder:'Describe the issue (card name, correction, etc.)...',
-    reportSend:'Send Report →',
-    reportEmpty:'Please enter a description.',
+    reportSend:'Send Report →',reportEmpty:'Please enter a description.',
     reportSent:'✅ Sent! Will be reviewed and updated soon. Thank you 💙',
     reportFail:'Failed. Please email: pllize0312@gmail.com',
     memoPlaceholder:'Memo...',
+    hideBtn:'🚫 Excluding from the exchange (HAVE) list',showBtn:'👁 Re-add to HAVE list',
+    hideConfirm:'Exclude from the exchange (HAVE) list?\n(Collected count is preserved)',showConfirm:'Re-add to the HAVE list?',
+    hideToast:'Excluded from HAVE list',showToast:'Shown in HAVE list',
+    goalResetConfirm:'Reset all targets to 0?',goalResetToast:'Targets reset',
+    tradeEmpty:'Enter your collection data to see exchange status.\nCards below target → 🔍 WANT, Cards above → ✨ HAVE',
+    resetConfirm:'Reset all collection, target, and memo data?',resetToast:'Reset complete',
+    backupToast:'Backup saved ✓',restoreToast:'Restored ✓',restoreErr:'File error',
+    achToast:'🎉 Target reached!',
+    shotReady:'Preparing screenshot...',shotDone:'📸 Saved!',shotFail:'Failed: ',shotLib:'Failed to load library',shotEmpty:'No cards to show',
+    colShotHdr:'Caligo Pt.2 Collection Status',tradeShotHdr:'Caligo Pt.2 Photocard Collection Tracker',
+    collapseAll:'Collapsed',expandAll:'Expanded',
   }
 };
 let lang='ko';
@@ -616,13 +664,13 @@ function _renderKeepScroll(fn){
 function colSec(k){UI.col[k]=!UI.col[k];saveUI();_renderKeepScroll(renderCollect);}
 function mColSec(k){UI.mgl[k]=!UI.mgl[k];saveUI();_renderKeepScroll(renderGoals);}
 function tColSec(k){UI.tcol[k]=!UI.tcol[k];saveUI();_renderKeepScroll(renderTrade);}
-function collapseAll(){if(!DB)return;for(const a of DB.albumTypes)for(const s of a.sets)UI.col[s.id]=true;UI.collapseC=true;saveUI();_renderKeepScroll(renderCollect);toast('모두 접음');}
-function expandAll(){UI.col={};UI.collapseC=false;saveUI();_renderKeepScroll(renderCollect);toast('모두 펼침');}
+function collapseAll(){if(!DB)return;for(const a of DB.albumTypes)for(const s of a.sets)UI.col[s.id]=true;UI.collapseC=true;saveUI();_renderKeepScroll(renderCollect);toast(t('collapseAll'));}
+function expandAll(){UI.col={};UI.collapseC=false;saveUI();_renderKeepScroll(renderCollect);toast(t('expandAll'));}
 function toggleCollapseC(){if(UI.collapseC)expandAll();else collapseAll();}
 function colAllGoals(){if(!DB)return;for(const a of DB.albumTypes)for(const s of a.sets)UI.mgl[s.id]=true;UI.collapseG=true;saveUI();_renderKeepScroll(renderGoals);}
 function expAllGoals(){UI.mgl={};UI.collapseG=false;saveUI();_renderKeepScroll(renderGoals);toast('모두 펼침');}
 function toggleCollapseG(){if(UI.collapseG)expAllGoals();else colAllGoals();}
-function resetAllGoals(){if(!confirm('모든 목표를 0으로 초기화할까요?'))return;ST.goals={};saveST();renderGoals();toast('목표 초기화 완료');}
+function resetAllGoals(){if(!confirm(t('goalResetConfirm')))return;ST.goals={};saveST();renderGoals();toast(t('goalResetToast'));}
 function cycleVis(fKey,cb){const f=UI[fKey];if(f.vis==='all')f.vis='have';else if(f.vis==='have')f.vis='nothave';else f.vis='all';saveUI();_renderKeepScroll(cb==='renderCollect'?renderCollect:cb==='renderGoals'?renderGoals:renderCur);}
 function visLabel(vis){if(vis==='have')return t('visHave');if(vis==='nothave')return t('visNot');return t('visAll');}
 
@@ -650,11 +698,11 @@ function renderFilterPanel(f){
   for(const m of MMMS){const on=f.mmms.includes(m);h+=`<span class="fchip${on?' on':''}" data-fk="mmms" data-fv="${m}" onclick="toggleFchip(this)">${m}</span>`;}
   h+=`</div></div>`;
   // Flat view toggle
-  h+=`<div class="filt-sec"><div class="filt-sec-title">보기 방식</div><div class="filt-chips">
-    <span class="fchip${f.flatView?' on':''}" data-fk-exc="flatView" onclick="toggleFchipExc(this,'flatView')">📋 카드만 나열 (세트 구분 없음)</span>
+  h+=`<div class="filt-sec"><div class="filt-sec-title">${t('filtViewMode')}</div><div class="filt-chips">
+    <span class="fchip${f.flatView?' on':''}" data-fk-exc="flatView" onclick="toggleFchipExc(this,'flatView')">${t('filtFlatView')}</span>
   </div></div>`;
   // Exclude toggles
-  h+=`<div class="filt-sec"><div class="filt-sec-title">제외 옵션</div><div class="filt-chips">
+  h+=`<div class="filt-sec"><div class="filt-sec-title">${t('filtExcOpts')}</div><div class="filt-chips">
     <span class="fchip${f.excUnits?' on':''}" data-fk-exc="excUnits" onclick="toggleFchipExc(this,'excUnits')">${t('filtExcUnits')}</span>
     <span class="fchip${f.excAll?' on':''}" data-fk-exc="excAll" onclick="toggleFchipExc(this,'excAll')">${t('filtExcAll')}</span>
     <span class="fchip${f.excMmmm?' on':''}" data-fk-exc="excMmmm" onclick="toggleFchipExc(this,'excMmmm')">${t('filtExcMmmm')}</span>
@@ -691,7 +739,7 @@ function topBarHTML(statsHTML,filtTarget,f,collapseState,onCollapse,onVis,extraR
     <div class="spacer"></div>
     <button class="ctrl-btn" onclick="cycleVis('${filtTarget==='collect'?'cf':'mf'}',${onVis})">${visLabel(f.vis)}</button>
     <button class="ctrl-btn" onclick="${onCollapse}">${collapseState?t('expandBtn'):t('collBtn')}</button>
-    <button class="filter-btn${filtActive?' active':''}" onclick="openFilter('${filtTarget}')">🔍 필터${filtActive?' ●':''}</button>
+    <button class="filter-btn${filtActive?' active':''}" onclick="openFilter('${filtTarget}')">${t('filtBtn')}${filtActive?' ●':''}</button>
     ${extraRight||''}
   </div>
   <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;align-items:center">
@@ -863,7 +911,7 @@ function renderTrade(){
   const tradeTopBar=`<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:8px">
     <button class="ctrl-btn${!tf.albs.length?' active':''}" onclick="setTradeAlb(null)">${lang==='ko'?'전체':'All'}</button>
     ${DB.albumTypes.map(a=>`<button class="ctrl-btn" onclick="setTradeAlb('${a.id}')" style="${tf.albs.includes(a.id)?`background:${a.color};border-color:${a.color};color:#fff`:`border-color:${a.color}55;color:${a.color}`}">${a.shortName}</button>`).join('')}
-    <button class="filter-btn${tf.flatView?' active':''}" onclick="toggleTradeFlatView()">📋 카드 나열${tf.flatView?' ●':''}</button>
+    <button class="filter-btn${tf.flatView?' active':''}" onclick="toggleTradeFlatView()">${t('tradeFlatBtn')}${tf.flatView?' ●':''}</button>
     <div class="spacer"></div>
     ${tradeShotBtn}
   </div>`;
@@ -1130,16 +1178,26 @@ function renderUsage(){
 /* ══════════════════════════════════
    SCREENSHOT
 ══════════════════════════════════ */
+
+/* Preload images using browser cache — avoids extra CDN hits during screenshot */
+async function preloadImages(cards){
+  const urls=[...new Set(cards.filter(x=>x.img).map(x=>x.img))];
+  await Promise.allSettled(urls.map(url=>new Promise(res=>{
+    // Check if already in cache via fetch with cache:'force-cache'
+    fetch(url,{mode:'no-cors',cache:'force-cache'}).then(res).catch(res);
+  })));
+}
 async function loadH2C(){if(window.html2canvas)return;return new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
 async function exportScreenshot(withMeta){
-  toast('스크린샷 준비 중...');try{await loadH2C();}catch(e){toast('라이브러리 로드 실패');return;}
+  toast(t('shotReady'));try{await loadH2C();}catch(e){toast(t('shotLib'));return;}
   const all=allCards();
   const tf=UI.tf;
   const wAll=all.filter(x=>wt(x.id)>0);
   const hAll=all.filter(x=>sp(x.id)>0&&!hid(x.id));
   const wCards=tf.albs.length?wAll.filter(x=>tf.albs.includes(x.aId)):wAll;
   const hCards=tf.albs.length?hAll.filter(x=>tf.albs.includes(x.aId)):hAll;
-  if(!wCards.length&&!hCards.length){toast('교환할 카드가 없어요');return;}
+  if(!wCards.length&&!hCards.length){toast(t('shotEmpty'));return;}
+  await preloadImages([...wCards,...hCards]);
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   const bg=dark?'#08090f':'#f0f2f9',tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
   const now=new Date().toLocaleDateString('ko-KR'),lscape=isLS();
@@ -1160,19 +1218,20 @@ async function exportScreenshot(withMeta){
   area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:${padding}px;color:${dark?'#e8edf8':'#141830'}`;
   const hdr=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid ${bd}"><div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Caligo Pt.2 포토카드 수집 트래커</div><div style="font-size:10px;color:${tx2}">${now}</div></div>`;
 
-  const shotCard=(card,mode,showMeta)=>{
+  const shotCard=(card,mode,showMeta,idx)=>{
     const cnt=mode==='w'?wt(card.id):sp(card.id);
     const bdCol=mode==='w'?'rgba(244,63,94,.4)':'rgba(59,130,246,.4)';
     const stripBg=mode==='w'?'rgba(244,63,94,.1)':'rgba(59,130,246,.1)';
     const stripCol=mode==='w'?'#f43f5e':'#3b82f6';
     const r=findCard(card.id);
     const metaLine=(showMeta&&r)?`<div style="padding:1px 3px;font-size:6px;color:${tx2};text-align:center;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(0,0,0,.05)">${r.alb.shortName} ${r.set.name}</div>`:'';
-    return`<div style="border-radius:5px;overflow:hidden;border:1px solid ${bdCol}"><div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${bdCol.replace('.4','.1')}">${card.img?`<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}</div><div style="padding:2px 3px;background:${stripBg};font-size:8px;font-weight:800;color:${stripCol};text-align:center">${mode==='w'?'−':'+'} ${cnt}</div>${metaLine}</div>`;
+    const numBadge=idx?`<div style="position:absolute;top:2px;left:2px;background:rgba(0,0,0,.6);color:#fff;font-size:6px;font-weight:800;border-radius:3px;padding:1px 3px;line-height:1.2">${idx}</div>`:'';
+    return`<div style="border-radius:5px;overflow:hidden;border:1px solid ${bdCol};position:relative"><div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${bdCol.replace('.4','.1')};position:relative">${card.img?`<img src="${card.img}" crossorigin="anonymous" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}${numBadge}</div><div style="padding:2px 3px;background:${stripBg};font-size:8px;font-weight:800;color:${stripCol};text-align:center">${mode==='w'?'−':'+'} ${cnt}</div>${metaLine}</div>`;
   };
 
   const buildSide=(cards,mode,showMeta,colCount)=>{
     if(tf.flatView){
-      return`<div style="display:grid;grid-template-columns:repeat(${colCount},1fr);gap:4px">${cards.map(card=>shotCard(card,mode,showMeta)).join('')}</div>`;
+      return`<div style="display:grid;grid-template-columns:repeat(${colCount},1fr);gap:4px">${cards.map((card,i)=>shotCard(card,mode,showMeta,i+1)).join('')}</div>`;
     } else {
       let h='';
       for(const alb of DB.albumTypes){
@@ -1203,8 +1262,8 @@ async function exportScreenshot(withMeta){
   }
   try{
     const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:w});
-    const link=document.createElement('a');link.download=`교환_${now.replace(/\./g,'')}.png`;link.href=canvas.toDataURL('image/png');link.click();toast('📸 저장 완료!');
-  }catch(e){toast('실패: '+e.message);}
+    const link=document.createElement('a');link.download=`교환_${now.replace(/\./g,'')}.png`;link.href=canvas.toDataURL('image/png');link.click();toast(t('shotDone'));
+  }catch(e){toast(t('shotFail')+e.message);}
   area.innerHTML='';
 }
 function toggleShotMenu(btn){
@@ -1235,8 +1294,8 @@ document.addEventListener('click',e=>{
 });
 
 async function exportCollectScreenshot(withMeta){
-  // withMeta: true = show album+set name below card, false = plain
-  toast('스크린샷 준비 중...');try{await loadH2C();}catch(e){toast('라이브러리 로드 실패');return;}
+  toast(t('shotReady'));try{await loadH2C();}catch(e){toast(t('shotLib'));return;}
+  await preloadImages(allCards());
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   const bg=dark?'#08090f':'#f0f2f9',tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
   const now=new Date().toLocaleDateString('ko-KR'),lscape=isLS();
@@ -1260,7 +1319,7 @@ async function exportCollectScreenshot(withMeta){
     else{statusTx='';statusBg='transparent';}
     const metaLine=showMeta?`<div style="padding:2px 3px;font-size:6px;color:${tx2};text-align:center;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(0,0,0,.06)">${alb.shortName} ${set.name}</div>`:'';
     return`<div style="border-radius:5px;overflow:hidden;border:1px solid ${bdr}">
-      <div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${alb.color}22">${card.img?`<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}</div>
+      <div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${alb.color}22">${card.img?`<img src="${card.img}" crossorigin="anonymous" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}</div>
       <div style="padding:2px 4px;background:${statusBg};font-size:8px;font-weight:800;text-align:center;color:${st==='c'?'#f43f5e':st==='m'?'#22c55e':st==='h'?'#3b82f6':'#888'};white-space:nowrap;overflow:hidden">${statusTx||'&nbsp;'}</div>
       ${metaLine}
     </div>`;
@@ -1302,8 +1361,8 @@ async function exportCollectScreenshot(withMeta){
   area.innerHTML=hdr+body;
   try{
     const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:w});
-    const link=document.createElement('a');link.download=`수집_${now.replace(/\./g,'')}.png`;link.href=canvas.toDataURL('image/png');link.click();toast('📸 저장 완료!');
-  }catch(e){toast('실패: '+e.message);}
+    const link=document.createElement('a');link.download=`수집_${now.replace(/\./g,'')}.png`;link.href=canvas.toDataURL('image/png');link.click();toast(t('shotDone'));
+  }catch(e){toast(t('shotFail')+e.message);}
   area.innerHTML='';
 }
 
@@ -1312,9 +1371,9 @@ async function exportCollectScreenshot(withMeta){
 ══════════════════════════════════ */
 function showSettings(){document.getElementById('set-ov').classList.add('open');}
 function closeSheet(id){document.getElementById(id).classList.remove('open');}
-function importState(inp){if(!inp.files[0])return;const r=new FileReader();r.onload=e=>{try{ST=JSON.parse(e.target.result);ST.goals=ST.goals||{};ST.collected=ST.collected||{};ST.memos=ST.memos||{};ST.hidden=ST.hidden||{};saveST();closeSheet('set-ov');renderCur();toast('복원 완료 ✓');}catch(e){toast('파일 오류');}};r.readAsText(inp.files[0]);}
-function exportState(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(ST,null,2)],{type:'application/json'}));a.download=`포카백업_${new Date().toISOString().split('T')[0]}.json`;a.click();toast('백업 파일 저장됨 ✓');}
-function resetState(){if(!confirm('모든 수집·목표·메모를 초기화할까요?'))return;ST={goals:{},collected:{},memos:{},hidden:{}};saveST();closeSheet('set-ov');renderCur();toast('초기화 완료');}
+function importState(inp){if(!inp.files[0])return;const r=new FileReader();r.onload=e=>{try{ST=JSON.parse(e.target.result);ST.goals=ST.goals||{};ST.collected=ST.collected||{};ST.memos=ST.memos||{};ST.hidden=ST.hidden||{};saveST();closeSheet('set-ov');renderCur();toast(t('restoreToast'));}catch(e){toast(t('restoreErr'));}};r.readAsText(inp.files[0]);}
+function exportState(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(ST,null,2)],{type:'application/json'}));a.download=`포카백업_${new Date().toISOString().split('T')[0]}.json`;a.click();toast(t('backupToast'));}
+function resetState(){if(!confirm(t('resetConfirm')))return;ST={goals:{},collected:{},memos:{},hidden:{}};saveST();closeSheet('set-ov');renderCur();toast(t('resetToast'));}
 function applyTheme(t){document.documentElement.setAttribute('data-theme',t);const b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'🌙':'☀️';const lb=document.getElementById('ls-theme-btn');if(lb)lb.textContent=t==='dark'?'🌙 테마':'☀️ 테마';}
 function toggleTheme(){UI.theme=UI.theme==='dark'?'light':'dark';applyTheme(UI.theme);saveUI();}
 function toast(msg){const w=document.getElementById('tw');const el=document.createElement('div');el.className='toast';el.textContent=msg;w.appendChild(el);setTimeout(()=>el.remove(),2100);}
