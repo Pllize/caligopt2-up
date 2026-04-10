@@ -1132,7 +1132,6 @@ function renderUsage(){
 ══════════════════════════════════ */
 async function loadH2C(){if(window.html2canvas)return;return new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
 async function exportScreenshot(withMeta){
-  // withMeta: true = show album+set name below each card (only meaningful in flatView)
   toast('스크린샷 준비 중...');try{await loadH2C();}catch(e){toast('라이브러리 로드 실패');return;}
   const all=allCards();
   const tf=UI.tf;
@@ -1143,12 +1142,24 @@ async function exportScreenshot(withMeta){
   if(!wCards.length&&!hCards.length){toast('교환할 카드가 없어요');return;}
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   const bg=dark?'#08090f':'#f0f2f9',tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
-  const now=new Date().toLocaleDateString('ko-KR'),lscape=isLS(),w=lscape?720:360;
+  const now=new Date().toLocaleDateString('ko-KR'),lscape=isLS();
+  // total canvas width
+  const w=lscape?720:360;
+  const padding=12; // area padding
+  const gap=10;     // gap between want/have columns
+  const innerPad=8; // padding inside each wrap div
+  const bothSides=wCards.length>0&&hCards.length>0;
+  // available width for cards inside each column
+  const colW=bothSides&&lscape
+    ? Math.floor((w - padding*2 - gap) / 2 - innerPad*2)
+    : w - padding*2 - innerPad*2;
+  const CARD_W=60; // card min width for screenshot
+  const cols=Math.max(1, Math.floor((colW+4)/(CARD_W+4))); // +4 for gap
+
   const area=document.getElementById('shot-area');
-  area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:12px;color:${dark?'#e8edf8':'#141830'}`;
+  area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:${padding}px;color:${dark?'#e8edf8':'#141830'}`;
   const hdr=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid ${bd}"><div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Caligo Pt.2 포토카드 수집 트래커</div><div style="font-size:10px;color:${tx2}">${now}</div></div>`;
 
-  // Helper: render one card tile for screenshot
   const shotCard=(card,mode,showMeta)=>{
     const cnt=mode==='w'?wt(card.id):sp(card.id);
     const bdCol=mode==='w'?'rgba(244,63,94,.4)':'rgba(59,130,246,.4)';
@@ -1156,24 +1167,13 @@ async function exportScreenshot(withMeta){
     const stripCol=mode==='w'?'#f43f5e':'#3b82f6';
     const r=findCard(card.id);
     const metaLine=(showMeta&&r)?`<div style="padding:1px 3px;font-size:6px;color:${tx2};text-align:center;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(0,0,0,.05)">${r.alb.shortName} ${r.set.name}</div>`:'';
-    return`<div style="border-radius:5px;overflow:hidden;border:1px solid ${bdCol}">
-      <div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${bdCol.replace('.4','.1')}">
-        ${card.img?`<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}
-      </div>
-      <div style="padding:2px 3px;background:${stripBg};font-size:8px;font-weight:800;color:${stripCol};text-align:center">${mode==='w'?'−':'+'} ${cnt}</div>
-      ${metaLine}
-    </div>`;
+    return`<div style="border-radius:5px;overflow:hidden;border:1px solid ${bdCol}"><div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${bdCol.replace('.4','.1')}">${card.img?`<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}</div><div style="padding:2px 3px;background:${stripBg};font-size:8px;font-weight:800;color:${stripCol};text-align:center">${mode==='w'?'−':'+'} ${cnt}</div>${metaLine}</div>`;
   };
 
-  // Helper: build one side (want or have) for screenshot
-  const buildSide=(cards,mode,showMeta)=>{
+  const buildSide=(cards,mode,showMeta,colCount)=>{
     if(tf.flatView){
-      // Flat: all cards in one grid
-      return`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:4px">
-        ${cards.map(card=>shotCard(card,mode,showMeta)).join('')}
-      </div>`;
+      return`<div style="display:grid;grid-template-columns:repeat(${colCount},1fr);gap:4px">${cards.map(card=>shotCard(card,mode,showMeta)).join('')}</div>`;
     } else {
-      // Section view
       let h='';
       for(const alb of DB.albumTypes){
         const ac=cards.filter(x=>x.aId===alb.id);if(!ac.length)continue;
@@ -1181,9 +1181,7 @@ async function exportScreenshot(withMeta){
         const sids=[...new Set(ac.map(x=>x.sId))];
         for(const sid of sids){
           const sc=ac.filter(x=>x.sId===sid);
-          h+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:3px;margin-bottom:4px">
-            ${sc.map(card=>shotCard(card,mode,false)).join('')}
-          </div>`;
+          h+=`<div style="display:grid;grid-template-columns:repeat(${colCount},1fr);gap:3px;margin-bottom:4px">${sc.map(card=>shotCard(card,mode,false)).join('')}</div>`;
         }
         h+='</div>';
       }
@@ -1193,11 +1191,13 @@ async function exportScreenshot(withMeta){
 
   const wLabel=`<div style="font-weight:800;font-size:13px;color:#f43f5e;margin-bottom:6px">🔍 구해요 (WANT) ${wCards.reduce((a,x)=>a+wt(x.id),0)}개</div>`;
   const hLabel=`<div style="font-weight:800;font-size:13px;color:#3b82f6;margin-bottom:6px">✨ 있어요 (HAVE) ${hCards.reduce((a,x)=>a+sp(x.id),0)}개</div>`;
-  const wWrap=wCards.length?`<div style="background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);border-radius:8px;padding:8px">${wLabel}${buildSide(wCards,'w',withMeta)}</div>`:'';
-  const hWrap=hCards.length?`<div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:8px">${hLabel}${buildSide(hCards,'h',withMeta)}</div>`:'';
+  const wWrap=wCards.length?`<div style="background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);border-radius:8px;padding:${innerPad}px;flex:1;min-width:0">${wLabel}${buildSide(wCards,'w',withMeta,cols)}</div>`:'';
+  const hWrap=hCards.length?`<div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:${innerPad}px;flex:1;min-width:0">${hLabel}${buildSide(hCards,'h',withMeta,cols)}</div>`:'';
 
-  if(lscape){
-    area.innerHTML=`${hdr}<div style="display:flex;gap:10px">${wWrap}${hWrap}</div>`;
+  if(lscape&&wCards.length&&hCards.length){
+    area.innerHTML=`${hdr}<div style="display:flex;gap:${gap}px">${wWrap}${hWrap}</div>`;
+  } else if(lscape){
+    area.innerHTML=`${hdr}${wWrap||hWrap}`;
   } else {
     area.innerHTML=hdr+(wWrap?wWrap+'<div style="margin-bottom:10px"></div>':'')+hWrap;
   }
@@ -1239,9 +1239,13 @@ async function exportCollectScreenshot(withMeta){
   toast('스크린샷 준비 중...');try{await loadH2C();}catch(e){toast('라이브러리 로드 실패');return;}
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   const bg=dark?'#08090f':'#f0f2f9',tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
-  const now=new Date().toLocaleDateString('ko-KR'),lscape=isLS(),w=lscape?720:360;
+  const now=new Date().toLocaleDateString('ko-KR'),lscape=isLS();
+  const w=lscape?720:360;
+  const PAD=12,GAP=4,CARD=62;
+  const innerW=w-PAD*2;
+  const cols=Math.max(1,Math.floor((innerW+GAP)/(CARD+GAP)));
   const area=document.getElementById('shot-area');
-  area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:12px;color:${dark?'#e8edf8':'#141830'}`;
+  area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:${PAD}px;color:${dark?'#e8edf8':'#141830'}`;
   const f=UI.cf;
   const albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
 
@@ -1272,8 +1276,7 @@ async function exportCollectScreenshot(withMeta){
       else if(f.vis==='nothave')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
       allFlatCards=allFlatCards.concat(cards.map(card=>({card,alb,set})));
     }
-    body=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:4px">
-      ${allFlatCards.map(({card,alb,set})=>cardHtml(card,alb,set,withMeta)).join('')}
+    body=`<div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:${GAP}px">${allFlatCards.map(({card,alb,set})=>cardHtml(card,alb,set,withMeta)).join('')}
     </div>`;
   } else {
     // Section view
@@ -1288,8 +1291,7 @@ async function exportCollectScreenshot(withMeta){
           <span style="background:${alb.color};color:#fff;padding:2px 7px;border-radius:6px;font-size:9px">${alb.shortName}</span>
           <span>${set.name}</span>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:3px">
-          ${cards.map(card=>cardHtml(card,alb,set,false)).join('')}
+        <div style="display:grid;grid-template-columns:repeat(${Math.min(cards.length,cols)},1fr);gap:3px">${cards.map(card=>cardHtml(card,alb,set,false)).join('')}
         </div>
       </div>`;
     }
