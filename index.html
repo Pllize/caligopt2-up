@@ -851,12 +851,21 @@ function renderTrade(){
   }
 
   // album filter bar + flat view toggle for trade
+  const tradeShotBtn=tf.flatView
+    ? `<div style="position:relative;display:inline-block">
+        <button class="shot-btn" onclick="toggleTradeShotMenu(this)">📸 ▾</button>
+        <div id="trade-shot-menu" style="display:none;position:absolute;right:0;top:100%;margin-top:4px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);padding:4px;white-space:nowrap;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,.15)">
+          <button onclick="closeTradeShotMenu();exportScreenshot(false)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📷 보이는 대로 찍기</button>
+          <button onclick="closeTradeShotMenu();exportScreenshot(true)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📋 카드 정보 포함해서 찍기</button>
+        </div>
+      </div>`
+    : `<button class="shot-btn" onclick="exportScreenshot(false)">📸 ${lang==='ko'?'교환 스크린샷':'Screenshot'}</button>`;
   const tradeTopBar=`<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:8px">
     <button class="ctrl-btn${!tf.albs.length?' active':''}" onclick="setTradeAlb(null)">${lang==='ko'?'전체':'All'}</button>
     ${DB.albumTypes.map(a=>`<button class="ctrl-btn" onclick="setTradeAlb('${a.id}')" style="${tf.albs.includes(a.id)?`background:${a.color};border-color:${a.color};color:#fff`:`border-color:${a.color}55;color:${a.color}`}">${a.shortName}</button>`).join('')}
     <button class="filter-btn${tf.flatView?' active':''}" onclick="toggleTradeFlatView()">📋 카드 나열${tf.flatView?' ●':''}</button>
     <div class="spacer"></div>
-    <button class="shot-btn" onclick="exportScreenshot()">📸 ${lang==='ko'?'교환 스크린샷':'Screenshot'}</button>
+    ${tradeShotBtn}
   </div>`;
 
   let cols='<div class="trade-wrap">';
@@ -1122,9 +1131,15 @@ function renderUsage(){
    SCREENSHOT
 ══════════════════════════════════ */
 async function loadH2C(){if(window.html2canvas)return;return new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
-async function exportScreenshot(){
+async function exportScreenshot(withMeta){
+  // withMeta: true = show album+set name below each card (only meaningful in flatView)
   toast('스크린샷 준비 중...');try{await loadH2C();}catch(e){toast('라이브러리 로드 실패');return;}
-  const all=allCards(),wCards=all.filter(x=>wt(x.id)>0),hCards=all.filter(x=>sp(x.id)>0&&!hid(x.id));
+  const all=allCards();
+  const tf=UI.tf;
+  const wAll=all.filter(x=>wt(x.id)>0);
+  const hAll=all.filter(x=>sp(x.id)>0&&!hid(x.id));
+  const wCards=tf.albs.length?wAll.filter(x=>tf.albs.includes(x.aId)):wAll;
+  const hCards=tf.albs.length?hAll.filter(x=>tf.albs.includes(x.aId)):hAll;
   if(!wCards.length&&!hCards.length){toast('교환할 카드가 없어요');return;}
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   const bg=dark?'#08090f':'#f0f2f9',tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
@@ -1132,10 +1147,64 @@ async function exportScreenshot(){
   const area=document.getElementById('shot-area');
   area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:12px;color:${dark?'#e8edf8':'#141830'}`;
   const hdr=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid ${bd}"><div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Caligo Pt.2 포토카드 수집 트래커</div><div style="font-size:10px;color:${tx2}">${now}</div></div>`;
-  const buildGrid=(cards,mode)=>{let h='';for(const alb of DB.albumTypes){const ac=cards.filter(x=>x.aId===alb.id);if(!ac.length)continue;h+=`<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:${alb.color};margin-bottom:3px">${alb.name}</div>`;const sids=[...new Set(ac.map(x=>x.sId))];for(const sid of sids){const sc=ac.filter(x=>x.sId===sid);h+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:3px;margin-bottom:4px">`;for(const card of sc){const cnt=mode==='w'?wt(card.id):sp(card.id);h+=`<div style="border-radius:5px;overflow:hidden;border:1px solid ${mode==='w'?'rgba(244,63,94,.4)':'rgba(59,130,246,.4)'}"><div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${alb.color}22">${card.img?`<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}</div><div style="padding:2px 3px;background:${mode==='w'?'rgba(244,63,94,.1)':'rgba(59,130,246,.1)'};font-size:8px;font-weight:800;color:${mode==='w'?'#f43f5e':'#3b82f6'};text-align:center">${mode==='w'?'−':'+'} ${cnt}</div></div>`;}h+='</div>';}h+='</div>';}return h;};
-  if(lscape){area.innerHTML=`${hdr}<div style="display:flex;gap:10px">${wCards.length?`<div style="flex:1;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);border-radius:8px;padding:8px"><div style="font-weight:800;font-size:13px;color:#f43f5e;margin-bottom:6px">🔍 구해요</div>${buildGrid(wCards,'w')}</div>`:''}${hCards.length?`<div style="flex:1;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:8px"><div style="font-weight:800;font-size:13px;color:#3b82f6;margin-bottom:6px">✨ 있어요</div>${buildGrid(hCards,'h')}</div>`:''}</div>`;}
-  else{area.innerHTML=hdr+(wCards.length?`<div style="background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);border-radius:8px;padding:10px;margin-bottom:10px"><div style="font-weight:800;font-size:14px;color:#f43f5e;margin-bottom:7px">🔍 구해요</div>${buildGrid(wCards,'w')}</div>`:'')+(hCards.length?`<div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:10px"><div style="font-weight:800;font-size:14px;color:#3b82f6;margin-bottom:7px">✨ 있어요</div>${buildGrid(hCards,'h')}</div>`:'');}
-  try{const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:w});const link=document.createElement('a');link.download=`교환_${now.replace(/\./g,'')}.png`;link.href=canvas.toDataURL('image/png');link.click();toast('📸 저장 완료!');}catch(e){toast('실패: '+e.message);}
+
+  // Helper: render one card tile for screenshot
+  const shotCard=(card,mode,showMeta)=>{
+    const cnt=mode==='w'?wt(card.id):sp(card.id);
+    const bdCol=mode==='w'?'rgba(244,63,94,.4)':'rgba(59,130,246,.4)';
+    const stripBg=mode==='w'?'rgba(244,63,94,.1)':'rgba(59,130,246,.1)';
+    const stripCol=mode==='w'?'#f43f5e':'#3b82f6';
+    const r=findCard(card.id);
+    const metaLine=(showMeta&&r)?`<div style="padding:1px 3px;font-size:6px;color:${tx2};text-align:center;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(0,0,0,.05)">${r.alb.shortName} ${r.set.name}</div>`:'';
+    return`<div style="border-radius:5px;overflow:hidden;border:1px solid ${bdCol}">
+      <div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${bdCol.replace('.4','.1')}">
+        ${card.img?`<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}
+      </div>
+      <div style="padding:2px 3px;background:${stripBg};font-size:8px;font-weight:800;color:${stripCol};text-align:center">${mode==='w'?'−':'+'} ${cnt}</div>
+      ${metaLine}
+    </div>`;
+  };
+
+  // Helper: build one side (want or have) for screenshot
+  const buildSide=(cards,mode,showMeta)=>{
+    if(tf.flatView){
+      // Flat: all cards in one grid
+      return`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:4px">
+        ${cards.map(card=>shotCard(card,mode,showMeta)).join('')}
+      </div>`;
+    } else {
+      // Section view
+      let h='';
+      for(const alb of DB.albumTypes){
+        const ac=cards.filter(x=>x.aId===alb.id);if(!ac.length)continue;
+        h+=`<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:${alb.color};margin-bottom:3px">${alb.name}</div>`;
+        const sids=[...new Set(ac.map(x=>x.sId))];
+        for(const sid of sids){
+          const sc=ac.filter(x=>x.sId===sid);
+          h+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:3px;margin-bottom:4px">
+            ${sc.map(card=>shotCard(card,mode,false)).join('')}
+          </div>`;
+        }
+        h+='</div>';
+      }
+      return h;
+    }
+  };
+
+  const wLabel=`<div style="font-weight:800;font-size:13px;color:#f43f5e;margin-bottom:6px">🔍 구해요 (WANT) ${wCards.reduce((a,x)=>a+wt(x.id),0)}개</div>`;
+  const hLabel=`<div style="font-weight:800;font-size:13px;color:#3b82f6;margin-bottom:6px">✨ 있어요 (HAVE) ${hCards.reduce((a,x)=>a+sp(x.id),0)}개</div>`;
+  const wWrap=wCards.length?`<div style="background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);border-radius:8px;padding:8px">${wLabel}${buildSide(wCards,'w',withMeta)}</div>`:'';
+  const hWrap=hCards.length?`<div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:8px">${hLabel}${buildSide(hCards,'h',withMeta)}</div>`:'';
+
+  if(lscape){
+    area.innerHTML=`${hdr}<div style="display:flex;gap:10px">${wWrap}${hWrap}</div>`;
+  } else {
+    area.innerHTML=hdr+(wWrap?wWrap+'<div style="margin-bottom:10px"></div>':'')+hWrap;
+  }
+  try{
+    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:w});
+    const link=document.createElement('a');link.download=`교환_${now.replace(/\./g,'')}.png`;link.href=canvas.toDataURL('image/png');link.click();toast('📸 저장 완료!');
+  }catch(e){toast('실패: '+e.message);}
   area.innerHTML='';
 }
 function toggleShotMenu(btn){
@@ -1147,9 +1216,21 @@ function closeShotMenu(){
   const m=document.getElementById('shot-menu');
   if(m)m.style.display='none';
 }
+function toggleTradeShotMenu(btn){
+  const m=document.getElementById('trade-shot-menu');
+  if(!m)return;
+  m.style.display=m.style.display==='none'?'block':'none';
+}
+function closeTradeShotMenu(){
+  const m=document.getElementById('trade-shot-menu');
+  if(m)m.style.display='none';
+}
 document.addEventListener('click',e=>{
   if(!e.target.closest('#shot-menu')&&!e.target.onclick?.toString().includes('toggleShotMenu')){
     const m=document.getElementById('shot-menu');if(m)m.style.display='none';
+  }
+  if(!e.target.closest('#trade-shot-menu')&&!e.target.onclick?.toString().includes('toggleTradeShotMenu')){
+    const m=document.getElementById('trade-shot-menu');if(m)m.style.display='none';
   }
 });
 
