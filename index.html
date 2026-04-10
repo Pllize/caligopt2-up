@@ -72,7 +72,10 @@ input:focus,textarea:focus{border-color:var(--blue)}
 @media(orientation:portrait){.ls-sidebar{display:none}.ls-toggle{display:none}}
 
 /* ── TOP BAR ── */
-.top-bar{display:flex;align-items:center;gap:5px;margin-bottom:8px;flex-wrap:wrap}
+.top-bar{display:flex;align-items:center;gap:5px;margin-bottom:6px;flex-wrap:wrap}
+/* album inline chips */
+.fp{padding:4px 11px;border-radius:16px;font-size:11px;font-weight:700;background:var(--s2);border:1.5px solid var(--bd);color:var(--tx2);cursor:pointer;white-space:nowrap;font-family:'Outfit',sans-serif;transition:all .14s}
+.fp.on-all{background:linear-gradient(135deg,var(--blue),var(--purple));border-color:transparent;color:#fff}
 .stat-chip{padding:4px 10px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);font-family:'Outfit',sans-serif;font-weight:700;font-size:11px;white-space:nowrap}
 .stat-chip span{color:var(--blue)}
 .filter-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:var(--r-sm);background:var(--s1);border:1.5px solid var(--bd);color:var(--tx2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap}
@@ -225,7 +228,7 @@ input:focus,textarea:focus{border-color:var(--blue)}
     </div>
     <div class="ls-nav" id="ls-nav"></div>
     <div class="ls-bottom">
-      <button class="ls-btn" onclick="exportCollectScreenshot()" id="ls-shot-btn">📸 스크린샷</button>
+      <button class="ls-btn" onclick="exportCollectScreenshot(false)" id="ls-shot-btn">📸 스크린샷</button>
       <button class="ls-btn" id="ls-theme-btn" onclick="toggleTheme()">☀️ 테마 전환</button>
       <button class="ls-btn" onclick="toggleLang()" id="ls-lang-btn">🌐 English</button>
       <button class="ls-btn" onclick="showSettings()" id="ls-set-btn">⚙️ 설정</button>
@@ -592,19 +595,35 @@ function addC(id,e){if(e)e.stopPropagation();ST.collected[id]=(ST.collected[id]|
 function subC(id,e){if(e)e.stopPropagation();ST.collected[id]=Math.max(0,(ST.collected[id]||0)-1);saveST();patchTile(id);}
 function setGoalById(id,n){if(n<0)n=0;if(n===0)delete ST.goals[id];else ST.goals[id]=n;saveST();}
 function goalAdj(id,d){setGoalById(id,g(id)+d);patchTile(id);const gn=document.querySelector(`[data-gid="${id}"]`);if(gn)gn.textContent=g(id);}
-function toggleHide(){if(!fsId)return;const isH=hid(fsId);if(!confirm(isH?'다시 있어요 목록에 표시할까요?':'있어요 목록에서 숨길까요? (수집 수는 유지됩니다)'))return;if(isH)delete ST.hidden[fsId];else ST.hidden[fsId]=true;saveST();updFull();renderCur();toast(isH?'있어요에 표시됩니다':'있어요에서 숨겼어요');}
+function toggleHide(){
+  if(!fsId)return;
+  const isH=hid(fsId);
+  const msg=isH
+    ?(lang==='en'?'Re-add to the HAVE list?':'다시 있어요 목록에 표시할까요?')
+    :(lang==='en'?'Exclude from the exchange (HAVE) list?\n(Collected count is preserved)':'있어요 목록에서 숨길까요? (수집 수는 유지됩니다)');
+  if(!confirm(msg))return;
+  if(isH)delete ST.hidden[fsId];else ST.hidden[fsId]=true;
+  saveST();updFull();renderCur();
+  toast(isH?(lang==='en'?'Shown in HAVE list':'있어요에 표시됩니다'):(lang==='en'?'Excluded from HAVE list':'있어요에서 숨겼어요'));
+}
 function saveMemo(){if(!fsId)return;const v=document.getElementById('fs-memo').value;if(v)ST.memos[fsId]=v;else delete ST.memos[fsId];saveST();}
-function colSec(k){UI.col[k]=!UI.col[k];saveUI();renderCur();}
-function mColSec(k){UI.mgl[k]=!UI.mgl[k];saveUI();renderGoals();}
-function tColSec(k){UI.tcol[k]=!UI.tcol[k];saveUI();renderTrade();}
-function collapseAll(){if(!DB)return;for(const a of DB.albumTypes)for(const s of a.sets)UI.col[s.id]=true;UI.collapseC=true;saveUI();renderCur();toast('모두 접음');}
-function expandAll(){UI.col={};UI.collapseC=false;saveUI();renderCur();toast('모두 펼침');}
+function _renderKeepScroll(fn){
+  const main=document.getElementById('main');
+  const sy=main?main.scrollTop:0;
+  fn();
+  if(main)requestAnimationFrame(()=>{main.scrollTop=sy;});
+}
+function colSec(k){UI.col[k]=!UI.col[k];saveUI();_renderKeepScroll(renderCollect);}
+function mColSec(k){UI.mgl[k]=!UI.mgl[k];saveUI();_renderKeepScroll(renderGoals);}
+function tColSec(k){UI.tcol[k]=!UI.tcol[k];saveUI();_renderKeepScroll(renderTrade);}
+function collapseAll(){if(!DB)return;for(const a of DB.albumTypes)for(const s of a.sets)UI.col[s.id]=true;UI.collapseC=true;saveUI();_renderKeepScroll(renderCollect);toast('모두 접음');}
+function expandAll(){UI.col={};UI.collapseC=false;saveUI();_renderKeepScroll(renderCollect);toast('모두 펼침');}
 function toggleCollapseC(){if(UI.collapseC)expandAll();else collapseAll();}
-function colAllGoals(){if(!DB)return;for(const a of DB.albumTypes)for(const s of a.sets)UI.mgl[s.id]=true;UI.collapseG=true;saveUI();renderGoals();}
-function expAllGoals(){UI.mgl={};UI.collapseG=false;saveUI();renderGoals();}
+function colAllGoals(){if(!DB)return;for(const a of DB.albumTypes)for(const s of a.sets)UI.mgl[s.id]=true;UI.collapseG=true;saveUI();_renderKeepScroll(renderGoals);}
+function expAllGoals(){UI.mgl={};UI.collapseG=false;saveUI();_renderKeepScroll(renderGoals);toast('모두 펼침');}
 function toggleCollapseG(){if(UI.collapseG)expAllGoals();else colAllGoals();}
 function resetAllGoals(){if(!confirm('모든 목표를 0으로 초기화할까요?'))return;ST.goals={};saveST();renderGoals();toast('목표 초기화 완료');}
-function cycleVis(fKey,cb){const f=UI[fKey];if(f.vis==='all')f.vis='have';else if(f.vis==='have')f.vis='nothave';else f.vis='all';saveUI();cb();}
+function cycleVis(fKey,cb){const f=UI[fKey];if(f.vis==='all')f.vis='have';else if(f.vis==='have')f.vis='nothave';else f.vis='all';saveUI();_renderKeepScroll(cb==='renderCollect'?renderCollect:cb==='renderGoals'?renderGoals:renderCur);}
 function visLabel(vis){if(vis==='have')return t('visHave');if(vis==='nothave')return t('visNot');return t('visAll');}
 
 /* ══════════════════════════════════
@@ -618,10 +637,6 @@ function openFilter(target){
 }
 function renderFilterPanel(f){
   let h='';
-  // Albums
-  h+=`<div class="filt-sec"><div class="filt-sec-title">${t('filtAlbums')}</div><div class="filt-chips">`;
-  for(const alb of DB.albumTypes){const on=f.albs.includes(alb.id);h+=`<span class="fchip${on?' on':''}" data-fk="albs" data-fv="${alb.id}" style="${on?`background:${alb.color}22;border-color:${alb.color};color:${alb.color}`:''}" onclick="toggleFchip(this)">${alb.shortName}</span>`;}
-  h+=`</div></div>`;
   // Members
   h+=`<div class="filt-sec"><div class="filt-sec-title">${t('filtMembers')}</div><div class="filt-chips">`;
   for(const m of MEMBERS){const on=f.members.includes(m);h+=`<span class="fchip${on?' on':''}" data-fk="members" data-fv="${m}" onclick="toggleFchip(this)">${m}</span>`;}
@@ -665,6 +680,12 @@ function resetCurFilter(){
 ══════════════════════════════════ */
 function topBarHTML(statsHTML,filtTarget,f,collapseState,onCollapse,onVis,extraRight){
   const filtActive=hasFilter(f);
+  const albChips=DB.albumTypes.map(a=>{
+    const on=f.albs.includes(a.id);
+    const onStyle=on?`background:${a.color};border-color:${a.color};color:#fff`:`border-color:${a.color}55;color:${a.color}`;
+    return`<button class="fp" style="${onStyle}" onclick="toggleAlbFilter('${filtTarget}','${a.id}')">${a.shortName}</button>`;
+  }).join('');
+  const allOn=!f.albs.length;
   return`<div class="top-bar">
     ${statsHTML}
     <div class="spacer"></div>
@@ -672,7 +693,17 @@ function topBarHTML(statsHTML,filtTarget,f,collapseState,onCollapse,onVis,extraR
     <button class="ctrl-btn" onclick="${onCollapse}">${collapseState?t('expandBtn'):t('collBtn')}</button>
     <button class="filter-btn${filtActive?' active':''}" onclick="openFilter('${filtTarget}')">🔍 필터${filtActive?' ●':''}</button>
     ${extraRight||''}
-  </div>`;
+  </div>
+  <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;align-items:center">
+    <button class="fp${allOn?' on-all':''}" onclick="toggleAlbFilter('${filtTarget}',null)">${lang==='en'?'All':'전체'}</button>
+    ${albChips}
+  </div>`;}
+
+function toggleAlbFilter(target,id){
+  const f=target==='collect'?UI.cf:UI.mf;
+  if(id===null){f.albs=[];}
+  else{const i=f.albs.indexOf(id);if(i>=0)f.albs.splice(i,1);else f.albs.push(id);}
+  saveUI();_renderKeepScroll(target==='collect'?renderCollect:renderGoals);
 }
 
 /* ══════════════════════════════════
@@ -757,12 +788,21 @@ function renderCollect(){
   const el=document.getElementById('page-content');
   const f=UI.cf;
   const allC=allCards(),haveC=allC.filter(x=>c(x.id)>0).length,metC=allC.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)).length,goalC=allC.filter(x=>g(x.id)>0).length;
+  const noGoalHint=goalC===0?`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);margin-bottom:8px;font-size:11px;color:var(--tx2)">🎯 ${lang==='en'?'No targets set. Go to <b>Target</b> tab to set collection goals!':'설정된 목표가 없어요. <b>목표</b> 탭에서 수집 목표를 설정해보세요!'} <button class="btn btn-s btn-sm" style="margin-left:auto;padding:3px 10px;font-size:10px" onclick="goTab('goals')">${lang==='en'?'Go':'이동'}</button></div>`:'';
   const statsHTML=`<div class="stat-chip">${t('statAll')} <span>${allC.length}</span></div><div class="stat-chip">${t('statColl')} <span>${haveC}</span></div><div class="stat-chip">${t('statGoal')} <span>${metC}/${goalC}</span></div>`;
-  const extra=`<button class="shot-btn" onclick="exportCollectScreenshot()">${t('shotBtn')}</button>`;
+  const extra=f.flatView
+    ? `<div style="position:relative;display:inline-block">
+        <button class="shot-btn" onclick="toggleShotMenu(this)">📸 ▾</button>
+        <div id="shot-menu" style="display:none;position:absolute;right:0;top:100%;margin-top:4px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);padding:4px;white-space:nowrap;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,.15)">
+          <button onclick="closeShotMenu();exportCollectScreenshot(false)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📷 보이는 대로 찍기</button>
+          <button onclick="closeShotMenu();exportCollectScreenshot(true)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📋 카드 정보 포함해서 찍기</button>
+        </div>
+      </div>`
+    : `<button class="shot-btn" onclick="exportCollectScreenshot(false)">${t('shotBtn')}</button>`;
   const albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
   const secs=buildSections(albums,f,UI.col,'colSec',false);
   const wrap=f.flatView?secs:`<div class="sets-wrap">${secs}</div>`;
-  el.innerHTML=topBarHTML(statsHTML,'collect',f,UI.collapseC,'toggleCollapseC()','renderCollect',extra)+wrap;
+  el.innerHTML=noGoalHint+topBarHTML(statsHTML,'collect',f,UI.collapseC,'toggleCollapseC()','renderCollect',extra)+wrap;
 }
 
 /* ══════════════════════════════════
@@ -771,6 +811,19 @@ function renderCollect(){
 function renderGoals(){
   const el=document.getElementById('page-content');
   const f=UI.mf;
+  const allC=allCards();
+  const hasGoal=allC.some(x=>g(x.id)>0);
+  // First visit to goals with no targets set → show wizard
+  if(!hasGoal){
+    el.innerHTML=`<div style="padding:24px;text-align:center;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:12px">
+      <div style="font-size:32px;margin-bottom:10px">🎯</div>
+      <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:15px;margin-bottom:6px">${lang==='en'?'No targets set yet':'아직 설정된 목표가 없어요'}</div>
+      <div style="font-size:12px;color:var(--tx2);line-height:1.8;margin-bottom:14px">${lang==='en'?'Set your collection targets to track progress.':'마법사를 통해 목표를 설정해보세요.<br>목표를 설정하면 수집·교환 현황을 트래킹할 수 있어요.'}</div>
+      <button class="btn btn-p" onclick="showWizard()">🎯 ${lang==='en'?'Quick Target Setup':'마법사로 목표 설정하기'}</button>
+    </div>`;
+    setTimeout(showWizard,400);
+    return;
+  }
   const extra=`<button class="shot-btn" style="color:var(--want);border-color:rgba(244,63,94,.3)" onclick="resetAllGoals()">${t('goalReset')}</button>`;
   const albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
   const secs=buildSections(albums,f,UI.mgl,'mColSec',true);
@@ -918,9 +971,18 @@ function updFull(){
   document.getElementById('fs-coll').textContent=cv;
   document.getElementById('fs-goal').textContent=gv;
   const ch=document.getElementById('fs-chips');
-  if(ch){let h='';if(s_>0)h+=`<span style="background:var(--have-g);border:1px solid var(--have-bd);color:var(--have);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">✨ ${s_}</span>`;if(w_>0)h+=`<span style="background:var(--want-g);border:1px solid var(--want-bd);color:var(--want);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif">🔍 ${w_}</span>`;ch.innerHTML=h;}
+  if(ch){
+    let h='';
+    if(s_>0)h+=`<span style="background:var(--have-g);border:1px solid var(--have-bd);color:var(--have);padding:5px 14px;border-radius:12px;font-size:13px;font-weight:800;font-family:'Outfit',sans-serif">${lang==='en'?'HAVE':'있어요'} ${s_}</span>`;
+    if(w_>0)h+=`<span style="background:var(--want-g);border:1px solid var(--want-bd);color:var(--want);padding:5px 14px;border-radius:12px;font-size:13px;font-weight:800;font-family:'Outfit',sans-serif">${lang==='en'?'WANT':'없어요'} ${w_}</span>`;
+    ch.innerHTML=h;
+  }
   const hb=document.getElementById('fs-hide-btn');
-  if(hb){if(s_>0){const isH=hid(fsId);hb.style.cssText=`display:block;background:none;border-color:${isH?'var(--ok)':'var(--want)'};color:${isH?'var(--ok)':'var(--want)'};width:100%;padding:8px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;margin-bottom:7px`;hb.textContent=isH?'👁 있어요에 다시 표시':'🚫 있어요에서 숨기기';}else{hb.style.display='none';}}
+  if(hb){if(s_>0){const isH=hid(fsId);hb.style.cssText=`display:block;background:none;border-color:${isH?'var(--ok)':'var(--want)'};color:${isH?'var(--ok)':'var(--want)'};width:100%;padding:8px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;margin-bottom:7px`;
+    hb.textContent=isH
+      ?(lang==='en'?'👁 Re-add to HAVE list':'👁 있어요에 다시 표시')
+      :(lang==='en'?'🚫 Excluding from the exchange (HAVE) list':'🚫 있어요에서 숨기기');
+  }else{hb.style.display='none';}}
 }
 function closeFull(){document.getElementById('fsov').classList.remove('open');fsId=null;}
 function fsAdj(d){if(!fsId)return;ST.collected[fsId]=Math.max(0,(ST.collected[fsId]||0)+d);saveST();updFull();patchTile(fsId);if(d>0){const gv=g(fsId),cv=c(fsId);if(gv>0&&cv===gv)toast('🎉 달성!');}}
@@ -1076,32 +1138,89 @@ async function exportScreenshot(){
   try{const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:w});const link=document.createElement('a');link.download=`교환_${now.replace(/\./g,'')}.png`;link.href=canvas.toDataURL('image/png');link.click();toast('📸 저장 완료!');}catch(e){toast('실패: '+e.message);}
   area.innerHTML='';
 }
-async function exportCollectScreenshot(){
+function toggleShotMenu(btn){
+  const m=document.getElementById('shot-menu');
+  if(!m)return;
+  m.style.display=m.style.display==='none'?'block':'none';
+}
+function closeShotMenu(){
+  const m=document.getElementById('shot-menu');
+  if(m)m.style.display='none';
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#shot-menu')&&!e.target.onclick?.toString().includes('toggleShotMenu')){
+    const m=document.getElementById('shot-menu');if(m)m.style.display='none';
+  }
+});
+
+async function exportCollectScreenshot(withMeta){
+  // withMeta: true = show album+set name below card, false = plain
   toast('스크린샷 준비 중...');try{await loadH2C();}catch(e){toast('라이브러리 로드 실패');return;}
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   const bg=dark?'#08090f':'#f0f2f9',tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
   const now=new Date().toLocaleDateString('ko-KR'),lscape=isLS(),w=lscape?720:360;
   const area=document.getElementById('shot-area');
   area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:12px;color:${dark?'#e8edf8':'#141830'}`;
-  const f=UI.cf,albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
-  let secH='';
-  for(const alb of albums)for(const set of alb.sets){
-    let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
-    if(f.vis==='have')cards=cards.filter(x=>c(x.id)>0);else if(f.vis==='nothave')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
-    if(!cards.length)continue;
-    secH+=`<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="background:${alb.color};color:#fff;padding:2px 7px;border-radius:6px;font-size:9px">${alb.shortName}</span><span style="color:var(--tx)">${set.name}</span></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:3px">${cards.map(card=>{const cv=c(card.id),gv=g(card.id),st=sts(card.id);const bdr=st==='c'?'rgba(244,63,94,.5)':st==='m'?'rgba(34,197,94,.6)':st==='h'?'rgba(59,130,246,.6)':'rgba(0,0,0,.1)';
-      // status label
-      let statusTx='',statusBg='';
-      if(st==='m'){statusTx=`✓${cv}`;statusBg='rgba(34,197,94,.15)';}
-      else if(st==='h'&&gv>0){statusTx=`+${cv-gv}`;statusBg='rgba(59,130,246,.15)';}
-      else if(st==='h'){statusTx=`✨${cv}`;statusBg='rgba(59,130,246,.15)';}
-      else if(st==='c'){statusTx=`−${gv-cv}`;statusBg='rgba(244,63,94,.15)';}
-      else{statusTx='';statusBg='transparent';}
-      return`<div style="border-radius:5px;overflow:hidden;border:1px solid ${bdr}"><div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${alb.color}22">${card.img?`<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}</div><div style="padding:2px 4px;background:${statusBg};font-size:8px;font-weight:800;text-align:center;color:${st==='c'?'#f43f5e':st==='m'?'#22c55e':st==='h'?'#3b82f6':'#888'};white-space:nowrap;overflow:hidden">${statusTx||'&nbsp;'}</div></div>`;}).join('')}</div></div>`;
+  const f=UI.cf;
+  const albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
+
+  const cardHtml=(card,alb,set,showMeta)=>{
+    const cv=c(card.id),gv=g(card.id),st=sts(card.id);
+    const bdr=st==='c'?'rgba(244,63,94,.5)':st==='m'?'rgba(34,197,94,.6)':st==='h'?'rgba(59,130,246,.6)':'rgba(0,0,0,.1)';
+    let statusTx='',statusBg='';
+    if(st==='m'){statusTx=`✓${cv}`;statusBg='rgba(34,197,94,.15)';}
+    else if(st==='h'&&gv>0){statusTx=`+${cv-gv}`;statusBg='rgba(59,130,246,.15)';}
+    else if(st==='h'){statusTx=`✨${cv}`;statusBg='rgba(59,130,246,.15)';}
+    else if(st==='c'){statusTx=`−${gv-cv}`;statusBg='rgba(244,63,94,.15)';}
+    else{statusTx='';statusBg='transparent';}
+    const metaLine=showMeta?`<div style="padding:2px 3px;font-size:6px;color:${tx2};text-align:center;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(0,0,0,.06)">${alb.shortName} ${set.name}</div>`:'';
+    return`<div style="border-radius:5px;overflow:hidden;border:1px solid ${bdr}">
+      <div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${alb.color}22">${card.img?`<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}</div>
+      <div style="padding:2px 4px;background:${statusBg};font-size:8px;font-weight:800;text-align:center;color:${st==='c'?'#f43f5e':st==='m'?'#22c55e':st==='h'?'#3b82f6':'#888'};white-space:nowrap;overflow:hidden">${statusTx||'&nbsp;'}</div>
+      ${metaLine}
+    </div>`;
+  };
+
+  let body='';
+  if(f.flatView){
+    // Flat view: all cards in one grid
+    let allFlatCards=[];
+    for(const alb of albums)for(const set of alb.sets){
+      let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
+      if(f.vis==='have')cards=cards.filter(x=>c(x.id)>0);
+      else if(f.vis==='nothave')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
+      allFlatCards=allFlatCards.concat(cards.map(card=>({card,alb,set})));
+    }
+    body=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:4px">
+      ${allFlatCards.map(({card,alb,set})=>cardHtml(card,alb,set,withMeta)).join('')}
+    </div>`;
+  } else {
+    // Section view
+    let secH='';
+    for(const alb of albums)for(const set of alb.sets){
+      let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
+      if(f.vis==='have')cards=cards.filter(x=>c(x.id)>0);
+      else if(f.vis==='nothave')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
+      if(!cards.length)continue;
+      secH+=`<div style="margin-bottom:8px">
+        <div style="font-size:10px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px">
+          <span style="background:${alb.color};color:#fff;padding:2px 7px;border-radius:6px;font-size:9px">${alb.shortName}</span>
+          <span>${set.name}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:3px">
+          ${cards.map(card=>cardHtml(card,alb,set,false)).join('')}
+        </div>
+      </div>`;
+    }
+    body=`<div style="display:grid;gap:6px">${secH}</div>`;
   }
+
   const hdr=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid ${bd}"><div style="font-weight:800;font-size:14px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Caligo Pt.2 수집 현황</div><div style="font-size:10px;color:${tx2}">${now}</div></div>`;
-  area.innerHTML=hdr+`<div style="display:grid;gap:6px">${secH}</div>`;
-  try{const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:w});const link=document.createElement('a');link.download=`수집_${now.replace(/\./g,'')}.png`;link.href=canvas.toDataURL('image/png');link.click();toast('📸 저장 완료!');}catch(e){toast('실패: '+e.message);}
+  area.innerHTML=hdr+body;
+  try{
+    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:w});
+    const link=document.createElement('a');link.download=`수집_${now.replace(/\./g,'')}.png`;link.href=canvas.toDataURL('image/png');link.click();toast('📸 저장 완료!');
+  }catch(e){toast('실패: '+e.message);}
   area.innerHTML='';
 }
 
@@ -1128,7 +1247,7 @@ function init(){
   document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--tx2);font-size:13px">📦 DB 로딩 중...</div>';
   fetch('./poca_db.json')
     .then(r=>r.json())
-    .then(d=>{DB=d;saveDB();renderCur();const hasGoal=Object.values(ST.goals).some(v=>v>0);if(!hasGoal)setTimeout(showWizard,600);})
+    .then(d=>{DB=d;saveDB();renderCur();})
     .catch(()=>{loadDB();if(DB)renderCur();else document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--want)">⚠️ poca_db.json을 같은 폴더에 두고 웹서버로 열어주세요.</div>';});
   document.getElementById('main').addEventListener('scroll',function(){const btn=document.getElementById('scroll-top-btn');if(btn)btn.classList.toggle('vis',this.scrollTop>200);},{passive:true});
   window.addEventListener('orientationchange',()=>setTimeout(()=>{renderNav();renderCur();},200));
