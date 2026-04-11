@@ -242,6 +242,7 @@ input:focus,textarea:focus{border-color:var(--blue)}
     <div class="hdr-r">
       <button class="abtn" id="theme-btn" onclick="toggleTheme()">☀️</button>
       <button class="abtn" id="lang-btn" onclick="toggleLang()" title="EN/KO" style="font-size:10px;font-weight:800;font-family:'Outfit',sans-serif;width:38px">KOR</button>
+      <button class="abtn" onclick="location.reload()" title="새로고침" style="font-size:15px">🔄</button>
       <button class="abtn" onclick="exportState()" title="Save/Backup" style="font-size:15px">💾</button>
     </div>
   </div>
@@ -573,7 +574,7 @@ function stripHtml(id){
   const cv=c(id),gv=g(id),s_=sp(id),w_=wt(id),st=sts(id);
   if(st==='m')return`✓ 달성(${cv}/${gv})`;
   if(st==='h'&&gv>0)return`✨ 있어요 +${s_}`;
-  if(st==='h')return`✨ 있어요 ${cv}장`;
+  if(st==='h')return`${cv}장 (목표없음)`;
   if(st==='c')return`🔍 없어요 −${w_}`;
   return'';
 }
@@ -1165,19 +1166,34 @@ function renderUsage(){
   <div class="use-sec"><h3>📦 수집 (Collection)</h3><ul>
     <li>카드 클릭 → 상세 보기: 수집/목표 나란히 조정, 메모, 제보</li>
     <li>− / + 버튼으로 카드에서 바로 수집 수 조정</li>
-    <li>🔍 필터: 앨범·멤버·유닛·MMMM 다중 선택, 유닛/단체/MMMM 제외 옵션</li>
-    <li>👁/✨/🔍 버튼: 전체/있는것/없는것 순환</li>
+    <li>카드 하단 상태 표시: <b>✓ 달성</b> / <b>✨ 있어요 +N</b>(여분) / <b>🔍 없어요 −N</b>(부족) / <b>N장 (목표없음)</b></li>
+    <li>상단 수집 칩: 수집수 / 목표수 카드 수량 표시</li>
+    <li>👁/✨/🔍 버튼: 전체 / 있는것 / 없는것 순환 필터</li>
     <li>▼/▶ 버튼: 전체 섹션 접기/펼치기 토글</li>
+    <li>🔍 상세필터: 멤버·유닛·MMMM 다중 선택, 유닛/단체/MMMM 제외 옵션</li>
+    <li>앨범 칩: 원하는 앨범만 바로 필터</li>
+    <li>⊞ / ▦ 버튼(우측): 섹션 보기 / 카드 나열 보기 전환</li>
+    <li>📸 스크린샷: 보이는 대로 / 카드 정보 포함 선택 저장</li>
   </ul></div>
   <div class="use-sec"><h3>🔄 교환 (Exchange)</h3><ul>
-    <li>앨범 필터로 원하는 앨범만 표시</li>
+    <li>목표보다 적으면 🔍 구해요, 목표보다 많으면 ✨ 있어요 자동 분류</li>
+    <li>앨범 칩으로 원하는 앨범만 필터</li>
+    <li>⊞ / ▦ 버튼(우측): 섹션 보기 / 카드 나열 보기 전환</li>
+    <li>📸 스크린샷: 보이는 대로 / 카드 정보 포함 선택 저장</li>
     <li>각 섹션 헤더를 눌러 접기/펼치기 가능</li>
-    <li>태블릿 및 가로모드에서 구해요/있어요 나란히 표시</li>
+    <li>태블릿·가로모드에서 구해요/있어요 나란히 표시</li>
   </ul></div>
   <div class="use-sec"><h3>🎯 목표 (Target)</h3><ul>
-    <li>수집창과 동일한 필터, 카드 그리드에서 목표 수량 조정</li>
-    <li>마법사: 멤버 → 유닛 자동 포함, 단체/MMMM 선택</li>
-    <li>🗑 초기화로 목표 전체 리셋</li>
+    <li>카드 그리드에서 − / + 로 목표 수량 직접 조정</li>
+    <li>⚡ 빠른 설정: 앨범·멤버 선택 → 유닛 자동 포함, 단체/MMMM 옵션</li>
+    <li>🗑 초기화: 모든 목표를 0으로 리셋</li>
+    <li>⊞ / ▦ 버튼(우측): 섹션 보기 / 카드 나열 보기 전환</li>
+    <li>🔍 상세필터·앨범 칩·접기/펼치기 수집탭과 동일하게 사용 가능</li>
+  </ul></div>
+  <div class="use-sec"><h3>💾 저장 / 복원</h3><ul>
+    <li>헤더 💾 버튼: 수집·목표·메모를 JSON 파일로 백업</li>
+    <li>기기 교체·브라우저 초기화 전 주기적으로 백업 권장</li>
+    <li>복원은 설정 메뉴(가로모드 사이드바 💾 저장 버튼 길게 누르거나 별도 방법)로 가능</li>
   </ul></div>
   <div class="use-sec"><h3>📷 사진/오류 제보</h3><ul>
     <li>카드 클릭 → 사진/오류 제보 버튼</li>
@@ -1185,11 +1201,11 @@ function renderUsage(){
     <li>메일 주소: ${REPORT_EMAIL}</li>
   </ul></div>
   <div class="use-sec"><h3>🖥 가로모드 사이드바</h3><ul>
-    <li>왼쪽 사이드바에 탭 메뉴, 스크린샷, 테마, 설정 버튼</li>
+    <li>왼쪽 사이드바에 탭 메뉴, 스크린샷, 테마, 언어, 💾 저장 버튼</li>
     <li>◀/▶ 버튼으로 사이드바 접기/펼치기</li>
+    <li>헤더 KOR/ENG 버튼으로 한국어/영어 전환</li>
   </ul></div>
-  <div style="text-align:center;padding:16px;font-size:11px;color:var(--tx3)">Made with Love for PLAVE &amp; PLLIs 💙💜💗❤️🖤 &nbsp;|&nbsp; @plli_ze</div>`;
-}
+  <div style="text-align:center;padding:16px;font-size:11px;color:var(--tx3)">Made with Love for PLAVE &amp; PLLIs 💙💜💗❤️🖤 &nbsp;|&nbsp; @plli_ze</div>`;}
 
 /* ══════════════════════════════════
    SCREENSHOT
