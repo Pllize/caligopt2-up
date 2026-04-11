@@ -727,7 +727,7 @@ function resetCurFilter(){
 /* ══════════════════════════════════
    TOP BAR
 ══════════════════════════════════ */
-function topBarHTML(statsHTML,filtTarget,f,collapseState,onCollapse,onVis,shotBtn){
+function topBarHTML(statsHTML,filtTarget,f,collapseState,onCollapse,_unused,shotBtn){
   const filtActive=hasFilter(f);
   const fKey=filtTarget==='collect'?'cf':'mf';
   const albChips=DB.albumTypes.map(a=>{
@@ -735,10 +735,9 @@ function topBarHTML(statsHTML,filtTarget,f,collapseState,onCollapse,onVis,shotBt
     return`<button class="fp" style="${on?`background:${a.color};border-color:${a.color};color:#fff`:`border-color:${a.color}55;color:${a.color}`}" onclick="toggleAlbFilter('${filtTarget}','${a.id}')">${a.shortName}</button>`;
   }).join('');
   const allOn=!f.albs.length;
-  // flat/section toggle icon button
-  const flatToggle=`<button class="icon-toggle-btn${f.flatView?' active':''}" onclick="toggleFlatView('${filtTarget}')" title="${f.flatView?(lang==='en'?'Section View':lang==='en'?'Section View':'섹션 뷰'):(lang==='en'?'Flat View':lang==='en'?'Flat View':'카드 나열 뷰')}">
-    ${f.flatView?`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" fill="currentColor"/><rect x="8" y="1" width="5" height="5" rx="1" fill="currentColor"/><rect x="1" y="8" width="5" height="5" rx="1" fill="currentColor"/><rect x="8" y="8" width="5" height="5" rx="1" fill="currentColor"/></svg>`:`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="2.5" rx="1" fill="currentColor"/><rect x="1" y="5.5" width="12" height="2.5" rx="1" fill="currentColor"/><rect x="1" y="10" width="12" height="2.5" rx="1" fill="currentColor"/></svg>`}
-  </button>`;
+  const flatTitle=f.flatView?(lang==='en'?'Section View':'섹션 뷰'):(lang==='en'?'Flat View':'카드 나열 뷰');
+  const flatIcon=f.flatView?'⊞':'☰';
+  const flatToggle=`<button class="icon-toggle-btn${f.flatView?' active':''}" onclick="toggleFlatView('${filtTarget}')" title="${flatTitle}" style="font-size:13px">${flatIcon}</button>`;
   return`
   <div class="top-bar">
     ${statsHTML}
@@ -755,7 +754,6 @@ function topBarHTML(statsHTML,filtTarget,f,collapseState,onCollapse,onVis,shotBt
     ${shotBtn||''}
     ${flatToggle}
   </div>`;}
-
 function toggleFlatView(target){
   const f=target==='collect'?UI.cf:UI.mf;
   f.flatView=!f.flatView;
@@ -919,9 +917,8 @@ function renderTrade(){
   }
 
   // album filter bar for trade
-  const tradeFlatIcon=`<button class="icon-toggle-btn${tf.flatView?' active':''}" onclick="toggleTradeFlatView()" title="${tf.flatView?(lang==='en'?'Section View':lang==='en'?'Section View':'섹션 뷰'):(lang==='en'?'Flat View':lang==='en'?'Flat View':'카드 나열 뷰')}">
-    ${tf.flatView?`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" fill="currentColor"/><rect x="8" y="1" width="5" height="5" rx="1" fill="currentColor"/><rect x="1" y="8" width="5" height="5" rx="1" fill="currentColor"/><rect x="8" y="8" width="5" height="5" rx="1" fill="currentColor"/></svg>`:`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="2.5" rx="1" fill="currentColor"/><rect x="1" y="5.5" width="12" height="2.5" rx="1" fill="currentColor"/><rect x="1" y="10" width="12" height="2.5" rx="1" fill="currentColor"/></svg>`}
-  </button>`;
+  const tradeFlatTitle=tf.flatView?(lang==='en'?'Section View':'섹션 뷰'):(lang==='en'?'Flat View':'카드 나열 뷰');
+  const tradeFlatIcon=`<button class="icon-toggle-btn${tf.flatView?' active':''}" onclick="toggleTradeFlatView()" title="${tradeFlatTitle}" style="font-size:13px">${tf.flatView?'⊞':'☰'}</button>`;
   const tradeShotBtn=tf.flatView
     ? `<div style="position:relative;display:inline-block">
         <button class="shot-btn" onclick="toggleTradeShotMenu(this)">📸 ▾</button>
