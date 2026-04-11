@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>Caligo Pt.2 포토카드 수집 트래커</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="./watermark.js" defer></script>
 <style>
 :root{
   --bg:#f0f2f9;--s1:#fff;--s2:#f4f6ff;--s3:#e8ecf7;
@@ -145,8 +146,8 @@ input:focus,textarea:focus{border-color:var(--blue)}
 /* ── FULLSCREEN ── */
 .fs-ov{position:fixed;inset:0;z-index:400;background:rgba(8,9,15,.94);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;padding:16px}
 .fs-ov.open{opacity:1;pointer-events:auto}
-.fs-inner{display:flex;flex-direction:column;align-items:center;width:100%;max-width:380px;max-height:calc(100svh - 32px);overflow-y:auto}
-.fs-img-wrap{width:min(140px,38vw);flex-shrink:0}
+.fs-inner{display:flex;flex-direction:column;align-items:center;width:100%;max-width:400px;max-height:calc(100svh - 32px);overflow-y:auto}
+.fs-img-wrap{width:min(180px,46vw);flex-shrink:0}
 .fsimg{width:100%;border-radius:10px;display:block}
 .fsph-big{width:100%;aspect-ratio:5/7;display:flex;align-items:center;justify-content:center;background:var(--s2);border-radius:10px;font-size:30px}
 .fs-name{font-family:'Outfit',sans-serif;font-weight:800;font-size:16px;text-align:center;color:#fff;margin-top:10px}
@@ -215,6 +216,23 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .scroll-top-btn{position:fixed;right:12px;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 10px);width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;z-index:200;box-shadow:0 2px 10px rgba(79,138,255,.35)}
 @media(orientation:landscape){.scroll-top-btn{bottom:16px}}
 .scroll-top-btn.vis{opacity:1;pointer-events:auto}
+/* ── NOTICE ── */
+.notice-badge{position:absolute;top:-4px;right:-4px;width:8px;height:8px;border-radius:50%;background:var(--want);border:2px solid var(--s1);display:none}
+.notice-badge.vis{display:block}
+.notice-balloon{position:fixed;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 8px);left:50%;transform:translateX(-50%);background:var(--want);color:#fff;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;z-index:300;pointer-events:none;animation:tin .3s,noticeOut .4s 3.6s forwards;font-family:'Outfit',sans-serif}
+@keyframes noticeOut{to{opacity:0;transform:translateX(-50%) translateY(10px)}}
+@media(orientation:landscape){.notice-balloon{bottom:16px}}
+.notice-list{display:flex;flex-direction:column;gap:8px}
+.notice-item{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px}
+.notice-item-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.notice-tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;font-family:'Outfit',sans-serif}
+.notice-tag-update{background:rgba(79,138,255,.15);color:var(--blue);border:1px solid rgba(79,138,255,.3)}
+.notice-tag-notice{background:rgba(245,158,11,.15);color:var(--warn);border:1px solid rgba(245,158,11,.3)}
+.notice-tag-event{background:rgba(34,197,94,.15);color:var(--ok);border:1px solid rgba(34,197,94,.3)}
+.notice-date{font-size:10px;color:var(--tx3);font-family:'Outfit',sans-serif}
+.notice-title{font-size:13px;font-weight:700;margin-bottom:4px}
+.notice-body{font-size:11px;color:var(--tx2);line-height:1.7;white-space:pre-wrap}
+.notice-empty{text-align:center;padding:30px;color:var(--tx3);font-size:12px}
 #shot-area{position:fixed;left:-9999px;top:0;font-family:'Noto Sans KR',sans-serif}
 </style>
 </head>
@@ -357,7 +375,7 @@ input:focus,textarea:focus{border-color:var(--blue)}
 const T={
   ko:{
     appSub:'포토카드 수집 트래커',
-    tabs:['수집','교환','목표','사용법'],
+    tabs:['수집','교환','목표','공지','사용법'],
     lsShot:'📸 스크린샷',lsTheme:'☀️ 테마 전환',lsLang:'🌐 English',lsSet:'💾 저장',
     fsFiltTtl:'🔍 필터 설정',fsFiltReset:'초기화',fsFiltApply:'적용',
     fsLblColl:'수집',fsLblGoal:'목표',fsClose:'✕ 닫기',fsReport:'📷 사진/오류 제보',
@@ -404,7 +422,7 @@ const T={
   },
   en:{
     appSub:'Photocard Collection Tracker',
-    tabs:['Collection','Exchange','Target','How to Use'],
+    tabs:['Collection','Exchange','Target','Notice','How to Use'],
     lsShot:'📸 Screenshot',lsTheme:'☀️ Theme',lsLang:'🌐 한국어',lsSet:'💾 Save',
     fsFiltTtl:'🔍 Filter',fsFiltReset:'Reset',fsFiltApply:'Apply',
     fsLblColl:'Collected',fsLblGoal:'Target',fsClose:'✕ Close',fsReport:'📷 Photo/Error Report',
@@ -823,11 +841,12 @@ function renderNav(){
     {id:'collect',ico:'📦',label:tabLabels[0]},
     {id:'trade',  ico:'🔄',label:tabLabels[1]},
     {id:'goals',  ico:'🎯',label:tabLabels[2]},
-    {id:'usage',  ico:'📖',label:tabLabels[3]},
+    {id:'notice', ico:'📢',label:tabLabels[3]},
+    {id:'usage',  ico:'📖',label:tabLabels[4]},
   ];
-  document.getElementById('dtabs').innerHTML=TABS.map(tp=>`<div class="dtab${curTab===tp.id?' on':''}" data-v="${tp.id}" onclick="goTab('${tp.id}')">${tp.label}</div>`).join('');
-  document.getElementById('bnav').innerHTML=TABS.map(tp=>`<div class="btab${curTab===tp.id?' on':''}" data-v="${tp.id}" onclick="goTab('${tp.id}')"><div class="btab-ico">${tp.ico}</div>${tp.label}</div>`).join('');
-  document.getElementById('ls-nav').innerHTML=TABS.map(tp=>`<div class="ls-tab${curTab===tp.id?' on':''}" data-v="${tp.id}" onclick="goTab('${tp.id}')"><span class="ls-tab-ico">${tp.ico}</span>${tp.label}</div>`).join('');
+  document.getElementById('dtabs').innerHTML=TABS.map(tp=>`<div class="dtab${curTab===tp.id?' on':''}" data-v="${tp.id}" onclick="goTab('${tp.id}')" style="position:relative">${tp.label}${tp.id==='notice'?'<span class="notice-badge" id="nb-dtab"></span>':''}</div>`).join('');
+  document.getElementById('bnav').innerHTML=`<div class="bnav-inner">`+TABS.map(tp=>`<div class="btab${curTab===tp.id?' on':''}" data-v="${tp.id}" onclick="goTab('${tp.id}')" style="position:relative"><div class="btab-ico">${tp.ico}${tp.id==='notice'?'<span class="notice-badge" id="nb-bnav"></span>':''}</div>${tp.label}</div>`).join('')+`</div>`;
+  document.getElementById('ls-nav').innerHTML=TABS.map(tp=>`<div class="ls-tab${curTab===tp.id?' on':''}" data-v="${tp.id}" onclick="goTab('${tp.id}')" style="position:relative"><span class="ls-tab-ico">${tp.ico}</span>${tp.label}${tp.id==='notice'?'<span class="notice-badge" id="nb-ls"></span>':''}</div>`).join('');
   const sb=document.getElementById('ls-sidebar');
   const tog=document.getElementById('ls-toggle');
   if(sb){sb.classList.toggle('collapsed',!UI.sidebarOpen);tog.textContent=UI.sidebarOpen?'◀':'▶';}
@@ -835,10 +854,11 @@ function renderNav(){
 function toggleSidebar(){UI.sidebarOpen=!UI.sidebarOpen;saveUI();renderNav();}
 function goTab(v){curTab=v;document.querySelectorAll('[data-v]').forEach(el=>el.classList.toggle('on',el.dataset.v===v));renderCur();}
 function renderCur(){
-  if(!DB&&curTab!=='usage'){document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--tx2)">📦 DB 로딩 중...</div>';return;}
+  if(!DB&&curTab!=='usage'&&curTab!=='notice'){document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--tx2)">📦 DB 로딩 중...</div>';return;}
   if(curTab==='collect')renderCollect();
   else if(curTab==='trade')renderTrade();
   else if(curTab==='goals')renderGoals();
+  else if(curTab==='notice')renderNotice();
   else renderUsage();
 }
 
@@ -1159,7 +1179,75 @@ function wizApply(){
 }
 
 /* ══════════════════════════════════
-   USAGE
+   NOTICE TAB
+══════════════════════════════════ */
+const NOTICE_KEY='plave_notice_seen_v1';
+const NOTICE_URL='./notices.json';
+
+function loadNotices(cb){
+  fetch(NOTICE_URL+'?t='+Date.now())
+    .then(r=>r.json())
+    .then(d=>cb(Array.isArray(d)?d:[]))
+    .catch(()=>cb([]));
+}
+
+function getSeenId(){return localStorage.getItem(NOTICE_KEY)||'';}
+function markSeen(id){localStorage.setItem(NOTICE_KEY,id);}
+
+function checkNoticeBadge(){
+  loadNotices(list=>{
+    if(!list.length)return;
+    const latest=list[0].id;
+    const seen=getSeenId();
+    const hasNew=seen!==latest;
+    document.querySelectorAll('.notice-badge').forEach(el=>el.classList.toggle('vis',hasNew));
+    if(hasNew){
+      // 풍선 팝업
+      const existing=document.getElementById('notice-balloon');
+      if(existing)existing.remove();
+      const b=document.createElement('div');
+      b.id='notice-balloon';
+      b.className='notice-balloon';
+      b.textContent='📢 새로운 공지가 등록되었습니다!';
+      b.onclick=()=>{b.remove();goTab('notice');};
+      b.style.cursor='pointer';
+      document.body.appendChild(b);
+      setTimeout(()=>{if(b.parentNode)b.remove();},4000);
+    }
+  });
+}
+
+function renderNotice(){
+  const el=document.getElementById('page-content');
+  el.innerHTML=`<div style="text-align:center;padding:20px;color:var(--tx2);font-size:12px">📢 불러오는 중...</div>`;
+  loadNotices(list=>{
+    if(!list.length){
+      el.innerHTML=`<div class="notice-empty">📭 등록된 공지가 없어요</div>`;
+      return;
+    }
+    // 읽음 처리
+    markSeen(list[0].id);
+    document.querySelectorAll('.notice-badge').forEach(e=>e.classList.remove('vis'));
+
+    const tagMap={update:'notice-tag-update',notice:'notice-tag-notice',event:'notice-tag-event'};
+    const tagLabel={update:'업데이트',notice:'공지',event:'이벤트'};
+    el.innerHTML=`<div class="notice-list">`+list.map(n=>{
+      const tagCls=tagMap[n.type]||'notice-tag-notice';
+      const tagTx=tagLabel[n.type]||'공지';
+      return`<div class="notice-item">
+        <div class="notice-item-top">
+          <span class="notice-tag ${tagCls}">${tagTx}</span>
+          <span class="notice-date">${n.date||''}</span>
+        </div>
+        <div class="notice-title">${n.title||''}</div>
+        <div class="notice-body">${n.body||''}</div>
+      </div>`;
+    }).join('')+`</div>`;
+  });
+}
+
+/* ══════════════════════════════════
+   USAGE TAB
 ══════════════════════════════════ */
 function renderUsage(){
   const el=document.getElementById('page-content');
@@ -1457,6 +1545,8 @@ function init(){
   document.getElementById('main').addEventListener('scroll',function(){const btn=document.getElementById('scroll-top-btn');if(btn)btn.classList.toggle('vis',this.scrollTop>200);},{passive:true});
   window.addEventListener('orientationchange',()=>setTimeout(()=>{renderNav();renderCur();},200));
   window.addEventListener('resize',()=>setTimeout(()=>renderNav(),100));
+  // 공지 뱃지 체크 (로딩 후 1.5초 뒤)
+  setTimeout(checkNoticeBadge, 1500);
 }
 init();
 </script>

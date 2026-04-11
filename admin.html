@@ -626,6 +626,8 @@ function renderSidebar(){
     }
   }
   h += `<div style="margin-top:8px;padding:6px"><button class="btn btn-s btn-sm" style="width:100%;justify-content:center" onclick="addAlbum()">+ 앨범 추가</button></div>`;
+  h += `<div class="sb-sec" style="margin-top:12px">공지사항</div>`;
+  h += `<div class="sb-alb${selAlb==='__notice__'?' on':''}" onclick="showNoticePanel()"><span style="font-size:14px">📢</span><span>공지 관리</span></div>`;
   document.getElementById('sidebar').innerHTML = h;
   const el = document.getElementById('db-info');
   if(el){ let t=0; DB.albumTypes.forEach(a=>a.sets.forEach(s=>t+=s.cards.length)); el.textContent=`총 ${t}장`; }
@@ -960,6 +962,126 @@ function handleImport(inp){
     }catch(e){ toast('파싱 오류!'); }
   };
   r.readAsText(inp.files[0]);
+}
+
+// ── NOTICE MANAGEMENT ─────────────────────────────────
+
+const NOTICE_STORAGE_KEY = 'poca_notices_v1';
+
+function loadNoticesAdmin(){
+  try{ return JSON.parse(localStorage.getItem(NOTICE_STORAGE_KEY))||[]; }catch(e){ return []; }
+}
+function saveNoticesAdmin(list){ localStorage.setItem(NOTICE_STORAGE_KEY, JSON.stringify(list)); }
+function genNoticeId(){ return 'n_'+Date.now().toString(36)+Math.random().toString(36).slice(2,4); }
+
+function showNoticePanel(){
+  selAlb='__notice__';
+  renderSidebar();
+  const list = loadNoticesAdmin();
+  const content = document.getElementById('content');
+  const typeOpts = ['update','notice','event'].map(t=>`<option value="${t}">${{update:'업데이트',notice:'공지',event:'이벤트'}[t]}</option>`).join('');
+  content.innerHTML = `
+  <div class="card">
+    <div class="card-hdr">
+      <div class="card-ttl">📢 공지사항 관리</div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="btn btn-ok btn-sm" onclick="saveNoticesToGitHub()">☁️ GitHub 저장</button>
+        <button class="btn btn-p btn-sm" onclick="saveNoticesLocal()">💾 파일 저장</button>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:12px;background:var(--sur2)">
+      <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:8px">새 공지 등록</div>
+      <div class="fr2" style="margin-bottom:7px">
+        <div class="fg"><label class="fl">유형</label><select id="n-type">${typeOpts}</select></div>
+        <div class="fg"><label class="fl">날짜</label><input type="date" id="n-date" value="${new Date().toISOString().slice(0,10)}"></div>
+      </div>
+      <div class="fg"><label class="fl">제목</label><input id="n-title" placeholder="공지 제목"></div>
+      <div class="fg"><label class="fl">내용</label><textarea id="n-body" rows="4" placeholder="내용을 입력하세요..."></textarea></div>
+      <button class="btn btn-p btn-sm" style="margin-top:6px" onclick="addNotice()">+ 등록</button>
+    </div>
+    <div class="sec-ttl">등록된 공지 <span style="font-size:10px;color:var(--tx3)">(최신순, 위가 최신)</span></div>
+    <div id="notice-list-admin">${renderNoticeListAdmin(list)}</div>
+  </div>`;
+}
+
+function renderNoticeListAdmin(list){
+  if(!list.length) return '<div class="empty" style="padding:16px">등록된 공지가 없어요</div>';
+  const typeLabel={update:'업데이트',notice:'공지',event:'이벤트'};
+  const typeColor={update:'var(--ac)',notice:'var(--warn)',event:'var(--ok)'};
+  return list.map((n,i)=>`
+  <div class="card-item">
+    <div class="card-item-top">
+      <div class="card-item-body">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <span style="font-size:9px;font-weight:700;color:${typeColor[n.type]||'var(--ac)'};background:rgba(0,0,0,.2);padding:1px 6px;border-radius:8px">${typeLabel[n.type]||n.type}</span>
+          <span style="font-size:10px;color:var(--tx3)">${n.date||''}</span>
+        </div>
+        <div style="font-size:12px;font-weight:700">${escH(n.title)}</div>
+        <div style="font-size:11px;color:var(--tx2);margin-top:3px;white-space:pre-wrap">${escH(n.body)}</div>
+      </div>
+      <div class="card-item-acts">
+        ${i>0?`<button class="iBtn" onclick="moveNotice(${i},-1)" title="위로">↑</button>`:''}
+        ${i<list.length-1?`<button class="iBtn" onclick="moveNotice(${i},1)" title="아래로">↓</button>`:''}
+        <button class="iBtn" onclick="deleteNotice('${n.id}')" style="color:var(--err)" title="삭제">🗑</button>
+      </div>
+    </div>
+  </div>`).join('');
+}
+
+function addNotice(){
+  const title = document.getElementById('n-title').value.trim();
+  const body  = document.getElementById('n-body').value.trim();
+  const type  = document.getElementById('n-type').value;
+  const date  = document.getElementById('n-date').value;
+  if(!title){ toast('제목을 입력하세요'); return; }
+  const list = loadNoticesAdmin();
+  list.unshift({ id:genNoticeId(), type, date, title, body });
+  saveNoticesAdmin(list);
+  document.getElementById('notice-list-admin').innerHTML = renderNoticeListAdmin(list);
+  document.getElementById('n-title').value='';
+  document.getElementById('n-body').value='';
+  toast('공지 등록됨 ✓');
+}
+
+function deleteNotice(id){
+  if(!confirm('삭제할까요?')) return;
+  const list = loadNoticesAdmin().filter(n=>n.id!==id);
+  saveNoticesAdmin(list);
+  document.getElementById('notice-list-admin').innerHTML = renderNoticeListAdmin(list);
+  toast('삭제됨');
+}
+
+function moveNotice(i, d){
+  const list = loadNoticesAdmin();
+  const ni = i+d;
+  if(ni<0||ni>=list.length) return;
+  [list[i],list[ni]] = [list[ni],list[i]];
+  saveNoticesAdmin(list);
+  document.getElementById('notice-list-admin').innerHTML = renderNoticeListAdmin(list);
+}
+
+function saveNoticesLocal(){
+  const list = loadNoticesAdmin();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(list,null,2)],{type:'application/json'}));
+  a.download = 'notices.json'; a.click();
+  toast('notices.json 저장됨 ✓');
+}
+
+async function saveNoticesToGitHub(){
+  const cfg = loadGhCfg();
+  if(!cfg.token||!cfg.owner||!cfg.repo){ toast('GitHub 설정을 먼저 해주세요'); openGhSettings(); return; }
+  const list = loadNoticesAdmin();
+  const noticePath = (cfg.path||'poca_db.json').replace(/[^/]+$/, 'notices.json');
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(list,null,2))));
+  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${noticePath}`;
+  let sha=null;
+  try{ const r=await fetch(`${url}?ref=${cfg.branch||'main'}`,{headers:{Authorization:`token ${cfg.token}`,'Accept':'application/vnd.github.v3+json'}});if(r.ok){const j=await r.json();sha=j.sha;} }catch(e){}
+  const body={message:`[admin] notices update ${new Date().toLocaleString('ko-KR')}`,content,branch:cfg.branch||'main'};
+  if(sha)body.sha=sha;
+  const res = await fetch(url,{method:'PUT',headers:{Authorization:`token ${cfg.token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)});
+  if(res.ok) toast('✅ GitHub notices.json 저장 완료!');
+  else { const j=await res.json(); toast('❌ 실패: '+(j.message||res.status)); }
 }
 
 // ── INIT ───────────────────────────────────────────────
