@@ -417,7 +417,7 @@
             {
               "id": "c_mnrkfbewivk",
               "name": "예준",
-              "img": null,
+              "img": "./images/cards/c_mnrkfbewivk.webp",
               "cardType": "Individual",
               "member": "예준",
               "unit": null,
@@ -427,7 +427,7 @@
             {
               "id": "c_mnrkfbk4ta2",
               "name": "노아",
-              "img": null,
+              "img": "./images/cards/c_mnrkfbk4ta2.webp",
               "cardType": "Individual",
               "member": "노아",
               "unit": null,
@@ -437,7 +437,7 @@
             {
               "id": "c_mnrkfbpgovn",
               "name": "밤비",
-              "img": null,
+              "img": "./images/cards/c_mnrkfbpgovn.webp",
               "cardType": "Individual",
               "member": "밤비",
               "unit": null,
@@ -447,7 +447,7 @@
             {
               "id": "c_mnrkfbwlma4",
               "name": "은호",
-              "img": null,
+              "img": "./images/cards/c_mnrkfbwlma4.webp",
               "cardType": "Individual",
               "member": "은호",
               "unit": null,
@@ -457,7 +457,7 @@
             {
               "id": "c_mnrkfc2ahne",
               "name": "하민",
-              "img": null,
+              "img": "./images/cards/c_mnrkfc2ahne.webp",
               "cardType": "Individual",
               "member": "하민",
               "unit": null,
