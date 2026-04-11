@@ -280,7 +280,7 @@
         },
         {
           "id": "set_mnoxkdhb",
-          "name": "단체",
+          "name": "GROUP",
           "cards": [
             {
               "id": "c_mnrna26et7h",
@@ -295,7 +295,7 @@
             {
               "id": "c_mnrna2f6ewd",
               "name": "단체",
-              "img": null,
+              "img": "./images/cards/c_mnrna2f6ewd.webp",
               "cardType": "All",
               "member": null,
               "unit": null,
@@ -311,7 +311,7 @@
             {
               "id": "c_mnrkbih3hnn",
               "name": "예준",
-              "img": "./images/cards/c_mnrkbih3hnn.webp",
+              "img": null,
               "cardType": "Individual",
               "member": "예준",
               "unit": null,
@@ -626,6 +626,62 @@
               "id": "c_mnrkif4g51h",
               "name": "하민",
               "img": "./images/cards/c_mnrkif4g51h.webp",
+              "cardType": "Individual",
+              "member": "하민",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            }
+          ]
+        },
+        {
+          "id": "set_mnum9zj34pl",
+          "name": "CLEAR",
+          "cards": [
+            {
+              "id": "c_mnum9zj3umc",
+              "name": "예준",
+              "img": null,
+              "cardType": "Individual",
+              "member": "예준",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnum9zj38fu",
+              "name": "노아",
+              "img": null,
+              "cardType": "Individual",
+              "member": "노아",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnum9zj3hls",
+              "name": "밤비",
+              "img": null,
+              "cardType": "Individual",
+              "member": "밤비",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnum9zj3jem",
+              "name": "은호",
+              "img": null,
+              "cardType": "Individual",
+              "member": "은호",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnum9zj3cl0",
+              "name": "하민",
+              "img": null,
               "cardType": "Individual",
               "member": "하민",
               "unit": null,
