@@ -30,102 +30,105 @@
     ctx.rotate(rad);
     for(let r=-rows;r<=rows;r++){
       for(let c=-cols;c<=cols;c++){
-        const x=c*WM_SPACING_X+(r%2===0?0:WM_SPACING_X/2);
-        const y=r*WM_SPACING_Y;
-        ctx.fillText(WM_TEXT,x,y);
+        ctx.fillText(WM_TEXT, c*WM_SPACING_X+(r%2===0?0:WM_SPACING_X/2), r*WM_SPACING_Y);
       }
     }
     ctx.restore();
   }
 
-  // src → dataURL (캐시 포함)
-  function getWatermarked(src, cb){
-    if(CACHE.has(src)){ cb(CACHE.get(src)); return; }
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = ()=>{
-      const canvas = document.createElement('canvas');
-      canvas.width  = img.naturalWidth  || 300;
-      canvas.height = img.naturalHeight || 420;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      drawWatermark(ctx, canvas.width, canvas.height);
-      const url = canvas.toDataURL('image/jpeg', 0.92);
-      evict(); CACHE.set(src, url);
-      cb(url);
+  // img 엘리먼트를 canvas로 교체 (핵심 함수)
+  function applyImg(imgEl, style){
+    if(!imgEl || imgEl.dataset.wm==='1') return;
+    imgEl.dataset.wm = '1';
+
+    const doRender = ()=>{
+      const w = imgEl.naturalWidth  || 300;
+      const h = imgEl.naturalHeight || 420;
+      const src = imgEl.src;
+
+      const render = (dataUrl)=>{
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        // 원본 img와 같은 style 유지
+        if(style){
+          canvas.style.cssText = style;
+        } else {
+          canvas.style.cssText = imgEl.style.cssText ||
+            'width:100%;height:100%;object-fit:cover;display:block';
+          if(imgEl.className) canvas.className = imgEl.className;
+        }
+        const ctx = canvas.getContext('2d');
+        const tmp = new Image();
+        tmp.onload = ()=>{
+          ctx.drawImage(tmp, 0, 0, w, h);
+          drawWatermark(ctx, w, h);
+        };
+        tmp.src = dataUrl;
+        // 우클릭 차단
+        canvas.addEventListener('contextmenu', e=>e.preventDefault());
+        imgEl.replaceWith(canvas);
+        evict(); CACHE.set(src, dataUrl);
+      };
+
+      if(CACHE.has(src)){ render(CACHE.get(src)); return; }
+      // crossOrigin 재로딩으로 canvas taint 방지
+      const loader = new Image();
+      loader.crossOrigin = 'anonymous';
+      loader.onload = ()=>{
+        const tmp2 = document.createElement('canvas');
+        tmp2.width = loader.naturalWidth; tmp2.height = loader.naturalHeight;
+        const ctx2 = tmp2.getContext('2d');
+        ctx2.drawImage(loader, 0, 0);
+        drawWatermark(ctx2, tmp2.width, tmp2.height);
+        const url = tmp2.toDataURL('image/jpeg', 0.92);
+        render(url);
+      };
+      loader.onerror = ()=>{}; // 실패 시 원본 유지
+      loader.src = src + (src.includes('?')?'&':'?') + '_wm=1';
     };
-    img.onerror = ()=>cb(null);
-    img.src = src;
+
+    if(imgEl.complete && imgEl.naturalWidth){ doRender(); }
+    else { imgEl.addEventListener('load', doRender, {once:true}); }
   }
 
-  // <canvas> 엘리먼트로 카드 이미지를 대체 렌더링
-  // container: .pci 또는 .crd-img div
+  // 컨테이너(.pci 등) 안의 img에 적용
   function applyToContainer(container){
     if(!container || container.dataset.wm==='1') return;
     const img = container.querySelector('img');
     if(!img) return;
-
-    // 이미 canvas로 교체된 경우
-    if(container.querySelector('canvas')) return;
-
     container.dataset.wm = '1';
-
-    const doRender = ()=>{
-      const src = img.src || img.dataset.src;
-      if(!src || src.startsWith('data:') && src.includes('wm')) return;
-
-      getWatermarked(src, dataUrl=>{
-        if(!dataUrl) return; // 실패 시 원본 유지
-        const canvas = document.createElement('canvas');
-        canvas.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block';
-        canvas.width  = img.naturalWidth  || 300;
-        canvas.height = img.naturalHeight || 420;
-        const ctx = canvas.getContext('2d');
-
-        // img → canvas
-        const tmp = new Image();
-        tmp.onload = ()=>{
-          ctx.drawImage(tmp, 0, 0, canvas.width, canvas.height);
-          drawWatermark(ctx, canvas.width, canvas.height);
-        };
-        tmp.src = dataUrl;
-
-        // 우클릭 차단
-        canvas.addEventListener('contextmenu', e=>e.preventDefault());
-
-        // img를 canvas로 교체
-        img.replaceWith(canvas);
-      });
-    };
-
-    if(img.complete && img.naturalWidth){ doRender(); }
-    else { img.addEventListener('load', doRender, {once:true}); }
+    applyImg(img);
   }
 
-  // MutationObserver로 동적 카드도 자동 처리
+  // 전체 스캔
+  function scanAll(){
+    document.querySelectorAll('.pci, .fs-img-wrap').forEach(c=>{
+      if(c.dataset.wm==='1') return;
+      applyToContainer(c);
+    });
+    // fs-img 내부도 직접 처리
+    const fsImg = document.getElementById('fs-img');
+    if(fsImg){ const img=fsImg.querySelector('img'); if(img&&img.dataset.wm!=='1') applyImg(img); }
+  }
+
+  // MutationObserver
   const observer = new MutationObserver(muts=>{
     for(const m of muts){
       for(const node of m.addedNodes){
         if(node.nodeType!==1) continue;
-        // .pci, .fs-img-wrap 내부 처리
-        const containers = node.classList&&(node.classList.contains('pci')||node.classList.contains('fs-img-wrap'))
+        const containers = (node.classList&&(node.classList.contains('pci')||node.classList.contains('fs-img-wrap')))
           ? [node]
           : [...node.querySelectorAll('.pci, .fs-img-wrap')];
         containers.forEach(applyToContainer);
+        // fs-img 직접 추가된 경우
+        if(node.id==='fs-img'||node.closest&&node.closest('#fs-img')){
+          const img=node.tagName==='IMG'?node:node.querySelector('img');
+          if(img&&img.dataset.wm!=='1') applyImg(img);
+        }
       }
     }
   });
 
-  // 전역 API
-  window.WM = {
-    apply: applyToContainer,
-    get: getWatermarked,
-    cache: CACHE,
-    // 페이지 전체 스캔 (renderCur 이후 호출용)
-    scanAll: ()=>{ document.querySelectorAll('.pci, .fs-img-wrap').forEach(applyToContainer); }
-  };
-
-  // DOM 준비되면 옵저버 시작
   if(document.body){
     observer.observe(document.body, {childList:true, subtree:true});
   } else {
@@ -133,4 +136,6 @@
       observer.observe(document.body, {childList:true, subtree:true});
     });
   }
+
+  window.WM = { apply: applyToContainer, applyImg, get: ()=>{}, cache: CACHE, scanAll };
 })();

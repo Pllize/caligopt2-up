@@ -1180,7 +1180,12 @@ function openFull(id){
   const m=document.getElementById('fs-memo');if(m)m.value=mo(id);
   document.getElementById('fsov').classList.add('open');
   // 풀스크린 이미지에 워터마크 적용
-  requestAnimationFrame(()=>{ if(window.WM)WM.apply(document.getElementById('fs-img')); });
+  requestAnimationFrame(()=>{
+    if(!window.WM) return;
+    const wrap = document.getElementById('fs-img');
+    const img = wrap && wrap.querySelector('img');
+    if(img) WM.applyImg(img);
+  });
 }
 function updFull(){
   if(!fsId)return;
