@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<title>${t('tradeShotHdr')}</title>
+<title>Caligo Pt.2 포토카드 수집 트래커</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -36,6 +36,7 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .logo-sub{font-family:'Outfit',sans-serif;font-weight:600;font-size:10px;color:var(--tx2);margin-left:6px}
 .hdr-r{display:flex;gap:4px;margin-left:auto}
 .abtn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm);background:var(--s2);border:1px solid var(--bd);font-size:14px;flex-shrink:0}
+.lang-abtn{font-family:'Outfit',sans-serif;font-weight:800;font-size:10px;color:var(--tx2)}
 .dtabs{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 12px;flex-shrink:0;overflow-x:auto;display:none}
 .dtab{padding:9px 13px;font-size:12px;font-weight:700;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;font-family:'Outfit',sans-serif}
 .dtab.on{color:var(--blue);border-bottom-color:var(--blue)}
@@ -82,6 +83,8 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .filter-btn.active{border-color:var(--blue);color:var(--blue);background:var(--s2)}
 .ctrl-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:var(--r-sm);background:var(--s2);border:1px solid var(--bd);color:var(--tx2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap}
 .shot-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:var(--r-sm);background:var(--s2);border:1px solid var(--bd);color:var(--tx2);font-size:10px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap}
+.icon-toggle-btn{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--r-sm);background:var(--s2);border:1px solid var(--bd);color:var(--tx2);cursor:pointer;flex-shrink:0;transition:all .14s}
+.icon-toggle-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}
 .spacer{flex:1}
 
 /* ── SECTIONS ── */
@@ -241,8 +244,8 @@ input:focus,textarea:focus{border-color:var(--blue)}
     <span class="logo-main">Caligo Pt.2</span><span class="logo-sub" id="p-logo-sub">포토카드 수집 트래커</span>
     <div class="hdr-r">
       <button class="abtn" id="theme-btn" onclick="toggleTheme()">☀️</button>
-      <button class="abtn" onclick="toggleLang()" title="EN/KO">🌐</button>
-      <button class="abtn" onclick="showSettings()">⚙️</button>
+      <button class="abtn lang-abtn" onclick="toggleLang()" id="hdr-lang-btn">ENG</button>
+      <button class="abtn" onclick="exportState()" title="백업 저장">💾</button>
     </div>
   </div>
   <div class="dtabs" id="dtabs"></div>
@@ -399,7 +402,7 @@ const T={
     achToast:'🎉 달성!',
     shotReady:'스크린샷 준비 중...',shotDone:'📸 저장 완료!',shotFail:'실패: ',shotLib:'라이브러리 로드 실패',shotEmpty:'교환할 카드가 없어요',
     colShotHdr:'Caligo Pt.2 수집 현황',tradeShotHdr:'Caligo Pt.2 포토카드 수집 트래커',
-    collapseAll:'모두 접음',expandAll:'모두 펼침',
+    noCards:'해당하는 카드가 없어요.',    collapseAll:'모두 접음',expandAll:'모두 펼침',
   },
   en:{
     appSub:'Photocard Collection Tracker',
@@ -446,7 +449,7 @@ const T={
     achToast:'🎉 Target reached!',
     shotReady:'Preparing screenshot...',shotDone:'📸 Saved!',shotFail:'Failed: ',shotLib:'Failed to load library',shotEmpty:'No cards to show',
     colShotHdr:'Caligo Pt.2 Collection Status',tradeShotHdr:'Caligo Pt.2 Photocard Collection Tracker',
-    collapseAll:'Collapsed',expandAll:'Expanded',
+    noCards:'No matching cards.',    collapseAll:'Collapsed',expandAll:'Expanded',
   }
 };
 let lang='ko';
@@ -458,6 +461,8 @@ function applyLang(){
   const lsL=document.getElementById('ls-lang-btn');if(lsL)lsL.textContent=t('lsLang');
   const lsS=document.getElementById('ls-shot-btn');if(lsS)lsS.textContent=t('lsShot');
   const lsSet=document.getElementById('ls-set-btn');if(lsSet)lsSet.textContent=t('lsSet');
+  // Header lang button: show what you'll switch TO
+  const hdrL=document.getElementById('hdr-lang-btn');if(hdrL)hdrL.textContent=lang==='ko'?'ENG':'KOR';
   const fsFiltTtl=document.getElementById('filt-ttl');if(fsFiltTtl)fsFiltTtl.textContent=t('fsFiltTtl');
   const fFR=document.getElementById('filt-reset-btn');if(fFR)fFR.textContent=t('fsFiltReset');
   const fFA=document.getElementById('filt-apply-btn');if(fFA)fFA.textContent=t('fsFiltApply');
@@ -563,17 +568,17 @@ function cardPassFilter(card, f){
   }
   return true;
 }
-function hasFilter(f){return f.albs.length||f.members.length||f.units.length||f.mmms.length||f.excUnits||f.excAll||f.excMmmm||f.flatView;}
+function hasFilter(f){return f.albs.length||f.members.length||f.units.length||f.mmms.length||f.excUnits||f.excAll||f.excMmmm;}
 
 /* ══════════════════════════════════
    STRIP / STATUS
 ══════════════════════════════════ */
 function stripHtml(id){
   const cv=c(id),gv=g(id),s_=sp(id),w_=wt(id),st=sts(id);
-  if(st==='m')return`✓ 달성(${cv}/${gv})`;
-  if(st==='h'&&gv>0)return`✨ 있어요 +${s_}`;
-  if(st==='h')return`✨ ${cv}장`;
-  if(st==='c')return`🔍 없어요 −${w_}`;
+  if(st==='m')returnlang==='en'?`✓ Done(${cv}/${gv})`:`✓ 달성(${cv}/${gv})`;
+  if(st==='h'&&gv>0)returnlang==='en'?`✨ HAVE +${s_}`:`✨ 있어요 +${s_}`;
+  if(st==='h')returnlang==='en'?`✨ ${cv}`:`✨ ${cv}장`;
+  if(st==='c')returnlang==='en'?`🔍 WANT −${w_}`:`🔍 없어요 −${w_}`;
   return'';
 }
 function stripStyle(id){
@@ -639,7 +644,7 @@ function patchTile(id){
 /* ══════════════════════════════════
    ACTIONS
 ══════════════════════════════════ */
-function addC(id,e){if(e)e.stopPropagation();ST.collected[id]=(ST.collected[id]||0)+1;saveST();patchTile(id);const g0=g(id),c0=c(id);if(g0>0&&c0===g0)toast('🎉 달성!');else if(g0>0&&c0>g0)toast(`✨ +${c0-g0}`);}
+function addC(id,e){if(e)e.stopPropagation();ST.collected[id]=(ST.collected[id]||0)+1;saveST();patchTile(id);const g0=g(id),c0=c(id);if(g0>0&&c0===g0)toast(t('achToast'));else if(g0>0&&c0>g0)toast(`✨ +${c0-g0}`);}
 function subC(id,e){if(e)e.stopPropagation();ST.collected[id]=Math.max(0,(ST.collected[id]||0)-1);saveST();patchTile(id);}
 function setGoalById(id,n){if(n<0)n=0;if(n===0)delete ST.goals[id];else ST.goals[id]=n;saveST();}
 function goalAdj(id,d){setGoalById(id,g(id)+d);patchTile(id);const gn=document.querySelector(`[data-gid="${id}"]`);if(gn)gn.textContent=g(id);}
@@ -647,12 +652,12 @@ function toggleHide(){
   if(!fsId)return;
   const isH=hid(fsId);
   const msg=isH
-    ?(lang==='en'?'Re-add to the HAVE list?':'다시 있어요 목록에 표시할까요?')
-    :(lang==='en'?'Exclude from the exchange (HAVE) list?\n(Collected count is preserved)':'있어요 목록에서 숨길까요? (수집 수는 유지됩니다)');
+    ?(lang==='en'?'Re-add to the HAVE list?':t('showConfirm'))
+    :(lang==='en'?'Exclude from the exchange (HAVE) list?\n(Collected count is preserved)':t('hideConfirm'));
   if(!confirm(msg))return;
   if(isH)delete ST.hidden[fsId];else ST.hidden[fsId]=true;
   saveST();updFull();renderCur();
-  toast(isH?(lang==='en'?'Shown in HAVE list':'있어요에 표시됩니다'):(lang==='en'?'Excluded from HAVE list':'있어요에서 숨겼어요'));
+  toast(isH?(lang==='en'?'Shown in HAVE list':t('showToast')):(lang==='en'?'Excluded from HAVE list':t('hideToast')));
 }
 function saveMemo(){if(!fsId)return;const v=document.getElementById('fs-memo').value;if(v)ST.memos[fsId]=v;else delete ST.memos[fsId];saveST();}
 function _renderKeepScroll(fn){
@@ -668,7 +673,7 @@ function collapseAll(){if(!DB)return;for(const a of DB.albumTypes)for(const s of
 function expandAll(){UI.col={};UI.collapseC=false;saveUI();_renderKeepScroll(renderCollect);toast(t('expandAll'));}
 function toggleCollapseC(){if(UI.collapseC)expandAll();else collapseAll();}
 function colAllGoals(){if(!DB)return;for(const a of DB.albumTypes)for(const s of a.sets)UI.mgl[s.id]=true;UI.collapseG=true;saveUI();_renderKeepScroll(renderGoals);}
-function expAllGoals(){UI.mgl={};UI.collapseG=false;saveUI();_renderKeepScroll(renderGoals);toast('모두 펼침');}
+function expAllGoals(){UI.mgl={};UI.collapseG=false;saveUI();_renderKeepScroll(renderGoals);toast(t('expandAll'));}
 function toggleCollapseG(){if(UI.collapseG)expAllGoals();else colAllGoals();}
 function resetAllGoals(){if(!confirm(t('goalResetConfirm')))return;ST.goals={};saveST();renderGoals();toast(t('goalResetToast'));}
 function cycleVis(fKey,cb){const f=UI[fKey];if(f.vis==='all')f.vis='have';else if(f.vis==='have')f.vis='nothave';else f.vis='all';saveUI();_renderKeepScroll(cb==='renderCollect'?renderCollect:cb==='renderGoals'?renderGoals:renderCur);}
@@ -697,10 +702,6 @@ function renderFilterPanel(f){
   h+=`<div class="filt-sec"><div class="filt-sec-title">${t('filtMmms')}</div><div class="filt-chips">`;
   for(const m of MMMS){const on=f.mmms.includes(m);h+=`<span class="fchip${on?' on':''}" data-fk="mmms" data-fv="${m}" onclick="toggleFchip(this)">${m}</span>`;}
   h+=`</div></div>`;
-  // Flat view toggle
-  h+=`<div class="filt-sec"><div class="filt-sec-title">${t('filtViewMode')}</div><div class="filt-chips">
-    <span class="fchip${f.flatView?' on':''}" data-fk-exc="flatView" onclick="toggleFchipExc(this,'flatView')">${t('filtFlatView')}</span>
-  </div></div>`;
   // Exclude toggles
   h+=`<div class="filt-sec"><div class="filt-sec-title">${t('filtExcOpts')}</div><div class="filt-chips">
     <span class="fchip${f.excUnits?' on':''}" data-fk-exc="excUnits" onclick="toggleFchipExc(this,'excUnits')">${t('filtExcUnits')}</span>
@@ -726,27 +727,40 @@ function resetCurFilter(){
 /* ══════════════════════════════════
    TOP BAR
 ══════════════════════════════════ */
-function topBarHTML(statsHTML,filtTarget,f,collapseState,onCollapse,onVis,extraRight){
+function topBarHTML(statsHTML,filtTarget,f,collapseState,onCollapse,onVis,shotBtn){
   const filtActive=hasFilter(f);
+  const fKey=filtTarget==='collect'?'cf':'mf';
   const albChips=DB.albumTypes.map(a=>{
     const on=f.albs.includes(a.id);
-    const onStyle=on?`background:${a.color};border-color:${a.color};color:#fff`:`border-color:${a.color}55;color:${a.color}`;
-    return`<button class="fp" style="${onStyle}" onclick="toggleAlbFilter('${filtTarget}','${a.id}')">${a.shortName}</button>`;
+    return`<button class="fp" style="${on?`background:${a.color};border-color:${a.color};color:#fff`:`border-color:${a.color}55;color:${a.color}`}" onclick="toggleAlbFilter('${filtTarget}','${a.id}')">${a.shortName}</button>`;
   }).join('');
   const allOn=!f.albs.length;
-  return`<div class="top-bar">
+  // flat/section toggle icon button
+  const flatToggle=`<button class="icon-toggle-btn${f.flatView?' active':''}" onclick="toggleFlatView('${filtTarget}')" title="${f.flatView?(lang==='en'?'Section View':lang==='en'?'Section View':'섹션 뷰'):(lang==='en'?'Flat View':lang==='en'?'Flat View':'카드 나열 뷰')}">
+    ${f.flatView?`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" fill="currentColor"/><rect x="8" y="1" width="5" height="5" rx="1" fill="currentColor"/><rect x="1" y="8" width="5" height="5" rx="1" fill="currentColor"/><rect x="8" y="8" width="5" height="5" rx="1" fill="currentColor"/></svg>`:`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="2.5" rx="1" fill="currentColor"/><rect x="1" y="5.5" width="12" height="2.5" rx="1" fill="currentColor"/><rect x="1" y="10" width="12" height="2.5" rx="1" fill="currentColor"/></svg>`}
+  </button>`;
+  return`
+  <div class="top-bar">
     ${statsHTML}
     <div class="spacer"></div>
-    <button class="ctrl-btn" onclick="cycleVis('${filtTarget==='collect'?'cf':'mf'}',${onVis})">${visLabel(f.vis)}</button>
+    <button class="ctrl-btn" onclick="cycleVis('${fKey}','${filtTarget==='collect'?'renderCollect':'renderGoals'}')">${visLabel(f.vis)}</button>
     <button class="ctrl-btn" onclick="${onCollapse}">${collapseState?t('expandBtn'):t('collBtn')}</button>
     <button class="filter-btn${filtActive?' active':''}" onclick="openFilter('${filtTarget}')">${t('filtBtn')}${filtActive?' ●':''}</button>
-    ${extraRight||''}
   </div>
-  <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;align-items:center">
+  <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;align-items:center">
     <button class="fp${allOn?' on-all':''}" onclick="toggleAlbFilter('${filtTarget}',null)">${lang==='en'?'All':'전체'}</button>
     ${albChips}
+  </div>
+  <div style="display:flex;justify-content:flex-end;align-items:center;gap:4px;margin-bottom:8px">
+    ${shotBtn||''}
+    ${flatToggle}
   </div>`;}
 
+function toggleFlatView(target){
+  const f=target==='collect'?UI.cf:UI.mf;
+  f.flatView=!f.flatView;
+  saveUI();_renderKeepScroll(target==='collect'?renderCollect:renderGoals);
+}
 function toggleAlbFilter(target,id){
   const f=target==='collect'?UI.cf:UI.mf;
   if(id===null){f.albs=[];}
@@ -769,7 +783,7 @@ function buildSections(albums,f,colMap,onColSec,showGoalRow){
         flatCards=flatCards.concat(cards.map(card=>({...card,aId:alb.id,aC:alb.color})));
       }
     }
-    if(!flatCards.length)return`<div style="padding:20px;text-align:center;color:var(--tx2);font-size:12px">해당하는 카드가 없어요.</div>`;
+    if(!flatCards.length)return`<div style="padding:20px;text-align:center;color:var(--tx2);font-size:12px">${lang==='en'?'No matching cards.':'해당하는 카드가 없어요.'}</div>`;
     // flat grid: auto-fill so large screens show many columns at consistent card size
     return`<div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:8px">
       <div class="pcg-flat">${flatCards.map(card=>cardTileHTML(card,showGoalRow)).join('')}</div>
@@ -836,21 +850,23 @@ function renderCollect(){
   const el=document.getElementById('page-content');
   const f=UI.cf;
   const allC=allCards(),haveC=allC.filter(x=>c(x.id)>0).length,metC=allC.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)).length,goalC=allC.filter(x=>g(x.id)>0).length;
-  const noGoalHint=goalC===0?`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);margin-bottom:8px;font-size:11px;color:var(--tx2)">🎯 ${lang==='en'?'No targets set. Go to <b>Target</b> tab to set collection goals!':'설정된 목표가 없어요. <b>목표</b> 탭에서 수집 목표를 설정해보세요!'} <button class="btn btn-s btn-sm" style="margin-left:auto;padding:3px 10px;font-size:10px" onclick="goTab('goals')">${lang==='en'?'Go':'이동'}</button></div>`:'';
-  const statsHTML=`<div class="stat-chip">${t('statAll')} <span>${allC.length}</span></div><div class="stat-chip">${t('statColl')} <span>${haveC}</span></div><div class="stat-chip">${t('statGoal')} <span>${metC}/${goalC}</span></div>`;
-  const extra=f.flatView
+  const noGoalHint=goalC===0?`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);margin-bottom:8px;font-size:11px;color:var(--tx2)">🎯 ${t('noGoalHint')} <button class="btn btn-s btn-sm" style="margin-left:auto;padding:3px 10px;font-size:10px" onclick="goTab('goals')">${t('noGoalGo')}</button></div>`:'';
+  // Stats: 전체 N (수집:X/목표:Y)
+  const statsHTML=`<div class="stat-chip">${t('statAll')} <span>${allC.length}</span> <span style="font-weight:400;color:var(--tx2);font-size:10px">(${t('statColl')}:${haveC}/${t('statGoal')}:${goalC})</span></div>`;
+  // Screenshot button (always visible, dropdown if flat view)
+  const shotBtn=f.flatView
     ? `<div style="position:relative;display:inline-block">
         <button class="shot-btn" onclick="toggleShotMenu(this)">📸 ▾</button>
         <div id="shot-menu" style="display:none;position:absolute;right:0;top:100%;margin-top:4px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);padding:4px;white-space:nowrap;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,.15)">
-          <button onclick="closeShotMenu();exportCollectScreenshot(false)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📷 보이는 대로 찍기</button>
-          <button onclick="closeShotMenu();exportCollectScreenshot(true)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📋 카드 정보 포함해서 찍기</button>
+          <button onclick="closeShotMenu();exportCollectScreenshot(false)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">${t('shotPlain')}</button>
+          <button onclick="closeShotMenu();exportCollectScreenshot(true)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">${t('shotMeta')}</button>
         </div>
       </div>`
-    : `<button class="shot-btn" onclick="exportCollectScreenshot(false)">${t('shotBtn')}</button>`;
+    : `<button class="shot-btn" onclick="exportCollectScreenshot(false)">📸</button>`;
   const albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
   const secs=buildSections(albums,f,UI.col,'colSec',false);
   const wrap=f.flatView?secs:`<div class="sets-wrap">${secs}</div>`;
-  el.innerHTML=noGoalHint+topBarHTML(statsHTML,'collect',f,UI.collapseC,'toggleCollapseC()','renderCollect',extra)+wrap;
+  el.innerHTML=noGoalHint+topBarHTML(statsHTML,'collect',f,UI.collapseC,'toggleCollapseC()','renderCollect',shotBtn)+wrap;
 }
 
 /* ══════════════════════════════════
@@ -861,23 +877,27 @@ function renderGoals(){
   const f=UI.mf;
   const allC=allCards();
   const hasGoal=allC.some(x=>g(x.id)>0);
-  // First visit to goals with no targets set → show wizard
   if(!hasGoal){
     el.innerHTML=`<div style="padding:24px;text-align:center;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:12px">
       <div style="font-size:32px;margin-bottom:10px">🎯</div>
-      <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:15px;margin-bottom:6px">${lang==='en'?'No targets set yet':'아직 설정된 목표가 없어요'}</div>
-      <div style="font-size:12px;color:var(--tx2);line-height:1.8;margin-bottom:14px">${lang==='en'?'Set your collection targets to track progress.':'마법사를 통해 목표를 설정해보세요.<br>목표를 설정하면 수집·교환 현황을 트래킹할 수 있어요.'}</div>
-      <button class="btn btn-p" onclick="showWizard()">🎯 ${lang==='en'?'Quick Target Setup':'마법사로 목표 설정하기'}</button>
+      <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:15px;margin-bottom:6px">${t('noGoalTtl')}</div>
+      <div style="font-size:12px;color:var(--tx2);line-height:1.8;margin-bottom:14px">${t('noGoalDesc')}</div>
+      <button class="btn btn-p" onclick="showWizard()">🎯 ${t('noGoalBtn')}</button>
     </div>`;
     setTimeout(showWizard,400);
     return;
   }
-  const extra=`<button class="shot-btn" style="color:var(--want);border-color:rgba(244,63,94,.3)" onclick="resetAllGoals()">${t('goalReset')}</button>`;
+  // Top action row: wizard + reset
+  const actionRow=`<div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
+    <button class="btn btn-p btn-sm" onclick="showWizard()">⚡ ${lang==='en'?'Quick Setup':'빠른 설정'}</button>
+    <button class="btn btn-s btn-sm" style="color:var(--want);border-color:rgba(244,63,94,.3)" onclick="resetAllGoals()">🗑 ${lang==='en'?'Reset':'초기화'}</button>
+  </div>`;
+  // Screenshot button for goals flat view
+  const shotBtn=`<button class="shot-btn" onclick="exportCollectScreenshot(false)">📸</button>`;
   const albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
   const secs=buildSections(albums,f,UI.mgl,'mColSec',true);
   const wrap=f.flatView?secs:`<div class="sets-wrap">${secs}</div>`;
-  el.innerHTML=`<div style="margin-bottom:8px"><button class="btn btn-p btn-sm" onclick="showWizard()">🎯 마법사로 일괄 설정</button></div>`+
-    topBarHTML('','goals',f,UI.collapseG,'toggleCollapseG()','renderGoals',extra)+wrap;
+  el.innerHTML=actionRow+topBarHTML('','goals',f,UI.collapseG,'toggleCollapseG()','renderGoals',shotBtn)+wrap;
 }
 
 /* ══════════════════════════════════
@@ -894,26 +914,31 @@ function renderTrade(){
   const hCards=tf.albs.length?hAll.filter(x=>tf.albs.includes(x.aId)):hAll;
 
   if(!wAll.length&&!hAll.length){
-    el.innerHTML=`<div style="padding:20px;text-align:center;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx2);font-size:12px;line-height:1.8">수집 정보를 입력하면 교환 현황이 자동으로 표시돼요.<br>목표보다 적으면 🔍 구해요, 더 많으면 ✨ 있어요에 나타나요.</div>`;
+    el.innerHTML=`<div style="padding:20px;text-align:center;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx2);font-size:12px;line-height:1.8">${lang==='en'?'Enter your collection data to see exchange status. Cards below target → 🔍 WANT, above → ✨ HAVE':'수집 정보를 입력하면 교환 현황이 자동으로 표시돼요.<br>목표보다 적으면 🔍 구해요, 더 많으면 ✨ 있어요에 나타나요.'}</div>`;
     return;
   }
 
-  // album filter bar + flat view toggle for trade
+  // album filter bar for trade
+  const tradeFlatIcon=`<button class="icon-toggle-btn${tf.flatView?' active':''}" onclick="toggleTradeFlatView()" title="${tf.flatView?(lang==='en'?'Section View':lang==='en'?'Section View':'섹션 뷰'):(lang==='en'?'Flat View':lang==='en'?'Flat View':'카드 나열 뷰')}">
+    ${tf.flatView?`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" fill="currentColor"/><rect x="8" y="1" width="5" height="5" rx="1" fill="currentColor"/><rect x="1" y="8" width="5" height="5" rx="1" fill="currentColor"/><rect x="8" y="8" width="5" height="5" rx="1" fill="currentColor"/></svg>`:`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="2.5" rx="1" fill="currentColor"/><rect x="1" y="5.5" width="12" height="2.5" rx="1" fill="currentColor"/><rect x="1" y="10" width="12" height="2.5" rx="1" fill="currentColor"/></svg>`}
+  </button>`;
   const tradeShotBtn=tf.flatView
     ? `<div style="position:relative;display:inline-block">
         <button class="shot-btn" onclick="toggleTradeShotMenu(this)">📸 ▾</button>
         <div id="trade-shot-menu" style="display:none;position:absolute;right:0;top:100%;margin-top:4px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);padding:4px;white-space:nowrap;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,.15)">
-          <button onclick="closeTradeShotMenu();exportScreenshot(false)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📷 보이는 대로 찍기</button>
-          <button onclick="closeTradeShotMenu();exportScreenshot(true)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📋 카드 정보 포함해서 찍기</button>
+          <button onclick="closeTradeShotMenu();exportScreenshot(false)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">${t('shotPlain')}</button>
+          <button onclick="closeTradeShotMenu();exportScreenshot(true)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">${t('shotMeta')}</button>
         </div>
       </div>`
-    : `<button class="shot-btn" onclick="exportScreenshot(false)">📸 ${lang==='ko'?'교환 스크린샷':'Screenshot'}</button>`;
-  const tradeTopBar=`<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:8px">
-    <button class="ctrl-btn${!tf.albs.length?' active':''}" onclick="setTradeAlb(null)">${lang==='ko'?'전체':'All'}</button>
-    ${DB.albumTypes.map(a=>`<button class="ctrl-btn" onclick="setTradeAlb('${a.id}')" style="${tf.albs.includes(a.id)?`background:${a.color};border-color:${a.color};color:#fff`:`border-color:${a.color}55;color:${a.color}`}">${a.shortName}</button>`).join('')}
-    <button class="filter-btn${tf.flatView?' active':''}" onclick="toggleTradeFlatView()">${t('tradeFlatBtn')}${tf.flatView?' ●':''}</button>
-    <div class="spacer"></div>
+    : `<button class="shot-btn" onclick="exportScreenshot(false)">📸</button>`;
+  const tradeTopBar=`
+  <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;align-items:center">
+    <button class="fp${!tf.albs.length?' on-all':''}" onclick="setTradeAlb(null)" style="${!tf.albs.length?'background:linear-gradient(135deg,var(--blue),var(--purple));border-color:transparent;color:#fff':'background:var(--s2);border:1.5px solid var(--bd);color:var(--tx2)'}">${lang==='ko'?'전체':'All'}</button>
+    ${DB.albumTypes.map(a=>`<button class="fp" onclick="setTradeAlb('${a.id}')" style="${tf.albs.includes(a.id)?`background:${a.color};border-color:${a.color};color:#fff`:`border-color:${a.color}55;color:${a.color}`}">${a.shortName}</button>`).join('')}
+  </div>
+  <div style="display:flex;justify-content:flex-end;align-items:center;gap:4px;margin-bottom:8px">
     ${tradeShotBtn}
+    ${tradeFlatIcon}
   </div>`;
 
   let cols='<div class="trade-wrap">';
@@ -924,8 +949,8 @@ function renderTrade(){
     cols+=`<div class="trade-col">
       <div class="trade-hdr-bar" style="border-bottom:2px solid rgba(244,63,94,.4)">
         <div>
-          <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:18px;color:var(--want);letter-spacing:-.5px">구해요 <span style="font-size:13px;opacity:.7">(WANT)</span></div>
-          <div style="font-size:11px;color:var(--tx2);margin-top:1px">🔍 ${wCards.reduce((a,x)=>a+wt(x.id),0)}개</div>
+          <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:18px;color:var(--want);letter-spacing:-.5px">${lang==='en'?'WANT':'구해요'} <span style="font-size:13px;opacity:.7">(WANT)</span></div>
+          <div style="font-size:11px;color:var(--tx2);margin-top:1px">${lang==='en'?'':'🔍 '} ${wCards.reduce((a,x)=>a+wt(x.id),0)}${lang==='en'?'cards':' 개'}</div>
         </div>
       </div>
       <div class="trade-body">${wBody}</div>
@@ -938,8 +963,8 @@ function renderTrade(){
     cols+=`<div class="trade-col">
       <div class="trade-hdr-bar" style="border-bottom:2px solid rgba(59,130,246,.4)">
         <div>
-          <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:18px;color:var(--have);letter-spacing:-.5px">있어요 <span style="font-size:13px;opacity:.7">(HAVE)</span></div>
-          <div style="font-size:11px;color:var(--tx2);margin-top:1px">✨ ${hCards.reduce((a,x)=>a+sp(x.id),0)}개</div>
+          <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:18px;color:var(--have);letter-spacing:-.5px">${lang==='en'?'HAVE':'있어요'} <span style="font-size:13px;opacity:.7">(HAVE)</span></div>
+          <div style="font-size:11px;color:var(--tx2);margin-top:1px">${lang==='en'?'':'✨ '} ${hCards.reduce((a,x)=>a+sp(x.id),0)}${lang==='en'?'cards':' 개'}</div>
         </div>
       </div>
       <div class="trade-body">${hBody}</div>
@@ -973,7 +998,7 @@ function buildTradeSets(cards,mode){
           <div class="pci" onclick="openFull('${card.id}')">
             ${card.img?`<img src="${card.img}" alt="${card.name}" loading="lazy">`:`<div class="pcph">${card.name}</div>`}
           </div>
-          <div class="pc-strip" style="color:${txCol};background:${bg}">${mode==='want'?'−':'+'} ${cnt}장</div>
+          <div class="pc-strip" style="color:${txCol};background:${bg}">${mode==='want'?'−':'+'} ${cnt}${lang==='en'?'':'장'}</div>
         </div>`;
       }).join('')}</div>`;
   }
@@ -989,7 +1014,7 @@ function buildTradeSets(cards,mode){
         <div class="sec-hdr" onclick="tColSec('${mode}_${sid}')">
           <span class="sec-atag" style="background:${alb.color}">${alb.shortName}</span>
           <span class="sec-name">${set.name}</span>
-          <span style="font-size:10px;font-weight:700;color:${txCol};font-family:'Outfit',sans-serif;flex-shrink:0">${sc.length}장</span>
+          <span style="font-size:10px;font-weight:700;color:${txCol};font-family:'Outfit',sans-serif;flex-shrink:0">${sc.length}${lang==='en'?'':' 장'}</span>
           <span class="chev${isC?'':' open'}">▼</span>
         </div>
         ${isC?'':`<div class="sec-body"><div ${pcgAttrs(sc.length)}>${sc.map(card=>{
@@ -998,7 +1023,7 @@ function buildTradeSets(cards,mode){
             <div class="pci" onclick="openFull('${card.id}')">
               ${card.img?`<img src="${card.img}" alt="${card.name}" loading="lazy">`:`<div class="pcph">${card.name}</div>`}
             </div>
-            <div class="pc-strip" style="color:${txCol};background:${bg}">${mode==='want'?'−':'+'} ${cnt}장</div>
+            <div class="pc-strip" style="color:${txCol};background:${bg}">${mode==='want'?'−':'+'} ${cnt}${lang==='en'?'':'장'}</div>
           </div>`;
         }).join('')}</div></div>`}
       </div>`;
@@ -1030,19 +1055,19 @@ function updFull(){
   const ch=document.getElementById('fs-chips');
   if(ch){
     let h='';
-    if(s_>0)h+=`<span style="background:var(--have-g);border:1px solid var(--have-bd);color:var(--have);padding:5px 14px;border-radius:12px;font-size:13px;font-weight:800;font-family:'Outfit',sans-serif">${lang==='en'?'HAVE':'있어요'} ${s_}</span>`;
-    if(w_>0)h+=`<span style="background:var(--want-g);border:1px solid var(--want-bd);color:var(--want);padding:5px 14px;border-radius:12px;font-size:13px;font-weight:800;font-family:'Outfit',sans-serif">${lang==='en'?'WANT':'없어요'} ${w_}</span>`;
+    if(s_>0)h+=`<span style="background:var(--have-g);border:1px solid var(--have-bd);color:var(--have);padding:5px 14px;border-radius:12px;font-size:13px;font-weight:800;font-family:'Outfit',sans-serif">${lang==='en'?'HAVE':lang==='en'?'HAVE':'있어요'} ${s_}</span>`;
+    if(w_>0)h+=`<span style="background:var(--want-g);border:1px solid var(--want-bd);color:var(--want);padding:5px 14px;border-radius:12px;font-size:13px;font-weight:800;font-family:'Outfit',sans-serif">${lang==='en'?'WANT':lang==='en'?'WANT':'없어요'} ${w_}</span>`;
     ch.innerHTML=h;
   }
   const hb=document.getElementById('fs-hide-btn');
   if(hb){if(s_>0){const isH=hid(fsId);hb.style.cssText=`display:block;background:none;border-color:${isH?'var(--ok)':'var(--want)'};color:${isH?'var(--ok)':'var(--want)'};width:100%;padding:8px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;margin-bottom:7px`;
     hb.textContent=isH
-      ?(lang==='en'?'👁 Re-add to HAVE list':'👁 있어요에 다시 표시')
-      :(lang==='en'?'🚫 Excluding from the exchange (HAVE) list':'🚫 있어요에서 숨기기');
+      ?(lang==='en'?'👁 Re-add to HAVE list':t('showBtn'))
+      :(lang==='en'?'🚫 Excluding from the exchange (HAVE) list':t('hideBtn'));
   }else{hb.style.display='none';}}
 }
 function closeFull(){document.getElementById('fsov').classList.remove('open');fsId=null;}
-function fsAdj(d){if(!fsId)return;ST.collected[fsId]=Math.max(0,(ST.collected[fsId]||0)+d);saveST();updFull();patchTile(fsId);if(d>0){const gv=g(fsId),cv=c(fsId);if(gv>0&&cv===gv)toast('🎉 달성!');}}
+function fsAdj(d){if(!fsId)return;ST.collected[fsId]=Math.max(0,(ST.collected[fsId]||0)+d);saveST();updFull();patchTile(fsId);if(d>0){const gv=g(fsId),cv=c(fsId);if(gv>0&&cv===gv)toast(t('achToast'));}}
 function fsGoal(d){if(!fsId)return;setGoalById(fsId,g(fsId)+d);updFull();patchTile(fsId);}
 
 /* ── REPORT FORM ── */
@@ -1058,18 +1083,18 @@ async function submitReport(){
   const r=findCard(fsId);
   const cardInfo=r?`${r.alb.name} › ${r.set.name} › ${r.card.name}`:'Unknown';
   // Build mailto
-  const subject=encodeURIComponent(`[포카 제보] ${cardInfo}`);
+  const subject=encodeURIComponent(lang==='en'?`[Report] ${cardInfo}`:`[포카 제보] ${cardInfo}`);
   const bodyLines=[
-    `카드 정보: ${cardInfo}`,
+    lang==='en'?`Card info: ${cardInfo}`:`카드 정보: ${cardInfo}`,
     ``,
-    `제보 내용:`,
+    lang==='en'?`Description:`:`제보 내용:`,
     txt,
     ``,
     `---`,
-    `Sent from Caligo Pt.2 포토카드 수집 트래커`,
+    `Sent from Caligo Pt.2 Photocard Collection Tracker`,
   ];
   if(fileEl.files&&fileEl.files[0]){
-    bodyLines.splice(4,0,`첨부 파일: ${fileEl.files[0].name} (이메일에 수동으로 첨부해 주세요)`);
+    bodyLines.splice(4,0,lang==='en'?`Attachment: ${fileEl.files[0].name} (please attach manually)`:`첨부 파일: ${fileEl.files[0].name} (이메일에 수동으로 첨부해 주세요)`);
   }
   const body=encodeURIComponent(bodyLines.join('\n'));
   const mailto=`mailto:${REPORT_EMAIL}?subject=${subject}&body=${body}`;
@@ -1090,45 +1115,45 @@ function showWizard(){
 }
 function renderWizStep(){
   const body=document.getElementById('wiz-body'),foot=document.getElementById('wiz-foot');
-  document.getElementById('wiz-ttl').textContent=wiz.step===1?'🎯 Step 1/2 — 앨범 선택':'🎯 Step 2/2 — 멤버 & 수량';
+  document.getElementById('wiz-ttl').textContent=wiz.step===1?t('wizStep1'):t('wizStep2');
   if(wiz.step===1){
-    body.innerHTML=`<p style="font-size:12px;color:var(--tx2);margin-bottom:12px">수집할 앨범을 선택하세요</p>
+    body.innerHTML=`<p style="font-size:12px;color:var(--tx2);margin-bottom:12px">${t('wizAlbDesc')}</p>
       <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px">
         ${DB.albumTypes.filter(a=>a.id!=='unpo').map(a=>`<button class="wiz-chip" onclick="wizToggleAlb('${a.id}');renderWizStep()" style="${wiz.albums.includes(a.id)?`background:${a.color};border-color:${a.color};color:#fff`:`border-color:${a.color}55;color:${a.color};background:none`}">${a.name}</button>`).join('')}
       </div>
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)">
         <input type="checkbox" ${wiz.inclUnpo?'checked':''} onchange="wiz.inclUnpo=this.checked" style="width:15px;height:15px">
-        <span style="font-size:12px;font-weight:600">미공포 포함</span>
+        <span style="font-size:12px;font-weight:600">${t('wizInclUnpo')}</span>
       </label>`;
     foot.innerHTML=`<button class="btn btn-s btn-sm" onclick="closeSheet('wiz-ov')" style="flex:1">${t('wizLater')}</button><button class="btn btn-p btn-sm" onclick="wizNext()" style="flex:2">${t('wizNext')}</button>`;
   }else{
-    const unitPreview=[...new Set(wiz.members.flatMap(m=>MU[m]||[]))].join(' · ')||'없음';
-    body.innerHTML=`<p style="font-size:12px;color:var(--tx2);margin-bottom:10px">멤버 선택 시 해당 유닛 카드도 자동 포함돼요.</p>
+    const unitPreview=[...new Set(wiz.members.flatMap(m=>MU[m]||[]))].join(' · ')||lang==='en'?'None':'없음';
+    body.innerHTML=`<p style="font-size:12px;color:var(--tx2);margin-bottom:10px">${t('wizMemDesc')}</p>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
         ${MEMBERS.map(m=>`<button class="wiz-chip" onclick="wizToggleMember('${m}');renderWizStep()" style="${wiz.members.includes(m)?'background:var(--blue);border-color:var(--blue);color:#fff':'background:none'}">${m}</button>`).join('')}
       </div>
       ${wiz.members.length?`<div style="font-size:10px;color:var(--tx2);margin-bottom:10px;padding:6px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)">자동 포함 유닛: ${unitPreview}</div>`:''}
       <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)"><input type="checkbox" ${wiz.inclAll?'checked':''} onchange="wiz.inclAll=this.checked" style="width:15px;height:15px"><span style="font-size:12px;font-weight:600">단체(All) 카드 포함</span></label>
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)"><input type="checkbox" ${wiz.inclMmmm?'checked':''} onchange="wiz.inclMmmm=this.checked" style="width:15px;height:15px"><span style="font-size:12px;font-weight:600">MMMM 카드 포함</span></label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)"><input type="checkbox" ${wiz.inclAll?'checked':''} onchange="wiz.inclAll=this.checked" style="width:15px;height:15px"><span style="font-size:12px;font-weight:600">${t('wizInclAll')}</span></label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)"><input type="checkbox" ${wiz.inclMmmm?'checked':''} onchange="wiz.inclMmmm=this.checked" style="width:15px;height:15px"><span style="font-size:12px;font-weight:600">${t('wizInclMmmm')}</span></label>
       </div>
-      <div style="text-align:center"><p style="font-size:11px;color:var(--tx2);margin-bottom:10px">수량</p>
+      <div style="text-align:center"><p style="font-size:11px;color:var(--tx2);margin-bottom:10px">${t('wizQtyLabel')}</p>
         <div style="display:inline-flex;align-items:center;background:var(--s2);border:1px solid var(--bd);border-radius:14px;overflow:hidden">
           <button onclick="if(wiz.count>0)wiz.count--;renderWizStep()" style="padding:10px 20px;font-size:20px;font-weight:800;border-right:1px solid var(--bd);color:var(--tx)">−</button>
           <span style="font-family:'Outfit',sans-serif;font-weight:800;font-size:28px;min-width:52px;text-align:center">${wiz.count}</span>
           <button onclick="wiz.count++;renderWizStep()" style="padding:10px 20px;font-size:20px;font-weight:800;border-left:1px solid var(--bd);color:var(--tx)">+</button>
         </div>
-        <div style="font-size:11px;color:var(--tx2);margin-top:6px">장</div>
+        <div style="font-size:11px;color:var(--tx2);margin-top:6px">${t('wizQtyUnit')}</div>
       </div>`;
     foot.innerHTML=`<button class="btn btn-s btn-sm" onclick="wizPrev()" style="flex:1">${t('wizPrev')}</button><button class="btn btn-p btn-sm" onclick="wizApply()" style="flex:2">${t('wizApply')}</button>`;
   }
 }
 function wizToggleAlb(id){const i=wiz.albums.indexOf(id);if(i>=0)wiz.albums.splice(i,1);else wiz.albums.push(id);}
 function wizToggleMember(m){const i=wiz.members.indexOf(m);if(i>=0)wiz.members.splice(i,1);else wiz.members.push(m);}
-function wizNext(){if(!wiz.albums.length){toast('앨범을 선택해주세요');return;}wiz.step=2;renderWizStep();}
+function wizNext(){if(!wiz.albums.length){toast(t('wizWarnAlb'));return;}wiz.step=2;renderWizStep();}
 function wizPrev(){wiz.step=1;renderWizStep();}
 function wizApply(){
-  if(!wiz.members.length&&!wiz.inclAll&&!wiz.inclMmmm){toast('멤버 또는 카드 종류를 선택해주세요');return;}
+  if(!wiz.members.length&&!wiz.inclAll&&!wiz.inclMmmm){toast(t('wizWarnMem'));return;}
   const albs=[...wiz.albums,...(wiz.inclUnpo?['unpo']:[])];
   const relevantUnits=new Set(wiz.members.flatMap(m=>MU[m]||[]));
   let count=0;
@@ -1136,7 +1161,7 @@ function wizApply(){
   saveST();closeSheet('wiz-ov');renderCur();
   setTimeout(()=>{
     const unitList=[...relevantUnits].join(', ');
-    const msg=t('applyDone').replace('{count}',count).replace('{members}',wiz.members.join(', ')||'없음').replace('{units}',unitList?`유닛: ${unitList}\n`:'').replace('{all}',wiz.inclAll?'단체 카드 포함\n':'').replace('{mmmm}',wiz.inclMmmm?'MMMM 카드 포함\n':'');
+    const msg=t('applyDone').replace('{count}',count).replace('{members}',wiz.members.join(', ')||lang==='en'?'None':'없음').replace('{units}',unitList?t('applyUnitLabel')+unitList+'\n':'').replace('{all}',wiz.inclAll?t('applyInclAll'):'').replace('{mmmm}',wiz.inclMmmm?t('applyInclMmmm'):'');
     if(confirm(msg))goTab('goals');
   },150);
 }
@@ -1374,7 +1399,7 @@ function closeSheet(id){document.getElementById(id).classList.remove('open');}
 function importState(inp){if(!inp.files[0])return;const r=new FileReader();r.onload=e=>{try{ST=JSON.parse(e.target.result);ST.goals=ST.goals||{};ST.collected=ST.collected||{};ST.memos=ST.memos||{};ST.hidden=ST.hidden||{};saveST();closeSheet('set-ov');renderCur();toast(t('restoreToast'));}catch(e){toast(t('restoreErr'));}};r.readAsText(inp.files[0]);}
 function exportState(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(ST,null,2)],{type:'application/json'}));a.download=`포카백업_${new Date().toISOString().split('T')[0]}.json`;a.click();toast(t('backupToast'));}
 function resetState(){if(!confirm(t('resetConfirm')))return;ST={goals:{},collected:{},memos:{},hidden:{}};saveST();closeSheet('set-ov');renderCur();toast(t('resetToast'));}
-function applyTheme(t){document.documentElement.setAttribute('data-theme',t);const b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'🌙':'☀️';const lb=document.getElementById('ls-theme-btn');if(lb)lb.textContent=t==='dark'?'🌙 테마':'☀️ 테마';}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);const b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'🌙':'☀️';const lb=document.getElementById('ls-theme-btn');if(lb)lb.textContent=t==='dark'?'🌙':'☀️';}
 function toggleTheme(){UI.theme=UI.theme==='dark'?'light':'dark';applyTheme(UI.theme);saveUI();}
 function toast(msg){const w=document.getElementById('tw');const el=document.createElement('div');el.className='toast';el.textContent=msg;w.appendChild(el);setTimeout(()=>el.remove(),2100);}
 
@@ -1390,7 +1415,7 @@ function init(){
   fetch('./poca_db.json')
     .then(r=>r.json())
     .then(d=>{DB=d;saveDB();renderCur();})
-    .catch(()=>{loadDB();if(DB)renderCur();else document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--want)">⚠️ poca_db.json을 같은 폴더에 두고 웹서버로 열어주세요.</div>';});
+    .catch(()=>{loadDB();if(DB)renderCur();else document.getElementById('page-content').innerHTML=`<div style="padding:24px;text-align:center;color:var(--want)">${lang==='en'?'⚠️ Place poca_db.json in the same folder and open via web server.':'⚠️ poca_db.json을 같은 폴더에 두고 웹서버로 열어주세요.'}</div>`;});
   document.getElementById('main').addEventListener('scroll',function(){const btn=document.getElementById('scroll-top-btn');if(btn)btn.classList.toggle('vis',this.scrollTop>200);},{passive:true});
   window.addEventListener('orientationchange',()=>setTimeout(()=>{renderNav();renderCur();},200));
   window.addEventListener('resize',()=>setTimeout(()=>renderNav(),100));
