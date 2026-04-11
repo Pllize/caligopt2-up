@@ -1459,7 +1459,7 @@
             {
               "id": "idp_A_1",
               "name": "예준",
-              "img": null,
+              "img": "./images/cards/idp_A_1.webp",
               "cardType": "Individual",
               "member": "예준",
               "unit": null,
@@ -1571,7 +1571,7 @@
             {
               "id": "c_mnoxn97g",
               "name": "예준",
-              "img": null,
+              "img": "./images/cards/c_mnoxn97g.webp",
               "cardType": "Individual",
               "member": "예준",
               "unit": null,
@@ -1677,7 +1677,7 @@
             {
               "id": "c_mnoxnilo",
               "name": "예준",
-              "img": null,
+              "img": "./images/cards/c_mnoxnilo.webp",
               "cardType": "Individual",
               "member": "예준",
               "unit": null,
