@@ -980,6 +980,8 @@ function renderCur(){
   else if(curTab==='goals')renderGoals();
   else if(curTab==='notice')renderNotice();
   else renderUsage();
+  // 렌더 후 워터마크 적용
+  requestAnimationFrame(()=>{ if(window.WM)WM.scanAll(); });
 }
 
 /* ══════════════════════════════════
@@ -1170,14 +1172,15 @@ function buildTradeSets(cards,mode){
 function openFull(id){
   const r=findCard(id);if(!r)return;
   fsId=id;const{card,alb,set}=r;
-  document.getElementById('fs-img').innerHTML=card.img?`<img class="fsimg" src="${card.img}" alt="${card.name}">`:`<div class="fsph-big">📷</div>`;
+  document.getElementById('fs-img').innerHTML=card.img?`<img class="fsimg" src="${card.img}" alt="${card.name}" crossorigin="anonymous">`:`<div class="fsph-big">📷</div>`;
   document.getElementById('fs-name').textContent=card.name;
   document.getElementById('fs-meta').textContent=`${alb.name} · ${set.name}`;
-  // hide report form
   document.getElementById('fs-report-form').style.display='none';
   updFull();
   const m=document.getElementById('fs-memo');if(m)m.value=mo(id);
   document.getElementById('fsov').classList.add('open');
+  // 풀스크린 이미지에 워터마크 적용
+  requestAnimationFrame(()=>{ if(window.WM)WM.apply(document.getElementById('fs-img')); });
 }
 function updFull(){
   if(!fsId)return;
