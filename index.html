@@ -573,7 +573,7 @@ function stripHtml(id){
   const cv=c(id),gv=g(id),s_=sp(id),w_=wt(id),st=sts(id);
   if(st==='m')return`✓ 달성(${cv}/${gv})`;
   if(st==='h'&&gv>0)return`✨ 있어요 +${s_}`;
-  if(st==='h')return`✨ ${cv}장`;
+  if(st==='h')return`✨ 있어요 ${cv}장`;
   if(st==='c')return`🔍 없어요 −${w_}`;
   return'';
 }
