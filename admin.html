@@ -1073,8 +1073,8 @@ function showNoticePanel(){
     <div class="card-hdr">
       <div class="card-ttl">📢 공지사항 관리</div>
       <div style="display:flex;gap:6px;align-items:center">
+        <button class="btn btn-s btn-sm" onclick="saveNoticesLocal()">💾 파일 저장</button>
         <button class="btn btn-ok btn-sm" onclick="saveNoticesToGitHub()">☁️ GitHub 저장</button>
-        <button class="btn btn-p btn-sm" onclick="saveNoticesLocal()">💾 파일 저장</button>
       </div>
     </div>
     <div class="card" style="margin-bottom:12px;background:var(--sur2)">
@@ -1128,7 +1128,8 @@ function addNotice(){
   document.getElementById('notice-list-admin').innerHTML = renderNoticeListAdmin(list);
   document.getElementById('n-title').value='';
   document.getElementById('n-body').value='';
-  toast('공지 등록됨 ✓');
+  toast('공지 등록 중...');
+  saveNoticesToGitHub(list);
 }
 
 function deleteNotice(id){
@@ -1136,7 +1137,8 @@ function deleteNotice(id){
   const list = loadNoticesAdmin().filter(n=>n.id!==id);
   saveNoticesAdmin(list);
   document.getElementById('notice-list-admin').innerHTML = renderNoticeListAdmin(list);
-  toast('삭제됨');
+  toast('삭제 중...');
+  saveNoticesToGitHub(list);
 }
 
 function moveNotice(i, d){
@@ -1146,6 +1148,7 @@ function moveNotice(i, d){
   [list[i],list[ni]] = [list[ni],list[i]];
   saveNoticesAdmin(list);
   document.getElementById('notice-list-admin').innerHTML = renderNoticeListAdmin(list);
+  saveNoticesToGitHub(list);
 }
 
 function saveNoticesLocal(){
@@ -1156,20 +1159,51 @@ function saveNoticesLocal(){
   toast('notices.json 저장됨 ✓');
 }
 
-async function saveNoticesToGitHub(){
+async function saveNoticesToGitHub(list){
   const cfg = loadGhCfg();
-  if(!cfg.token||!cfg.owner||!cfg.repo){ toast('GitHub 설정을 먼저 해주세요'); openGhSettings(); return; }
-  const list = loadNoticesAdmin();
+  if(!cfg.token||!cfg.owner||!cfg.repo){
+    toast('⚠️ GitHub 미설정 — 로컬에만 저장됨');
+    return;
+  }
+  if(!list) list = loadNoticesAdmin();
   const noticePath = (cfg.path||'poca_db.json').replace(/[^/]+$/, 'notices.json');
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(list,null,2))));
+  // 한글 안전 인코딩
+  const jsonStr = JSON.stringify(list,null,2);
+  const bytes = new TextEncoder().encode(jsonStr);
+  let binary=''; bytes.forEach(b=>binary+=String.fromCharCode(b));
+  const content = btoa(binary);
   const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${noticePath}`;
   let sha=null;
-  try{ const r=await fetch(`${url}?ref=${cfg.branch||'main'}`,{headers:{Authorization:`token ${cfg.token}`,'Accept':'application/vnd.github.v3+json'}});if(r.ok){const j=await r.json();sha=j.sha;} }catch(e){}
+  try{
+    const r=await fetch(`${url}?ref=${cfg.branch||'main'}&t=${Date.now()}`,{headers:{Authorization:`token ${cfg.token}`,'Accept':'application/vnd.github.v3+json'}});
+    if(r.ok){const j=await r.json();sha=j.sha;}
+  }catch(e){}
   const body={message:`[admin] notices update ${new Date().toLocaleString('ko-KR')}`,content,branch:cfg.branch||'main'};
   if(sha)body.sha=sha;
-  const res = await fetch(url,{method:'PUT',headers:{Authorization:`token ${cfg.token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)});
-  if(res.ok) toast('✅ GitHub notices.json 저장 완료!');
-  else { const j=await res.json(); toast('❌ 실패: '+(j.message||res.status)); }
+  try{
+    const res = await fetch(url,{method:'PUT',headers:{Authorization:`token ${cfg.token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)});
+    if(res.ok) toast('✅ 공지 GitHub 저장 완료!');
+    else { const j=await res.json(); toast('❌ 공지 저장 실패: '+(j.message||res.status)); }
+  }catch(e){ toast('❌ 오류: '+e.message); }
+}
+
+// 공지 초기 로드 (GitHub → localStorage 동기화)
+async function loadNoticesFromGitHub(){
+  const cfg = loadGhCfg();
+  if(!cfg.token||!cfg.owner||!cfg.repo) return;
+  const noticePath = (cfg.path||'poca_db.json').replace(/[^/]+$/, 'notices.json');
+  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${noticePath}?ref=${cfg.branch||'main'}&t=${Date.now()}`;
+  try{
+    const r = await fetch(url,{headers:{Authorization:`token ${cfg.token}`,'Accept':'application/vnd.github.v3+json'}});
+    if(!r.ok) return;
+    const j = await r.json();
+    const raw = j.content.replace(/\s/g,'');
+    const bytes = Uint8Array.from(atob(raw),c=>c.charCodeAt(0));
+    const list = JSON.parse(new TextDecoder('utf-8').decode(bytes));
+    saveNoticesAdmin(list);
+    // 공지 패널이 열려있으면 갱신
+    if(selAlb==='__notice__') showNoticePanel();
+  }catch(e){ console.warn('공지 로드 실패:', e); }
 }
 
 // ── INIT ───────────────────────────────────────────────
@@ -1215,7 +1249,7 @@ async function init(){
     if(r.ok){
       const text = await r.text();
       const d = JSON.parse(text);
-      if(applyDB(d)){ toast('✅ DB 로드됨'); return; }
+      if(applyDB(d)){ toast('✅ DB 로드됨'); loadNoticesFromGitHub(); return; }
     }
   }catch(e){ console.warn('fetch poca_db.json 실패:', e); }
 
