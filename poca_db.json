@@ -1459,7 +1459,7 @@
             {
               "id": "idp_A_1",
               "name": "예준",
-              "img": "./images/cards/idp_A_1.webp",
+              "img": null,
               "cardType": "Individual",
               "member": "예준",
               "unit": null,
@@ -1515,7 +1515,7 @@
             {
               "id": "idp_B_1",
               "name": "예준",
-              "img": null,
+              "img": "./images/cards/idp_B_1.webp",
               "cardType": "Individual",
               "member": "예준",
               "unit": null,
