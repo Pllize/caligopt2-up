@@ -1225,9 +1225,9 @@ async function init(){
 
 
 // Entry point — check session first, otherwise show lock
-if(!checkSession()){
-  // lock screen is already visible, init() called after successful unlock
-}
+if(checkSession()){
+  init();
+} // else: lock screen is visible, init() called after successful unlock
 </script>
 </body>
 </html>
