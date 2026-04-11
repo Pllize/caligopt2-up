@@ -238,7 +238,7 @@ textarea{resize:vertical;min-height:44px}
     </div>
     <div class="modal-foot">
       <button class="btn btn-s btn-sm" onclick="closeModal('img-modal')">취소</button>
-      <button class="btn btn-p btn-sm" onclick="applyImg()">적용</button>
+      <button class="btn btn-p btn-sm" id="img-apply-btn" onclick="applyImg()">적용</button>
     </div>
   </div>
 </div>
@@ -913,27 +913,91 @@ function moveCard(ai,si,ci,d){
 
 // ── IMAGE MODAL ────────────────────────────────────────
 
+let imgFileRaw = null; // 원본 File 객체 보관
+
 function openImgModal(ai,si,ci){
-  imgAlb=ai; imgSet=si; imgCard=ci; imgPending=null;
+  imgAlb=ai; imgSet=si; imgCard=ci; imgPending=null; imgFileRaw=null;
   const card = fCard(ai,si,ci); if(!card) return;
   document.getElementById('img-modal-ttl').textContent = `${card.name} 이미지`;
   const prev = document.getElementById('img-preview');
   prev.innerHTML = card.img ? `<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">` : `<span>이미지 없음</span>`;
   document.getElementById('img-file').value = '';
+  document.getElementById('img-apply-btn').textContent = '적용';
   document.getElementById('img-modal').classList.add('open');
 }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); imgPending=null; }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); imgPending=null; imgFileRaw=null; }
+
 function previewImg(inp){
   if(!inp.files[0]) return;
+  imgFileRaw = inp.files[0];
   const r = new FileReader();
-  r.onload = e=>{ imgPending=e.target.result; document.getElementById('img-preview').innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`; };
+  r.onload = e=>{
+    imgPending = e.target.result; // base64 for preview only
+    document.getElementById('img-preview').innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;
+  };
   r.readAsDataURL(inp.files[0]);
 }
-function applyImg(){
+
+async function applyImg(){
   const c = fCard(imgAlb,imgSet,imgCard); if(!c) return;
-  if(imgPending!==null) c.img = imgPending;
-  saveDB(); closeModal('img-modal'); renderSetView(); toast('이미지 저장됨 ✓');
+  if(!imgPending){ closeModal('img-modal'); return; }
+
+  const cfg = loadGhCfg();
+  const btn = document.getElementById('img-apply-btn');
+
+  // GitHub 설정이 있으면 이미지를 파일로 push
+  if(cfg.token && cfg.owner && cfg.repo && imgFileRaw){
+    btn.disabled=true; btn.textContent='⏳ 업로드 중...';
+    try{
+      // 파일 확장자 추출
+      const ext = imgFileRaw.name.split('.').pop().toLowerCase() || 'webp';
+      const imgPath = (cfg.path||'poca_db.json').replace(/[^/]+$/, '') + `images/cards/${c.id}.${ext}`;
+      const imgUrl  = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${imgPath}`;
+
+      // base64 데이터만 추출 (data:...;base64, 제거)
+      const b64 = imgPending.split(',')[1];
+
+      // 기존 파일 SHA 확인
+      let sha = null;
+      try{
+        const r = await fetch(`${imgUrl}?ref=${cfg.branch||'main'}`,{headers:{Authorization:`token ${cfg.token}`,'Accept':'application/vnd.github.v3+json'}});
+        if(r.ok){ const j=await r.json(); sha=j.sha; }
+      }catch(e){}
+
+      const body = { message:`[admin] image update: ${c.name}`, content:b64, branch:cfg.branch||'main' };
+      if(sha) body.sha = sha;
+
+      const res = await fetch(imgUrl,{
+        method:'PUT',
+        headers:{Authorization:`token ${cfg.token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
+        body:JSON.stringify(body)
+      });
+
+      if(res.ok){
+        // DB에는 상대 경로만 저장
+        const relPath = `./images/cards/${c.id}.${ext}`;
+        c.img = relPath;
+        saveDB();
+        closeModal('img-modal'); renderSetView();
+        toast(`✅ 이미지 업로드 완료! (${relPath})`);
+        // DB도 자동 저장
+        saveToGitHub();
+      } else {
+        const j = await res.json();
+        toast('❌ 이미지 업로드 실패: '+(j.message||res.status));
+      }
+    }catch(e){
+      toast('❌ 오류: '+e.message);
+    }
+    btn.disabled=false; btn.textContent='적용';
+  } else {
+    // GitHub 미설정이면 기존처럼 base64로 로컬 저장
+    if(imgPending) c.img = imgPending;
+    saveDB(); closeModal('img-modal'); renderSetView();
+    toast(cfg.token ? '이미지 저장됨 (GitHub 미설정 — 로컬만)' : '이미지 저장됨 ✓');
+  }
 }
+
 function clearImg(){
   const c = fCard(imgAlb,imgSet,imgCard);
   if(c){ c.img=null; saveDB(); renderSetView(); }
@@ -1089,13 +1153,64 @@ async function saveNoticesToGitHub(){
 function selAlbum(id){ selAlb=id; selSet=null; renderSidebar(); renderAlbumView(); }
 function selSetFn(ai,si){ selAlb=ai; selSet=si; renderSidebar(); renderSetView(); }
 
-function init(){
+function applyDB(d){
+  const needsMigration = d.albumTypes && d.albumTypes.some(a=>a.sets.some(s=>s.cards.some(c=>!c.cardType)));
+  DB = needsMigration ? migrateDB(d) : d;
+  saveDB(); renderSidebar();
+}
+
+async function loadDBFromGitHub(){
+  const cfg = loadGhCfg();
+  if(!cfg.token||!cfg.owner||!cfg.repo) return false;
+  try{
+    const url=`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path||'poca_db.json'}?ref=${cfg.branch||'main'}`;
+    const r=await fetch(url,{headers:{Authorization:`token ${cfg.token}`,'Accept':'application/vnd.github.v3+json'}});
+    if(!r.ok) return false;
+    const j=await r.json();
+    const d=JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g,'')))));
+    applyDB(d);
+    toast('✅ GitHub에서 DB 로드됨');
+    return true;
+  }catch(e){ return false; }
+}
+
+async function init(){
   loadDB(); renderSidebar(); updateGhStatus();
-  fetch('./poca_db.json').then(r=>r.json()).then(d=>{
-    const needsMigration = d.albumTypes && d.albumTypes.some(a=>a.sets.some(s=>s.cards.some(c=>!c.cardType)));
-    DB = needsMigration ? migrateDB(d) : d;
-    saveDB(); renderSidebar(); toast('poca_db.json 로드됨');
-  }).catch(()=>{});
+
+  // 1순위: 로컬 fetch (웹서버 환경)
+  try{
+    const r = await fetch('./poca_db.json?t='+Date.now());
+    if(r.ok){
+      const d = await r.json();
+      applyDB(d);
+      toast('poca_db.json 로드됨');
+      return;
+    }
+  }catch(e){}
+
+  // 2순위: GitHub API (로컬 파일 열기 환경)
+  const ghOk = await loadDBFromGitHub();
+  if(ghOk) return;
+
+  // 3순위: localStorage 데이터가 있으면 그걸로
+  if(DB && DB.albumTypes && DB.albumTypes.length){
+    toast('⚠️ 로컬 저장 데이터로 로드됨');
+    renderSidebar();
+    return;
+  }
+
+  // 아무것도 없으면 안내
+  document.getElementById('content').innerHTML=`
+    <div class="empty" style="padding-top:60px">
+      <div style="font-size:28px;margin-bottom:10px">⚠️</div>
+      <div style="margin-bottom:12px">DB를 불러올 수 없어요</div>
+      <div style="font-size:11px;color:var(--tx3);margin-bottom:14px;line-height:1.8">
+        웹서버로 열거나 GitHub 설정을 해주세요.<br>
+        또는 DB 파일을 직접 가져오기 하세요.
+      </div>
+      <button class="btn btn-p btn-sm" onclick="document.getElementById('imp-inp').click()">📥 DB 가져오기</button>
+      <button class="btn btn-s btn-sm" style="margin-left:6px" onclick="openGhSettings()">⚙️ GitHub 설정</button>
+    </div>`;
 }
 
 // Entry point — check session first, otherwise show lock
