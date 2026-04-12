@@ -1504,12 +1504,12 @@
       "sets": [
         {
           "id": "idp_A",
-          "name": "ID PASS CARD",
+          "name": "ID PHOTO",
           "cards": [
             {
               "id": "idp_A_1",
               "name": "예준",
-              "img": null,
+              "img": "./images/cards/idp_A_1.webp",
               "cardType": "Individual",
               "member": "예준",
               "unit": null,
@@ -1519,7 +1519,7 @@
             {
               "id": "idp_A_2",
               "name": "노아",
-              "img": null,
+              "img": "./images/cards/idp_A_2.webp",
               "cardType": "Individual",
               "member": "노아",
               "unit": null,
@@ -1529,7 +1529,7 @@
             {
               "id": "idp_A_3",
               "name": "밤비",
-              "img": null,
+              "img": "./images/cards/idp_A_3.webp",
               "cardType": "Individual",
               "member": "밤비",
               "unit": null,
@@ -1539,7 +1539,7 @@
             {
               "id": "idp_A_4",
               "name": "은호",
-              "img": null,
+              "img": "./images/cards/idp_A_4.webp",
               "cardType": "Individual",
               "member": "은호",
               "unit": null,
@@ -1549,7 +1549,7 @@
             {
               "id": "idp_A_5",
               "name": "하민",
-              "img": null,
+              "img": "./images/cards/idp_A_5.webp",
               "cardType": "Individual",
               "member": "하민",
               "unit": null,
@@ -1560,7 +1560,7 @@
         },
         {
           "id": "idp_B",
-          "name": "ID PHOTO",
+          "name": "ID PASS CARD",
           "cards": [
             {
               "id": "idp_B_1",
