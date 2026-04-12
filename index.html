@@ -898,8 +898,14 @@ function topBarHTML(statsHTML,filtTarget,f,collapseState,onCollapse,onVis,extraR
   </div>`;}
 
 function setSearch(target, val){
-  searchQuery[target]=val.trim();
-  _renderKeepScroll(target==='collect'?renderCollect:renderGoals);
+  searchQuery[target]=val;
+  const renderFn=target==='collect'?renderCollect:renderGoals;
+  _renderKeepScroll(renderFn);
+  // 렌더 후 검색창 포커스 + 커서 위치 복원
+  requestAnimationFrame(()=>{
+    const el=document.getElementById('search-'+target);
+    if(el){el.focus();const len=el.value.length;el.setSelectionRange(len,len);}
+  });
 }
 
 function setViewMode(fKey,flat,renderFn){
