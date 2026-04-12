@@ -689,12 +689,24 @@ function renderAlbumView(){
       </div>
     </div>
   </div>
-  <div class="sec-ttl">세트 목록 <button class="btn btn-p btn-sm" onclick="addSet('${a.id}')">+ 세트 추가</button></div>`;
-  for(const s of a.sets){
+  <div class="sec-ttl">세트 목록
+    <div style="display:flex;gap:5px;align-items:center">
+      <button class="btn btn-s btn-sm" onclick="sortSetsAlpha('${a.id}')">가나다↑</button>
+      <button class="btn btn-p btn-sm" onclick="addSet('${a.id}')">+ 세트 추가</button>
+    </div>
+  </div>`;
+  for(let si=0;si<a.sets.length;si++){
+    const s=a.sets[si];
     const imgCnt = s.cards.filter(c=>c.img).length;
-    h += `<div class="set-ov"><div>
-      <span style="font-weight:700;font-size:12px">${escH(s.name)}</span>
-      <span style="font-size:10px;color:var(--tx2);margin-left:8px">${s.cards.length}종 · 이미지 ${imgCnt}/${s.cards.length}</span>
+    h += `<div class="set-ov"><div style="display:flex;align-items:center;gap:6px;flex:1;min-width:0">
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <button class="iBtn" onclick="moveSet('${a.id}',${si},-1)" ${si===0?'disabled style="opacity:.3"':''} title="위로">↑</button>
+        <button class="iBtn" onclick="moveSet('${a.id}',${si},1)" ${si===a.sets.length-1?'disabled style="opacity:.3"':''} title="아래로">↓</button>
+      </div>
+      <div>
+        <span style="font-weight:700;font-size:12px">${escH(s.name)}</span>
+        <span style="font-size:10px;color:var(--tx2);margin-left:8px">${s.cards.length}종 · 이미지 ${imgCnt}/${s.cards.length}</span>
+      </div>
     </div><div style="display:flex;gap:4px">
       <button class="btn btn-s btn-sm" onclick="selSetFn('${a.id}','${s.id}')">✏️ 편집</button>
       <button class="btn btn-d btn-sm" onclick="delSet('${a.id}','${s.id}')">🗑</button>
@@ -902,7 +914,19 @@ function addSet(ai){
   a.sets.push({ id, name:`${String.fromCharCode(65+a.sets.length)}세트`, cards });
   saveDB(); selSet=id; renderSidebar(); renderSetView(); toast('세트 추가됨 (개인 5종 자동 포함)');
 }
-function updSet(ai,si,k,v){ const s=fSet(ai,si); if(s){s[k]=v;saveDB();} }
+function moveSet(ai,idx,d){
+  const a=fAlb(ai); if(!a) return;
+  const ni=idx+d;
+  if(ni<0||ni>=a.sets.length) return;
+  [a.sets[idx],a.sets[ni]]=[a.sets[ni],a.sets[idx]];
+  saveDB(); markDirty(); renderSidebar(); renderAlbumView();
+}
+function sortSetsAlpha(ai){
+  const a=fAlb(ai); if(!a) return;
+  a.sets.sort((x,y)=>x.name.localeCompare(y.name,'ko'));
+  saveDB(); markDirty(); renderSidebar(); renderAlbumView(); toast('가나다순 정렬됨');
+}
+function updSet(ai,si,k,v){ const s=fSet(ai,si); if(s){s[k]=v;saveDB();markDirty();} }
 function delSet(ai,si){
   if(!confirm('이 세트를 삭제할까요?')) return;
   const a=fAlb(ai); if(a){ a.sets=a.sets.filter(s=>s.id!==si); saveDB(); selSet=null; renderSidebar(); renderAlbumView(); toast('삭제 완료'); }

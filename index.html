@@ -37,7 +37,7 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .logo-main{font-family:'Outfit',sans-serif;font-weight:800;font-size:13px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .logo-sub{font-family:'Outfit',sans-serif;font-weight:600;font-size:10px;color:var(--tx2);margin-left:6px}
 .hdr-r{display:flex;gap:4px;margin-left:auto}
-.abtn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm);background:var(--s2);border:1px solid var(--bd);font-size:14px;flex-shrink:0}
+.abtn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm);background:var(--s2);border:1px solid var(--bd2);font-size:14px;flex-shrink:0;color:var(--tx)}
 .dtabs{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 12px;flex-shrink:0;overflow-x:auto;display:none}
 .dtab{padding:9px 13px;font-size:12px;font-weight:700;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;font-family:'Outfit',sans-serif}
 .dtab.on{color:var(--blue);border-bottom-color:var(--blue)}
@@ -248,7 +248,7 @@ input:focus,textarea:focus{border-color:var(--blue)}
     </div>
     <div class="ls-nav" id="ls-nav"></div>
     <div class="ls-bottom">
-      <button class="ls-btn" onclick="exportCollectScreenshot(false)" id="ls-shot-btn">📸 스크린샷</button>
+      <button class="ls-btn" onclick="lsScreenshot()" id="ls-shot-btn">📸 스크린샷</button>
       <button class="ls-btn" id="ls-theme-btn" onclick="toggleTheme()">☀️ 테마 전환</button>
       <button class="ls-btn" onclick="toggleLang()" id="ls-lang-btn">🌐 English</button>
       <button class="ls-btn" onclick="exportState()" id="ls-set-btn">💾 저장</button>
@@ -524,6 +524,7 @@ let UI={
   theme:'light',sidebarOpen:true,
 };
 let curTab='collect', fsId=null, wiz={}, curFilterTarget='collect';
+let searchQuery={collect:'', goals:''}; // 검색어 상태
 
 /* ══════════════════════════════════
    STORAGE
@@ -871,26 +872,35 @@ function topBarHTML(statsHTML,filtTarget,f,collapseState,onCollapse,onVis,extraR
     return`<button class="fp" style="${onStyle}" onclick="toggleAlbFilter('${filtTarget}','${a.id}')">${a.shortName}</button>`;
   }).join('');
   const allOn=!f.albs.length;
-  // View mode icon buttons (section view / flat view)
   const _rf=filtTarget==='collect'?'renderCollect':'renderGoals';
-  const _secBd=!f.flatView?'var(--blue)':'var(--bd)';
+  const _secBd=!f.flatView?'var(--blue)':'var(--bd2)';
   const _secBg=!f.flatView?'var(--s3)':'var(--s2)';
-  const _flatBd=f.flatView?'var(--blue)':'var(--bd)';
+  const _flatBd=f.flatView?'var(--blue)':'var(--bd2)';
   const _flatBg=f.flatView?'var(--s3)':'var(--s2)';
   const _btnBase='width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer;font-size:13px;border:1.5px solid ';
-  const viewIcons=`<div style="display:flex;gap:2px;margin-left:auto"><button onclick="setViewMode('${fKey}',false,'${_rf}')" style="${_btnBase}${_secBd};background:${_secBg}">⊞</button><button onclick="setViewMode('${fKey}',true,'${_rf}')" style="${_btnBase}${_flatBd};background:${_flatBg}">▦</button></div>`;
+  const sq=searchQuery[filtTarget]||'';
+  const viewAndSearch=`<div style="display:flex;gap:4px;align-items:center;margin-left:auto">
+    <input id="search-${filtTarget}" type="search" value="${sq.replace(/"/g,'&quot;')}" placeholder="🔍 세트 검색" oninput="setSearch('${filtTarget}',this.value)" style="width:100px;padding:4px 7px;font-size:11px;border-radius:6px;border:1.5px solid var(--bd2);background:var(--s2);color:var(--tx);outline:none;font-family:'Outfit',sans-serif" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--bd2)'">
+    <button onclick="setViewMode('${fKey}',false,'${_rf}')" title="${lang==='ko'?'섹션 보기':'Section'}" style="${_btnBase}${_secBd};background:${_secBg};color:var(--tx)">⊞</button>
+    <button onclick="setViewMode('${fKey}',true,'${_rf}')" title="${lang==='ko'?'카드 나열':'Flat'}" style="${_btnBase}${_flatBd};background:${_flatBg};color:var(--tx)">▦</button>
+  </div>`;
   return`<div class="top-bar">
     ${statsHTML}
     <button class="ctrl-btn" onclick="cycleVis('${fKey}',${onVis})">${visLabel(f.vis)}</button>
     <button class="ctrl-btn" onclick="${onCollapse}">${collapseState?t('expandBtn'):t('collBtn')}</button>
     <button class="filter-btn${filtActive?' active':''}" onclick="openFilter('${filtTarget}')">${t('filtBtn')}${filtActive?' ●':''}</button>
     ${extraRight||''}
-    ${viewIcons}
+    ${viewAndSearch}
   </div>
   <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;align-items:center">
     <button class="fp${allOn?' on-all':''}" onclick="toggleAlbFilter('${filtTarget}',null)">${lang==='en'?'All':'전체'}</button>
     ${albChips}
   </div>`;}
+
+function setSearch(target, val){
+  searchQuery[target]=val.trim();
+  _renderKeepScroll(target==='collect'?renderCollect:renderGoals);
+}
 
 function setViewMode(fKey,flat,renderFn){
   UI[fKey].flatView=flat;
@@ -909,19 +919,21 @@ function toggleAlbFilter(target,id){
    SECTION BUILDER
 ══════════════════════════════════ */
 function buildSections(albums,f,colMap,onColSec,showGoalRow){
+  const target=onColSec==='colSec'?'collect':'goals';
+  const sq=(searchQuery[target]||'').toLowerCase();
   // FLAT VIEW: all matching cards in one big grid, no section wrappers
   if(f.flatView){
     let flatCards=[];
     for(const alb of albums){
       for(const set of alb.sets){
+        if(sq&&!set.name.toLowerCase().includes(sq)&&!alb.name.toLowerCase().includes(sq))continue;
         let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
         if(f.vis==='have')cards=cards.filter(x=>c(x.id)>0);
         else if(f.vis==='nothave')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
         flatCards=flatCards.concat(cards.map(card=>({...card,aId:alb.id,aC:alb.color})));
       }
     }
-    if(!flatCards.length)return`<div style="padding:20px;text-align:center;color:var(--tx2);font-size:12px">해당하는 카드가 없어요.</div>`;
-    // flat grid: auto-fill so large screens show many columns at consistent card size
+    if(!flatCards.length)return`<div style="padding:20px;text-align:center;color:var(--tx2);font-size:12px">${sq?`"${sq}" 검색 결과가 없어요.`:'해당하는 카드가 없어요.'}</div>`;
     return`<div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:8px">
       <div class="pcg-flat">${flatCards.map(card=>cardTileHTML(card,showGoalRow)).join('')}</div>
     </div>`;
@@ -930,6 +942,7 @@ function buildSections(albums,f,colMap,onColSec,showGoalRow){
   let secs='';
   for(const alb of albums){
     for(const set of alb.sets){
+      if(sq&&!set.name.toLowerCase().includes(sq)&&!alb.name.toLowerCase().includes(sq))continue;
       let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
       if(f.vis==='have')cards=cards.filter(x=>c(x.id)>0);
       else if(f.vis==='nothave')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
@@ -970,6 +983,10 @@ function renderNav(){
   const sb=document.getElementById('ls-sidebar');
   const tog=document.getElementById('ls-toggle');
   if(sb){sb.classList.toggle('collapsed',!UI.sidebarOpen);tog.textContent=UI.sidebarOpen?'◀':'▶';}
+}
+function lsScreenshot(){
+  if(curTab==='trade') exportScreenshot(false);
+  else exportCollectScreenshot(false);
 }
 function toggleSidebar(){UI.sidebarOpen=!UI.sidebarOpen;saveUI();renderNav();}
 function goTab(v){curTab=v;document.querySelectorAll('[data-v]').forEach(el=>el.classList.toggle('on',el.dataset.v===v));renderCur();}
@@ -1061,12 +1078,12 @@ function renderTrade(){
         <button onclick="closeTradeShotMenu();exportScreenshot(true)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📋 카드 정보 포함해서 찍기</button>
       </div>
     </div>`;
-  const _tSecBd=!tf.flatView?'var(--blue)':'var(--bd)';
+  const _tSecBd=!tf.flatView?'var(--blue)':'var(--bd2)';
   const _tSecBg=!tf.flatView?'var(--s3)':'var(--s2)';
-  const _tFlatBd=tf.flatView?'var(--blue)':'var(--bd)';
+  const _tFlatBd=tf.flatView?'var(--blue)':'var(--bd2)';
   const _tFlatBg=tf.flatView?'var(--s3)':'var(--s2)';
   const _tBtn='width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer;font-size:13px;border:1.5px solid ';
-  const tradeViewIcons=`<div style="display:flex;gap:2px"><button onclick="toggleTradeFlatView(false)" style="${_tBtn}${_tSecBd};background:${_tSecBg}">⊞</button><button onclick="toggleTradeFlatView(true)" style="${_tBtn}${_tFlatBd};background:${_tFlatBg}">▦</button></div>`;
+  const tradeViewIcons=`<div style="display:flex;gap:2px"><button onclick="toggleTradeFlatView(false)" style="${_tBtn}${_tSecBd};background:${_tSecBg};color:var(--tx)">⊞</button><button onclick="toggleTradeFlatView(true)" style="${_tBtn}${_tFlatBd};background:${_tFlatBg};color:var(--tx)">▦</button></div>`;
   const tradeTopBar=`<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:8px">
     <button class="ctrl-btn${!tf.albs.length?' active':''}" onclick="setTradeAlb(null)">${lang==='ko'?'전체':'All'}</button>
     ${DB.albumTypes.map(a=>`<button class="ctrl-btn" onclick="setTradeAlb('${a.id}')" style="${tf.albs.includes(a.id)?`background:${a.color};border-color:${a.color};color:#fff`:`border-color:${a.color}55;color:${a.color}`}">${a.shortName}</button>`).join('')}
