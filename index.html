@@ -1503,10 +1503,26 @@ async function preloadImages(cards){
     fetch(url,{mode:'no-cors',cache:'force-cache'}).then(res).catch(res);
   })));
 }
-async function loadH2C(){if(window.html2canvas)return;return new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+async function loadH2C(){
+  if(window.html2canvas)return;
+  const urls=[
+    'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+    'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js'
+  ];
+  for(const src of urls){
+    try{
+      await new Promise((res,rej)=>{
+        const s=document.createElement('script');
+        s.src=src;s.onload=res;s.onerror=rej;
+        document.head.appendChild(s);
+      });
+      if(window.html2canvas)return;
+    }catch(e){}
+  }
+  throw new Error('html2canvas 로드 실패');
+}
 
-/* ── 공통 워터마크 유틸 ── */
-// canvas에 워터마크 텍스트 합성
+/* ── 워터마크: 최종 canvas에 오버레이 (가장 확실하고 빠름) ── */
 function _applyWMtoCanvas(canvas){
   const ctx=canvas.getContext('2d');
   const W=canvas.width,H=canvas.height;
@@ -1525,43 +1541,9 @@ function _applyWMtoCanvas(canvas){
   ctx.restore();
 }
 
-// 이미지 URL → 워터마크 합성된 dataURL (캐시 포함)
-const _wmCache=new Map();
-async function _imgToWMDataUrl(src){
-  if(!src)return null;
-  if(_wmCache.has(src))return _wmCache.get(src);
-  return new Promise(res=>{
-    // fetch로 blob 가져와서 CORS 우회
-    fetch(src,{cache:'force-cache'})
-      .then(r=>r.blob())
-      .then(blob=>{
-        const url=URL.createObjectURL(blob);
-        const img=new Image();
-        img.onload=()=>{
-          const cv=document.createElement('canvas');
-          cv.width=img.naturalWidth||300;
-          cv.height=img.naturalHeight||420;
-          const ctx=cv.getContext('2d');
-          ctx.drawImage(img,0,0);
-          _applyWMtoCanvas(cv);
-          URL.revokeObjectURL(url);
-          const dataUrl=cv.toDataURL('image/jpeg',0.88);
-          if(_wmCache.size>200)_wmCache.delete(_wmCache.keys().next().value);
-          _wmCache.set(src,dataUrl);
-          res(dataUrl);
-        };
-        img.onerror=()=>res(null);
-        img.src=url;
-      })
-      .catch(()=>res(null));
-  });
-}
-
-// 카드 목록의 이미지들을 미리 WM 변환
-async function _preWMImages(cards){
-  const srcs=[...new Set(cards.filter(x=>x.img).map(x=>x.img))];
-  await Promise.allSettled(srcs.map(s=>_imgToWMDataUrl(s)));
-}
+// 이미지 src 그대로 사용 (워터마크는 최종 canvas에만 합성)
+const _wmCache=new Map(); // 미사용, 하위 호환용
+function _cachedSrc(src){ return src||null; }
 
 async function exportScreenshot(withMeta){
   toast(t('shotReady'));
@@ -1574,8 +1556,6 @@ async function exportScreenshot(withMeta){
   const hCards=tf.albs.length?hAll.filter(x=>tf.albs.includes(x.aId)):hAll;
   if(!wCards.length&&!hCards.length){toast(t('shotEmpty'));return;}
 
-  // 이미지 WM 변환 먼저
-  await _preWMImages([...wCards,...hCards]);
 
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   const bg=dark?'#08090f':'#f0f2f9',fg=dark?'#e8edf8':'#141830',tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
@@ -1594,7 +1574,7 @@ async function exportScreenshot(withMeta){
     const metaLine=(tf.flatView&&r)?`<div style="padding:1px 3px;font-size:6px;color:${tx2};text-align:center;line-height:1.4;overflow:hidden;background:rgba(0,0,0,.05);word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${r.alb.shortName} ${r.set.name}</div>`:'';
     // 번호 뱃지 - 플랫뷰, 크기 키움
     const numBadge=(tf.flatView&&idx)?`<div style="position:absolute;top:2px;left:2px;background:rgba(0,0,0,.72);color:#fff;font-size:9px;font-weight:800;border-radius:4px;padding:1px 4px;line-height:1.4;font-family:Outfit,sans-serif">${idx}</div>`:'';
-    const wmSrc=card.img?(_wmCache.get(card.img)||card.img):null;
+    const wmSrc=card.img||null;
     const imgEl=wmSrc?`<img src="${wmSrc}" style="width:100%;height:100%;object-fit:cover">`:`<span style="font-size:6px;color:${tx2}">${card.name}</span>`;
     return`<div style="border-radius:4px;overflow:hidden;border:1px solid ${bdCol};position:relative">
       <div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;background:${bdCol.replace('.4','.08')};position:relative">
@@ -1647,6 +1627,7 @@ async function exportScreenshot(withMeta){
 
   try{
     const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,allowTaint:true,logging:false,windowWidth:w});
+    _applyWMtoCanvas(canvas);
     const link=document.createElement('a');
     link.download=`교환_${now.replace(/\./g,'')}.png`;
     link.href=canvas.toDataURL('image/png');
@@ -1666,10 +1647,6 @@ async function exportCollectScreenshot(withMeta){
   const f=UI.cf;
   const albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
 
-  // 이미지 WM 변환 먼저
-  const allC=[];
-  for(const alb of albums)for(const set of alb.sets)allC.push(...set.cards);
-  await _preWMImages(allC.map(c=>({img:c.img})));
 
   const cardHtml=(card,alb,set,showMeta)=>{
     const cv=c(card.id),gv=g(card.id),st=sts(card.id);
@@ -1680,7 +1657,7 @@ async function exportCollectScreenshot(withMeta){
     else if(st==='h'){statusTx=`✨${cv}장`;statusBg='rgba(59,130,246,.15)';}
     else if(st==='c'){statusTx=`−${gv-cv}`;statusBg='rgba(244,63,94,.15)';}
     const metaLine=showMeta?`<div style="padding:2px 3px;font-size:6px;color:${tx2};text-align:center;line-height:1.4;overflow:hidden;background:rgba(0,0,0,.06);word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${alb.shortName} ${set.name}</div>`:'';
-    const wmSrc=card.img?(_wmCache.get(card.img)||card.img):null;
+    const wmSrc=card.img||null;
     const imgEl=wmSrc?`<img src="${wmSrc}" style="width:100%;height:100%;object-fit:cover">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:6px;color:${tx2}">${card.name}</div>`;
     return`<div style="border-radius:4px;overflow:hidden;border:1.5px solid ${bdr}">
       <div style="aspect-ratio:5/7;overflow:hidden;background:${alb.color}22">${imgEl}</div>
@@ -1728,6 +1705,7 @@ async function exportCollectScreenshot(withMeta){
 
   try{
     const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,allowTaint:true,logging:false,windowWidth:w});
+    _applyWMtoCanvas(canvas);
     const link=document.createElement('a');
     link.download=`수집_${now.replace(/\./g,'')}.png`;
     link.href=canvas.toDataURL('image/png');
