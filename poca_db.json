@@ -1575,7 +1575,7 @@
             {
               "id": "idp_B_2",
               "name": "노아",
-              "img": null,
+              "img": "./images/cards/idp_B_2.webp",
               "cardType": "Individual",
               "member": "노아",
               "unit": null,
@@ -1585,7 +1585,7 @@
             {
               "id": "idp_B_3",
               "name": "밤비",
-              "img": null,
+              "img": "./images/cards/idp_B_3.webp",
               "cardType": "Individual",
               "member": "밤비",
               "unit": null,
@@ -1595,7 +1595,7 @@
             {
               "id": "idp_B_4",
               "name": "은호",
-              "img": null,
+              "img": "./images/cards/idp_B_4.webp",
               "cardType": "Individual",
               "member": "은호",
               "unit": null,
@@ -1605,7 +1605,7 @@
             {
               "id": "idp_B_5",
               "name": "하민",
-              "img": null,
+              "img": "./images/cards/idp_B_5.webp",
               "cardType": "Individual",
               "member": "하민",
               "unit": null,
@@ -1793,7 +1793,7 @@
             {
               "id": "c_f67d743a6",
               "name": "노아",
-              "img": null,
+              "img": "./images/cards/c_f67d743a6.webp",
               "cardType": "Individual",
               "member": "노아",
               "unit": null,
@@ -1803,7 +1803,7 @@
             {
               "id": "c_4151e74df",
               "name": "밤비",
-              "img": null,
+              "img": "./images/cards/c_4151e74df.webp",
               "cardType": "Individual",
               "member": "밤비",
               "unit": null,
@@ -1813,7 +1813,7 @@
             {
               "id": "c_3e9ed5fd0",
               "name": "은호",
-              "img": null,
+              "img": "./images/cards/c_3e9ed5fd0.webp",
               "cardType": "Individual",
               "member": "은호",
               "unit": null,
@@ -1823,7 +1823,7 @@
             {
               "id": "c_8e59eea97",
               "name": "하민",
-              "img": null,
+              "img": "./images/cards/c_8e59eea97.webp",
               "cardType": "Individual",
               "member": "하민",
               "unit": null,
@@ -1833,7 +1833,7 @@
             {
               "id": "c_mnoxntyu",
               "name": "예준",
-              "img": null,
+              "img": "./images/cards/c_mnoxntyu.webp",
               "cardType": "Individual",
               "member": "예준",
               "unit": null,
@@ -1843,7 +1843,7 @@
             {
               "id": "c_25a751494",
               "name": "노아",
-              "img": null,
+              "img": "./images/cards/c_25a751494.webp",
               "cardType": "Individual",
               "member": "노아",
               "unit": null,
@@ -1853,7 +1853,7 @@
             {
               "id": "c_6ac997315",
               "name": "밤비",
-              "img": null,
+              "img": "./images/cards/c_6ac997315.webp",
               "cardType": "Individual",
               "member": "밤비",
               "unit": null,
@@ -1863,7 +1863,7 @@
             {
               "id": "c_d750a4b5d",
               "name": "은호",
-              "img": null,
+              "img": "./images/cards/c_d750a4b5d.webp",
               "cardType": "Individual",
               "member": "은호",
               "unit": null,
@@ -1873,7 +1873,7 @@
             {
               "id": "c_3333ee1e3",
               "name": "하민",
-              "img": null,
+              "img": "./images/cards/c_3333ee1e3.webp",
               "cardType": "Individual",
               "member": "하민",
               "unit": null,
@@ -3005,6 +3005,22 @@
               "img": "./images/cards/c_mnrkpgbquon.webp",
               "cardType": "Individual",
               "member": "하민",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            }
+          ]
+        },
+        {
+          "id": "set_mnv3z8c1odq",
+          "name": "일본 (유니버설/HMV/타워/애니메이트) 특전엽서",
+          "cards": [
+            {
+              "id": "c_mnv3zykevah",
+              "name": "단체",
+              "img": "./images/cards/c_mnv3zykevah.webp",
+              "cardType": "All",
+              "member": null,
               "unit": null,
               "mmmm": null,
               "memo": ""
