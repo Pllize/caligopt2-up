@@ -5,7 +5,7 @@
 (function(){
   const CACHE = new Map(); // src → dataURL (워터마크 합성 완료)
   const MAX_CACHE = 300;
-  const WM_TEXT = 'CaligoPt2 PLAVE';
+  const WM_TEXT = 'CaligoPt2';
   const WM_OPACITY = 0.13;
   const WM_FONT_SIZE = 12;
   const WM_SPACING_X = 55;

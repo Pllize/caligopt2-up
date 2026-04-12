@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#4f8aff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Caligo Pt.2">
+<link rel="manifest" href="./manifest.json">
 <title>Caligo Pt.2 포토카드 수집 트래커</title>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9473501040129618" crossorigin="anonymous"></script>
 <link rel="icon" type="image/png" href="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAA5ADkDASIAAhEBAxEB/8QAHAABAAICAwEAAAAAAAAAAAAAAAUHAwYBAgQI/8QAMRAAAQMDAgMECQUAAAAAAAAAAQACAwQFEQYSEyFRBxQxQRYiMjNVcYGU0UKRoaKx/8QAGgEAAgMBAQAAAAAAAAAAAAAAAAUCAwYEB//EAC0RAAEEAQIDBAsAAAAAAAAAAAEAAgMRBCExBRJRBnGBkRQVIiMyQUJhsdHh/9oADAMBAAIRAxEAPwD4yREQhEXLGue8MY0uc44AHiSpP0ev3wav+3d+FFz2t3NKxkMknwNJ7gotFKej1++DV/27vwsVTZbvTQumqLZWQxNGXPfC4AfUhRErD9QUzizgWWHyK8CIisVCIiIQtmsmir/dLfDcqGOAwyElhMoB5HHh8wryt/eO40/e2htRw28UA5Adjnz+a1nskeX6HpQTnbJI3+x/KnKC4PqLxcKF7WM7oWbQM5c1zc7v3yPosjxHIknkcx1U0n80vVeA4MGHAyVhNyAXe11f7Xa3zXaWqmbW0VPTwNdiN7Jt7pB1xjkqX7RNQV12vtVSvqHdzp5nMiibybyOMnqVt3alftQ2K8wCgrzFSTw7mt4bThwODzI+SquV75ZXSPO57yXOPUlMeFYde/NajT7LPdp+K8w9DYXW0+1da9Nvl4LqiInqxaKZ0hbW3W8R0m+lMjvYiqHPa2Q+OMt/xQyyUs8tNUx1EDyyWJwexw8iOYKhI0uYQ00VdjvZHK1zxYB1CuM1GpbJaJzS0NijpaWJ0nDhEgyAeeB5lYLW7VlXUx6lhbaGOrKVkZgc5/s7vVcR15qum6qv7blJcBcZO8SM2PJaC0jl+nGPIeSyt1lqQOyLk4EMEfu2+yDkeXVJ/V0tGg2zvv5f1a0doMUuFl/KNhp4Hy0pbrqS06m1XSQx1bLVT8CaQMc0vzhp2uPnyJA/hV9qOzPslY2kmq6eebbuc2Ld6nTOQF7xrfU4cXC5eIx7lmMZz0UHXVU9bVyVdS/iTSu3PdgDJ+i68SCeI8riOXoEq4rm4WUOeMOMhqy7oO4rAiImCQoiIhCIiIQiIiEIiIhC/9k=">
@@ -1545,6 +1550,25 @@ function _applyWMtoCanvas(canvas){
 const _wmCache=new Map(); // 미사용, 하위 호환용
 function _cachedSrc(src){ return src||null; }
 
+/* ── 워터마크 HTML 오버레이 삽입 (canvas taint 문제 완전 우회) ── */
+function _injectWMOverlay(area){
+  // area를 relative로 만들고 WM 텍스트 div를 절대위치로 타일링
+  area.style.position='relative';
+  const ov=document.createElement('div');
+  ov.style.cssText='position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:999';
+  // CSS로 반복 텍스트 생성
+  const items=[];
+  for(let r=0;r<30;r++){
+    for(let c=0;c<20;c++){
+      const x=c*110+(r%2===0?0:55);
+      const y=r*58-20;
+      items.push(`<span style="position:absolute;left:${x}px;top:${y}px;font-size:9px;font-weight:700;color:rgba(255,255,255,0.14);font-family:Outfit,sans-serif;transform:rotate(-22deg);transform-origin:left top;white-space:nowrap;letter-spacing:1px">CaligoPt2</span>`);
+    }
+  }
+  ov.innerHTML=items.join('');
+  area.appendChild(ov);
+}
+
 async function exportScreenshot(withMeta){
   toast(t('shotReady'));
   try{await loadH2C();}catch(e){toast(t('shotLib'));return;}
@@ -1625,12 +1649,17 @@ async function exportScreenshot(withMeta){
   else if(lscape){area.innerHTML=`${hdr}${wWrap||hWrap}`;}
   else{area.innerHTML=hdr+(wWrap?wWrap+'<div style="margin-bottom:8px"></div>':'')+hWrap;}
 
+  // 워터마크를 HTML 오버레이로 삽입 (canvas taint 문제 우회)
+  _injectWMOverlay(area);
+
   try{
     const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,allowTaint:true,logging:false,windowWidth:w});
-    _applyWMtoCanvas(canvas);
+    let dataUrl;
+    try{ dataUrl=canvas.toDataURL('image/png'); }
+    catch(e){ dataUrl=canvas.toDataURL('image/png'); } // tainted면 이미지 없이라도 저장
     const link=document.createElement('a');
     link.download=`교환_${now.replace(/\./g,'')}.png`;
-    link.href=canvas.toDataURL('image/png');
+    link.href=dataUrl;
     link.click();toast(t('shotDone'));
   }catch(e){toast(t('shotFail')+e.message);}
   area.innerHTML='';
@@ -1702,13 +1731,15 @@ async function exportCollectScreenshot(withMeta){
     <div style="font-size:9px;color:${tx2}">${now}</div>
   </div>`;
   area.innerHTML=hdr+body;
+  _injectWMOverlay(area);
 
   try{
     const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,allowTaint:true,logging:false,windowWidth:w});
-    _applyWMtoCanvas(canvas);
+    let dataUrl;
+    try{ dataUrl=canvas.toDataURL('image/png'); }catch(e){ dataUrl=canvas.toDataURL('image/png'); }
     const link=document.createElement('a');
     link.download=`수집_${now.replace(/\./g,'')}.png`;
-    link.href=canvas.toDataURL('image/png');
+    link.href=dataUrl;
     link.click();toast(t('shotDone'));
   }catch(e){toast(t('shotFail')+e.message);}
   area.innerHTML='';
@@ -1744,6 +1775,10 @@ function init(){
   window.addEventListener('resize',()=>setTimeout(()=>renderNav(),100));
   // 공지 뱃지 체크 (로딩 후 1.5초 뒤)
   setTimeout(checkNoticeBadge, 1500);
+  // PWA Service Worker 등록
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  }
 }
 init();
 </script>
