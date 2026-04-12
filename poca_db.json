@@ -1106,7 +1106,7 @@
           ]
         }
       ],
-      "albumType": "POCAALBUM"
+      "albumType": "PHOTOBOOK"
     },
     {
       "id": "inventory",
@@ -1494,7 +1494,7 @@
           ]
         }
       ],
-      "albumType": "POCAALBUM"
+      "albumType": "INVENTORY"
     },
     {
       "id": "idpass",
@@ -1883,7 +1883,7 @@
           ]
         }
       ],
-      "albumType": "POCAALBUM"
+      "albumType": "IDPASS"
     },
     {
       "id": "unpo",
@@ -1893,7 +1893,7 @@
       "sets": [
         {
           "id": "up_poca_ms",
-          "name": "메이크스타 (Makestar)",
+          "name": "메이크스타 (MAKESTAR)",
           "cards": [
             {
               "id": "up_poca_ms_1",
@@ -1949,7 +1949,7 @@
         },
         {
           "id": "up_poca_yp",
-          "name": "영풍문고",
+          "name": "영풍문고/뮤직아트 (MUSICART)",
           "cards": [
             {
               "id": "up_poca_yp_1",
@@ -2173,7 +2173,7 @@
         },
         {
           "id": "up_pb_vl",
-          "name": "VLAST SHOP",
+          "name": "블래스트샵 (VLAST SHOP)",
           "cards": [
             {
               "id": "up_pb_vl_1",
@@ -2229,7 +2229,7 @@
         },
         {
           "id": "up_pb_tme",
-          "name": "TME (QQ)",
+          "name": "TME (QQ MUSIC)",
           "cards": [
             {
               "id": "up_pb_tme_1",
@@ -2341,7 +2341,7 @@
         },
         {
           "id": "up_inv_sw",
-          "name": "사운드웨이브",
+          "name": "사운드웨이브 (SOUNDWAVE)",
           "cards": [
             {
               "id": "up_inv_sw_1",
@@ -2397,7 +2397,7 @@
         },
         {
           "id": "up_inv_mp",
-          "name": "뮤직플랜트 (MusicPlant)",
+          "name": "뮤직플랜트 (MUSICPLANT)",
           "cards": [
             {
               "id": "up_inv_mp_1",
@@ -2509,7 +2509,7 @@
         },
         {
           "id": "up_id_an",
-          "name": "애니메이트",
+          "name": "애니메이트 (ANIMATE)",
           "cards": [
             {
               "id": "up_id_an_1",
@@ -2565,7 +2565,7 @@
         },
         {
           "id": "up_id_oy",
-          "name": "올리브영 (OliveYoung)",
+          "name": "올리브영 (OLIVEYOUNG)",
           "cards": [
             {
               "id": "up_id_oy_1",
@@ -2621,7 +2621,7 @@
         },
         {
           "id": "up_id_tw",
-          "name": "타워레코드 (TowerRecords JP)",
+          "name": "타워레코드 (TOWER RECORDS JP)",
           "cards": [
             {
               "id": "up_id_tw_1",
@@ -2789,7 +2789,7 @@
         },
         {
           "id": "up_id_h82l",
-          "name": "Hello82 (Lookup, Pop-up)",
+          "name": "Hello82 (LOOKUP, POPUP EXCLUSIVE)",
           "cards": [
             {
               "id": "up_id_h82l_1",
@@ -2901,7 +2901,7 @@
         },
         {
           "id": "set_mnrknklo6ql",
-          "name": "케타포",
+          "name": "케타포 (KTOWN4U)",
           "cards": [
             {
               "id": "c_mnrknoykc7c",
@@ -2957,7 +2957,7 @@
         },
         {
           "id": "set_mnrkpauqbvo",
-          "name": "케타포 오프라인",
+          "name": "케타포 오프라인 (KTOWN4U DRINK)",
           "cards": [
             {
               "id": "c_mnrkpfs8jrq",
@@ -3026,9 +3026,65 @@
               "memo": ""
             }
           ]
+        },
+        {
+          "id": "set_mnv4f6uojb2",
+          "name": "애니메이트 (ANIMATE 코스터)",
+          "cards": [
+            {
+              "id": "c_mnv4f6uo0m4",
+              "name": "예준",
+              "img": null,
+              "cardType": "Individual",
+              "member": "예준",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnv4f6uonj6",
+              "name": "노아",
+              "img": null,
+              "cardType": "Individual",
+              "member": "노아",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnv4f6uoj9c",
+              "name": "밤비",
+              "img": null,
+              "cardType": "Individual",
+              "member": "밤비",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnv4f6uog9t",
+              "name": "은호",
+              "img": null,
+              "cardType": "Individual",
+              "member": "은호",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnv4f6uodox",
+              "name": "하민",
+              "img": null,
+              "cardType": "Individual",
+              "member": "하민",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            }
+          ]
         }
       ],
-      "albumType": "POCAALBUM"
+      "albumType": "EXCLUSIVE"
     }
   ]
 }
