@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>Caligo Pt.2 포토카드 수집 트래커</title>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9473501040129618" crossorigin="anonymous"></script>
 <link rel="icon" type="image/png" href="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAA5ADkDASIAAhEBAxEB/8QAHAABAAICAwEAAAAAAAAAAAAAAAUHAwYBAgQI/8QAMRAAAQMDAgMECQUAAAAAAAAAAQACAwQFEQYSEyFRBxQxQRYiMjNVcYGU0UKRoaKx/8QAGgEAAgMBAQAAAAAAAAAAAAAAAAUCAwYEB//EAC0RAAEEAQIDBAsAAAAAAAAAAAEAAgMRBCExBRJRBnGBkRQVIiMyQUJhsdHh/9oADAMBAAIRAxEAPwD4yREQhEXLGue8MY0uc44AHiSpP0ev3wav+3d+FFz2t3NKxkMknwNJ7gotFKej1++DV/27vwsVTZbvTQumqLZWQxNGXPfC4AfUhRErD9QUzizgWWHyK8CIisVCIiIQtmsmir/dLfDcqGOAwyElhMoB5HHh8wryt/eO40/e2htRw28UA5Adjnz+a1nskeX6HpQTnbJI3+x/KnKC4PqLxcKF7WM7oWbQM5c1zc7v3yPosjxHIknkcx1U0n80vVeA4MGHAyVhNyAXe11f7Xa3zXaWqmbW0VPTwNdiN7Jt7pB1xjkqX7RNQV12vtVSvqHdzp5nMiibybyOMnqVt3alftQ2K8wCgrzFSTw7mt4bThwODzI+SquV75ZXSPO57yXOPUlMeFYde/NajT7LPdp+K8w9DYXW0+1da9Nvl4LqiInqxaKZ0hbW3W8R0m+lMjvYiqHPa2Q+OMt/xQyyUs8tNUx1EDyyWJwexw8iOYKhI0uYQ00VdjvZHK1zxYB1CuM1GpbJaJzS0NijpaWJ0nDhEgyAeeB5lYLW7VlXUx6lhbaGOrKVkZgc5/s7vVcR15qum6qv7blJcBcZO8SM2PJaC0jl+nGPIeSyt1lqQOyLk4EMEfu2+yDkeXVJ/V0tGg2zvv5f1a0doMUuFl/KNhp4Hy0pbrqS06m1XSQx1bLVT8CaQMc0vzhp2uPnyJA/hV9qOzPslY2kmq6eebbuc2Ld6nTOQF7xrfU4cXC5eIx7lmMZz0UHXVU9bVyVdS/iTSu3PdgDJ+i68SCeI8riOXoEq4rm4WUOeMOMhqy7oO4rAiImCQoiIhCIiIQiIiEIiIhC/9k=">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
 <script src="./watermark.js" defer></script>
@@ -991,8 +992,18 @@ function renderNav(){
   if(sb){sb.classList.toggle('collapsed',!UI.sidebarOpen);tog.textContent=UI.sidebarOpen?'◀':'▶';}
 }
 function lsScreenshot(){
-  if(curTab==='trade') exportScreenshot(false);
-  else exportCollectScreenshot(false);
+  const f=curTab==='trade'?UI.tf:UI.cf;
+  const flat=f.flatView;
+  if(curTab==='trade'){
+    exportScreenshot(false);
+  } else {
+    // 섹션뷰면 바로, 플랫뷰면 메타 포함 여부 선택
+    if(!flat){ exportCollectScreenshot(false); }
+    else {
+      const choice=confirm(lang==='ko'?'카드 정보(앨범·세트명) 포함해서 찍을까요?\n\n확인=포함 / 취소=기본':'Include card info (album·set name)?\n\nOK=Include / Cancel=Basic');
+      exportCollectScreenshot(choice);
+    }
+  }
 }
 function toggleSidebar(){UI.sidebarOpen=!UI.sidebarOpen;saveUI();renderNav();}
 function goTab(v){curTab=v;document.querySelectorAll('[data-v]').forEach(el=>el.classList.toggle('on',el.dataset.v===v));renderCur();}
@@ -1016,13 +1027,16 @@ function renderCollect(){
   const allC=allCards(),haveC=allC.filter(x=>c(x.id)>0).length,metC=allC.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)).length,goalC=allC.filter(x=>g(x.id)>0).length;
   const noGoalHint=goalC===0?`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);margin-bottom:8px;font-size:11px;color:var(--tx2)">🎯 ${lang==='en'?'No targets set. Go to <b>Target</b> tab to set collection goals!':'설정된 목표가 없어요. <b>목표</b> 탭에서 수집 목표를 설정해보세요!'} <button class="btn btn-s btn-sm" style="margin-left:auto;padding:3px 10px;font-size:10px" onclick="goTab('goals')">${lang==='en'?'Go':'이동'}</button></div>`:'';
   const statsHTML=`<div class="stat-chip">${lang==='ko'?'수집':'Collected'} <span>${haveC}/${goalC||allC.length}</span></div>`;
-  const extra=`<div style="position:relative;display:inline-block">
-      <button class="shot-btn" onclick="toggleShotMenu(this)">📸 ▾</button>
-      <div id="shot-menu" style="display:none;position:absolute;right:0;top:100%;margin-top:4px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);padding:4px;white-space:nowrap;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,.15)">
-        <button onclick="closeShotMenu();exportCollectScreenshot(false)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📷 보이는 대로 찍기</button>
-        <button onclick="closeShotMenu();exportCollectScreenshot(true)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📋 카드 정보 포함해서 찍기</button>
-      </div>
-    </div>`;
+  // 섹션뷰: 버튼 하나, 플랫뷰: 드롭다운(메타 포함 여부 선택)
+  const extra=f.flatView
+    ? `<div style="position:relative;display:inline-block">
+        <button class="shot-btn" onclick="toggleShotMenu(this)">📸 ▾</button>
+        <div id="shot-menu" style="display:none;position:absolute;right:0;top:100%;margin-top:4px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);padding:4px;white-space:nowrap;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,.15)">
+          <button onclick="closeShotMenu();exportCollectScreenshot(false)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📷 기본 찍기</button>
+          <button onclick="closeShotMenu();exportCollectScreenshot(true)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📋 앨범·세트명 포함</button>
+        </div>
+      </div>`
+    : `<button class="shot-btn" onclick="exportCollectScreenshot(false)">📸</button>`;
   const albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
   const secs=buildSections(albums,f,UI.col,'colSec',false);
   const wrap=f.flatView?secs:`<div class="sets-wrap">${secs}</div>`;
@@ -1076,14 +1090,15 @@ function renderTrade(){
     return;
   }
 
-  // album filter bar + screenshot + view mode icons for trade
-  const tradeShotBtn=`<div style="position:relative;display:inline-block">
-      <button class="shot-btn" onclick="toggleTradeShotMenu(this)">📸 ▾</button>
-      <div id="trade-shot-menu" style="display:none;position:absolute;right:0;top:100%;margin-top:4px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);padding:4px;white-space:nowrap;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,.15)">
-        <button onclick="closeTradeShotMenu();exportScreenshot(false)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📷 보이는 대로 찍기</button>
-        <button onclick="closeTradeShotMenu();exportScreenshot(true)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📋 카드 정보 포함해서 찍기</button>
-      </div>
-    </div>`;
+  // 섹션뷰: 버튼 하나, 플랫뷰: 드롭다운(현재 구조상 동일 함수여도 모드가 다름)
+  const tradeShotBtn=tf.flatView
+    ? `<div style="position:relative;display:inline-block">
+        <button class="shot-btn" onclick="toggleTradeShotMenu(this)">📸 ▾</button>
+        <div id="trade-shot-menu" style="display:none;position:absolute;right:0;top:100%;margin-top:4px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);padding:4px;white-space:nowrap;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,.15)">
+          <button onclick="closeTradeShotMenu();exportScreenshot(false)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📷 카드나열 (번호+앨범·세트명)</button>
+        </div>
+      </div>`
+    : `<button class="shot-btn" onclick="exportScreenshot(false)">📸</button>`;
   const _tSecBd=!tf.flatView?'var(--blue)':'var(--bd2)';
   const _tSecBg=!tf.flatView?'var(--s3)':'var(--s2)';
   const _tFlatBd=tf.flatView?'var(--blue)':'var(--bd2)';
@@ -1491,7 +1506,8 @@ async function preloadImages(cards){
 }
 async function loadH2C(){if(window.html2canvas)return;return new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
 async function exportScreenshot(withMeta){
-  toast(t('shotReady'));try{await loadH2C();}catch(e){toast(t('shotLib'));return;}
+  toast(t('shotReady'));
+  try{await loadH2C();}catch(e){toast(t('shotLib'));return;}
   const all=allCards();
   const tf=UI.tf;
   const wAll=all.filter(x=>wt(x.id)>0);
@@ -1499,72 +1515,104 @@ async function exportScreenshot(withMeta){
   const wCards=tf.albs.length?wAll.filter(x=>tf.albs.includes(x.aId)):wAll;
   const hCards=tf.albs.length?hAll.filter(x=>tf.albs.includes(x.aId)):hAll;
   if(!wCards.length&&!hCards.length){toast(t('shotEmpty'));return;}
-  await preloadImages([...wCards,...hCards]);
+
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
-  const bg=dark?'#08090f':'#f0f2f9',tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
+  const bg=dark?'#08090f':'#f0f2f9',fg=dark?'#e8edf8':'#141830',tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
   const now=new Date().toLocaleDateString('ko-KR'),lscape=isLS();
-  // total canvas width
   const w=lscape?720:360;
-  const padding=12; // area padding
-  const gap=10;     // gap between want/have columns
-  const innerPad=8; // padding inside each wrap div
+  const PAD=12,GAP=10,innerPad=8;
   const bothSides=wCards.length>0&&hCards.length>0;
-  // available width for cards inside each column
-  const colW=bothSides&&lscape
-    ? Math.floor((w - padding*2 - gap) / 2 - innerPad*2)
-    : w - padding*2 - innerPad*2;
-  const CARD_W=60; // card min width for screenshot
-  const cols=Math.max(1, Math.floor((colW+4)/(CARD_W+4))); // +4 for gap
+  const COLS=5;
 
-  const area=document.getElementById('shot-area');
-  area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:${padding}px;color:${dark?'#e8edf8':'#141830'}`;
-  const hdr=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid ${bd}"><div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Caligo Pt.2 포토카드 수집 트래커</div><div style="font-size:10px;color:${tx2}">${now}</div></div>`;
+  // 워터마크
+  const addWM=(canvas)=>{
+    const ctx=canvas.getContext('2d');
+    const W=canvas.width,H=canvas.height;
+    ctx.save();ctx.globalAlpha=0.13;ctx.fillStyle='#fff';
+    ctx.font=`700 ${9*2}px Outfit,sans-serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    const rad=-22*Math.PI/180;
+    ctx.translate(W/2,H/2);ctx.rotate(rad);
+    for(let r=-8;r<=8;r++)for(let cc=-10;cc<=10;cc++)
+      ctx.fillText('CaligoPt2',cc*104+(r%2===0?0:52),r*56);
+    ctx.restore();
+    return canvas;
+  };
 
-  const shotCard=(card,mode,showMeta,idx)=>{
+  const shotCard=(card,mode,idx)=>{
     const cnt=mode==='w'?wt(card.id):sp(card.id);
     const bdCol=mode==='w'?'rgba(244,63,94,.4)':'rgba(59,130,246,.4)';
     const stripBg=mode==='w'?'rgba(244,63,94,.1)':'rgba(59,130,246,.1)';
     const stripCol=mode==='w'?'#f43f5e':'#3b82f6';
     const r=findCard(card.id);
-    const metaLine=(showMeta&&r)?`<div style="padding:1px 3px;font-size:6px;color:${tx2};text-align:center;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(0,0,0,.05)">${r.alb.shortName} ${r.set.name}</div>`:'';
-    const numBadge=idx?`<div style="position:absolute;top:2px;left:2px;background:rgba(0,0,0,.6);color:#fff;font-size:6px;font-weight:800;border-radius:3px;padding:1px 3px;line-height:1.2">${idx}</div>`:'';
-    return`<div style="border-radius:5px;overflow:hidden;border:1px solid ${bdCol};position:relative"><div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${bdCol.replace('.4','.1')};position:relative">${card.img?`<img src="${card.img}" crossorigin="anonymous" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}${numBadge}</div><div style="padding:2px 3px;background:${stripBg};font-size:8px;font-weight:800;color:${stripCol};text-align:center">${mode==='w'?'−':'+'} ${cnt}</div>${metaLine}</div>`;
+    // 플랫뷰에서만 앨범·세트 정보 표시
+    const metaLine=(tf.flatView&&r)?`<div style="padding:1px 3px;font-size:6px;color:${tx2};text-align:center;line-height:1.4;overflow:hidden;background:rgba(0,0,0,.05);word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${r.alb.shortName} ${r.set.name}</div>`:'';
+    // 플랫뷰에서만 번호 뱃지
+    const numBadge=(tf.flatView&&idx)?`<div style="position:absolute;top:2px;left:2px;background:rgba(0,0,0,.65);color:#fff;font-size:6px;font-weight:800;border-radius:3px;padding:1px 3px;line-height:1.2">${idx}</div>`:'';
+    return`<div style="border-radius:4px;overflow:hidden;border:1px solid ${bdCol};position:relative">
+      <div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:6px;color:${tx2};background:${bdCol.replace('.4','.08')};position:relative">
+        ${card.img?`<img src="${card.img}" crossorigin="anonymous" style="width:100%;height:100%;object-fit:cover">`:`<span>${card.name}</span>`}
+        ${numBadge}
+      </div>
+      <div style="padding:2px 3px;background:${stripBg};font-size:7px;font-weight:800;color:${stripCol};text-align:center">${mode==='w'?'−':'+'} ${cnt}</div>
+      ${metaLine}
+    </div>`;
   };
 
-  const buildSide=(cards,mode,showMeta,colCount)=>{
+  const buildSide=(cards,mode)=>{
     if(tf.flatView){
-      return`<div style="display:grid;grid-template-columns:repeat(${colCount},1fr);gap:4px">${cards.map((card,i)=>shotCard(card,mode,showMeta,i+1)).join('')}</div>`;
+      // 플랫뷰: 전체 카드 5열 나열 + 번호 + 앨범세트명
+      return`<div style="display:grid;grid-template-columns:repeat(${COLS},1fr);gap:3px">${cards.map((card,i)=>shotCard(card,mode,i+1)).join('')}</div>`;
     } else {
+      // 섹션뷰: 앨범→세트별 그룹화, 카드 크기 5열 고정
       let h='';
       for(const alb of DB.albumTypes){
         const ac=cards.filter(x=>x.aId===alb.id);if(!ac.length)continue;
-        h+=`<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:${alb.color};margin-bottom:3px">${alb.name}</div>`;
         const sids=[...new Set(ac.map(x=>x.sId))];
         for(const sid of sids){
           const sc=ac.filter(x=>x.sId===sid);
-          h+=`<div style="display:grid;grid-template-columns:repeat(${colCount},1fr);gap:3px;margin-bottom:4px">${sc.map(card=>shotCard(card,mode,false)).join('')}</div>`;
+          const set=alb.sets.find(s=>s.id===sid);if(!set)continue;
+          h+=`<div style="margin-bottom:6px">
+            <div style="font-size:8px;font-weight:700;margin-bottom:2px;display:flex;align-items:center;gap:4px">
+              <span style="background:${alb.color};color:#fff;padding:1px 5px;border-radius:4px;font-size:7px">${alb.shortName}</span>
+              <span style="color:${fg}">${set.name}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(${COLS},1fr);gap:3px">${sc.map(card=>shotCard(card,mode,0)).join('')}</div>
+          </div>`;
         }
-        h+='</div>';
       }
       return h;
     }
   };
 
-  const wLabel=`<div style="font-weight:800;font-size:13px;color:#f43f5e;margin-bottom:6px">🔍 구해요 (WANT) ${wCards.reduce((a,x)=>a+wt(x.id),0)}개</div>`;
-  const hLabel=`<div style="font-weight:800;font-size:13px;color:#3b82f6;margin-bottom:6px">✨ 있어요 (HAVE) ${hCards.reduce((a,x)=>a+sp(x.id),0)}개</div>`;
-  const wWrap=wCards.length?`<div style="background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);border-radius:8px;padding:${innerPad}px;flex:1;min-width:0">${wLabel}${buildSide(wCards,'w',withMeta,cols)}</div>`:'';
-  const hWrap=hCards.length?`<div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:${innerPad}px;flex:1;min-width:0">${hLabel}${buildSide(hCards,'h',withMeta,cols)}</div>`:'';
+  const area=document.getElementById('shot-area');
+  area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:${PAD}px;color:${fg};font-family:'Noto Sans KR',sans-serif`;
 
-  if(lscape&&wCards.length&&hCards.length){
-    area.innerHTML=`${hdr}<div style="display:flex;gap:${gap}px">${wWrap}${hWrap}</div>`;
+  const wLabel=`<div style="font-weight:800;font-size:12px;color:#f43f5e;margin-bottom:5px">🔍 구해요 (WANT) — ${wCards.reduce((a,x)=>a+wt(x.id),0)}장</div>`;
+  const hLabel=`<div style="font-weight:800;font-size:12px;color:#3b82f6;margin-bottom:5px">✨ 있어요 (HAVE) — ${hCards.reduce((a,x)=>a+sp(x.id),0)}장</div>`;
+  const wWrap=wCards.length?`<div style="background:rgba(244,63,94,.07);border:1px solid rgba(244,63,94,.22);border-radius:7px;padding:${innerPad}px;flex:1;min-width:0">${wLabel}${buildSide(wCards,'w')}</div>`:'';
+  const hWrap=hCards.length?`<div style="background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.22);border-radius:7px;padding:${innerPad}px;flex:1;min-width:0">${hLabel}${buildSide(hCards,'h')}</div>`:'';
+  const hdr=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid ${bd}">
+    <div style="font-weight:800;font-size:13px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Caligo Pt.2 교환 현황${tf.flatView?' · 카드나열':' · 세트별'}</div>
+    <div style="font-size:9px;color:${tx2}">${now}</div>
+  </div>`;
+
+  if(lscape&&bothSides){
+    area.innerHTML=`${hdr}<div style="display:flex;gap:${GAP}px">${wWrap}${hWrap}</div>`;
   } else if(lscape){
     area.innerHTML=`${hdr}${wWrap||hWrap}`;
   } else {
-    area.innerHTML=hdr+(wWrap?wWrap+'<div style="margin-bottom:10px"></div>':'')+hWrap;
+    area.innerHTML=hdr+(wWrap?wWrap+'<div style="margin-bottom:8px"></div>':'')+hWrap;
   }
+
   try{
-    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:w});
-    const link=document.createElement('a');link.download=`교환_${now.replace(/\./g,'')}.png`;link.href=canvas.toDataURL('image/png');link.click();toast(t('shotDone'));
+    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:w,allowTaint:false});
+    addWM(canvas);
+    const link=document.createElement('a');
+    link.download=`교환_${now.replace(/\./g,'')}.png`;
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+    toast(t('shotDone'));
   }catch(e){toast(t('shotFail')+e.message);}
   area.innerHTML='';
 }
@@ -1596,19 +1644,48 @@ document.addEventListener('click',e=>{
 });
 
 async function exportCollectScreenshot(withMeta){
-  toast(t('shotReady'));try{await loadH2C();}catch(e){toast(t('shotLib'));return;}
-  await preloadImages(allCards());
+  toast(t('shotReady'));
+  try{await loadH2C();}catch(e){toast(t('shotLib'));return;}
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
-  const bg=dark?'#08090f':'#f0f2f9',tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
+  const bg=dark?'#08090f':'#f0f2f9',fg=dark?'#e8edf8':'#141830',tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
   const now=new Date().toLocaleDateString('ko-KR'),lscape=isLS();
   const w=lscape?720:360;
-  const PAD=12,GAP=4,CARD=62;
+  const PAD=12,GAP=3;
   const innerW=w-PAD*2;
-  const cols=Math.max(1,Math.floor((innerW+GAP)/(CARD+GAP)));
-  const area=document.getElementById('shot-area');
-  area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:${PAD}px;color:${dark?'#e8edf8':'#141830'}`;
+  // 5장 기준 고정 카드폭
+  const COLS=5;
+  const CARD=Math.floor((innerW-(COLS-1)*GAP)/COLS);
   const f=UI.cf;
   const albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
+
+  // 워터마크 함수
+  const addWM=(canvas)=>{
+    const ctx=canvas.getContext('2d');
+    const W=canvas.width,H=canvas.height;
+    ctx.save();ctx.globalAlpha=0.13;ctx.fillStyle='#fff';
+    ctx.font=`700 ${9*2}px Outfit,sans-serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    const rad=-22*Math.PI/180;
+    ctx.translate(W/2,H/2);ctx.rotate(rad);
+    for(let r=-8;r<=8;r++)for(let cc=-10;cc<=10;cc++)
+      ctx.fillText('CaligoPt2',cc*104+(r%2===0?0:52),r*56);
+    ctx.restore();
+    return canvas;
+  };
+
+  // 이미지→canvas dataURL (워터마크 포함)
+  const imgToWM=(src)=>new Promise(res=>{
+    if(!src){res(null);return;}
+    const img=new Image();img.crossOrigin='anonymous';
+    img.onload=()=>{
+      const cv=document.createElement('canvas');
+      cv.width=img.naturalWidth;cv.height=img.naturalHeight;
+      const ctx=cv.getContext('2d');ctx.drawImage(img,0,0);
+      addWM(cv);res(cv.toDataURL('image/jpeg',0.88));
+    };
+    img.onerror=()=>res(null);
+    img.src=src+(src.includes('?')?'&':'?')+'_wm=1';
+  });
 
   const cardHtml=(card,alb,set,showMeta)=>{
     const cv=c(card.id),gv=g(card.id),st=sts(card.id);
@@ -1616,54 +1693,64 @@ async function exportCollectScreenshot(withMeta){
     let statusTx='',statusBg='';
     if(st==='m'){statusTx=`✓${cv}`;statusBg='rgba(34,197,94,.15)';}
     else if(st==='h'&&gv>0){statusTx=`+${cv-gv}`;statusBg='rgba(59,130,246,.15)';}
-    else if(st==='h'){statusTx=`✨${cv}`;statusBg='rgba(59,130,246,.15)';}
+    else if(st==='h'){statusTx=`✨${cv}장`;statusBg='rgba(59,130,246,.15)';}
     else if(st==='c'){statusTx=`−${gv-cv}`;statusBg='rgba(244,63,94,.15)';}
-    else{statusTx='';statusBg='transparent';}
-    const metaLine=showMeta?`<div style="padding:2px 3px;font-size:6px;color:${tx2};text-align:center;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(0,0,0,.06)">${alb.shortName} ${set.name}</div>`:'';
-    return`<div style="border-radius:5px;overflow:hidden;border:1px solid ${bdr}">
-      <div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7px;color:${tx2};background:${alb.color}22">${card.img?`<img src="${card.img}" crossorigin="anonymous" style="width:100%;height:100%;object-fit:cover">`:`${card.name}`}</div>
-      <div style="padding:2px 4px;background:${statusBg};font-size:8px;font-weight:800;text-align:center;color:${st==='c'?'#f43f5e':st==='m'?'#22c55e':st==='h'?'#3b82f6':'#888'};white-space:nowrap;overflow:hidden">${statusTx||'&nbsp;'}</div>
+    // 메타: 2줄까지 (앨범, 세트명)
+    const metaLine=showMeta?`<div style="padding:2px 3px;font-size:6px;color:${tx2};text-align:center;line-height:1.4;overflow:hidden;background:rgba(0,0,0,.06);word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${alb.shortName} ${set.name}</div>`:'';
+    const imgEl=card.img?`<img src="${card.img}" crossorigin="anonymous" style="width:100%;height:100%;object-fit:cover">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:6px;color:${tx2}">${card.name}</div>`;
+    return`<div style="border-radius:4px;overflow:hidden;border:1.5px solid ${bdr}">
+      <div style="aspect-ratio:5/7;overflow:hidden;background:${alb.color}22">${imgEl}</div>
+      <div style="padding:2px 3px;background:${statusBg};font-size:7px;font-weight:800;text-align:center;color:${st==='c'?'#f43f5e':st==='m'?'#22c55e':st==='h'?'#3b82f6':'#888'};white-space:nowrap;overflow:hidden">${statusTx||'&nbsp;'}</div>
       ${metaLine}
     </div>`;
   };
 
+  const area=document.getElementById('shot-area');
+  area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:${PAD}px;color:${fg};font-family:'Noto Sans KR',sans-serif`;
+
   let body='';
   if(f.flatView){
-    // Flat view: all cards in one grid
-    let allFlatCards=[];
+    let allFlat=[];
     for(const alb of albums)for(const set of alb.sets){
       let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
       if(f.vis==='have')cards=cards.filter(x=>c(x.id)>0);
       else if(f.vis==='nothave')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
-      allFlatCards=allFlatCards.concat(cards.map(card=>({card,alb,set})));
+      allFlat=allFlat.concat(cards.map(card=>({card,alb,set})));
     }
-    body=`<div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:${GAP}px">${allFlatCards.map(({card,alb,set})=>cardHtml(card,alb,set,withMeta)).join('')}
-    </div>`;
+    body=`<div style="display:grid;grid-template-columns:repeat(${COLS},1fr);gap:${GAP}px">${allFlat.map(({card,alb,set})=>cardHtml(card,alb,set,withMeta)).join('')}</div>`;
   } else {
-    // Section view
     let secH='';
     for(const alb of albums)for(const set of alb.sets){
       let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
       if(f.vis==='have')cards=cards.filter(x=>c(x.id)>0);
       else if(f.vis==='nothave')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
       if(!cards.length)continue;
+      // 항상 5열 고정 (카드 수 무관)
       secH+=`<div style="margin-bottom:8px">
-        <div style="font-size:10px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px">
-          <span style="background:${alb.color};color:#fff;padding:2px 7px;border-radius:6px;font-size:9px">${alb.shortName}</span>
-          <span>${set.name}</span>
+        <div style="font-size:9px;font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:5px">
+          <span style="background:${alb.color};color:#fff;padding:1px 6px;border-radius:5px;font-size:8px">${alb.shortName}</span>
+          <span style="color:${fg}">${set.name}</span>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(${Math.min(cards.length,cols)},1fr);gap:3px">${cards.map(card=>cardHtml(card,alb,set,false)).join('')}
-        </div>
+        <div style="display:grid;grid-template-columns:repeat(${COLS},1fr);gap:${GAP}px">${cards.map(card=>cardHtml(card,alb,set,false)).join('')}</div>
       </div>`;
     }
-    body=`<div style="display:grid;gap:6px">${secH}</div>`;
+    body=`<div>${secH}</div>`;
   }
 
-  const hdr=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid ${bd}"><div style="font-weight:800;font-size:14px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Caligo Pt.2 수집 현황</div><div style="font-size:10px;color:${tx2}">${now}</div></div>`;
+  const hdr=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid ${bd}">
+    <div style="font-weight:800;font-size:13px;background:linear-gradient(135deg,#4f8aff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Caligo Pt.2 수집 현황</div>
+    <div style="font-size:9px;color:${tx2}">${now}</div>
+  </div>`;
   area.innerHTML=hdr+body;
+
   try{
-    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:w});
-    const link=document.createElement('a');link.download=`수집_${now.replace(/\./g,'')}.png`;link.href=canvas.toDataURL('image/png');link.click();toast(t('shotDone'));
+    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,logging:false,windowWidth:w,allowTaint:false});
+    addWM(canvas);
+    const link=document.createElement('a');
+    link.download=`수집_${now.replace(/\./g,'')}.png`;
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+    toast(t('shotDone'));
   }catch(e){toast(t('shotFail')+e.message);}
   area.innerHTML='';
 }

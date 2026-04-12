@@ -441,49 +441,64 @@ async function saveToGitHub(){
   }
   saveDB();
   const btn = document.getElementById('gh-save-btn');
-  btn.disabled=true; btn.textContent='⏳ 저장 중...';
+  btn.disabled=true;
+
+  const total = pendingImgUploads.length;
+
+  // ── 1단계: 대기중인 이미지 순차 업로드 ──
+  if(total > 0){
+    btn.textContent=`⏳ 이미지 업로드 중... (0/${total})`;
+    let done=0, failed=0;
+    for(const img of pendingImgUploads){
+      try{
+        const url=`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${img.ghPath}`;
+        let sha=null;
+        try{
+          const r=await fetch(`${url}?ref=${cfg.branch||'main'}`,{headers:{Authorization:`token ${cfg.token}`,'Accept':'application/vnd.github.v3+json'}});
+          if(r.ok){const j=await r.json();sha=j.sha;}
+        }catch(e){}
+        const body={message:`[admin] image: ${img.cardId}`,content:img.b64,branch:cfg.branch||'main'};
+        if(sha)body.sha=sha;
+        const res=await fetch(url,{method:'PUT',headers:{Authorization:`token ${cfg.token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)});
+        if(res.ok) done++;
+        else failed++;
+      }catch(e){ failed++; }
+      btn.textContent=`⏳ 이미지 업로드 중... (${done+failed}/${total})`;
+    }
+    if(failed>0) toast(`⚠️ 이미지 ${done}개 성공 / ${failed}개 실패`);
+    else pendingImgUploads=[]; // 전부 성공시만 큐 비움
+    updatePendingBadge();
+  }
+
+  // ── 2단계: DB(poca_db.json) push ──
+  btn.textContent='⏳ DB 저장 중...';
   try{
-    // 한글 안전 base64 인코딩
     const jsonStr = JSON.stringify(DB,null,2);
     const bytes = new TextEncoder().encode(jsonStr);
-    let binary = '';
-    bytes.forEach(b=>binary+=String.fromCharCode(b));
+    let binary=''; bytes.forEach(b=>binary+=String.fromCharCode(b));
     const content = btoa(binary);
-
     const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path||'poca_db.json'}`;
-
-    // SHA 재취득 (항상 최신)
-    let sha = null;
+    let sha=null;
     try{
-      const r = await fetch(`${url}?ref=${cfg.branch||'main'}&t=${Date.now()}`,{
-        headers:{Authorization:`token ${cfg.token}`,'Accept':'application/vnd.github.v3+json'}
-      });
-      if(r.ok){ const j=await r.json(); sha=j.sha; }
+      const r=await fetch(`${url}?ref=${cfg.branch||'main'}&t=${Date.now()}`,{headers:{Authorization:`token ${cfg.token}`,'Accept':'application/vnd.github.v3+json'}});
+      if(r.ok){const j=await r.json();sha=j.sha;}
     }catch(e){}
-
-    const body = {
-      message:`[admin] DB update ${new Date().toLocaleString('ko-KR')}`,
-      content,
-      branch: cfg.branch||'main',
-    };
-    if(sha) body.sha = sha;
-
-    const res = await fetch(url,{
-      method:'PUT',
-      headers:{Authorization:`token ${cfg.token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
-      body:JSON.stringify(body)
-    });
+    const body={message:`[admin] DB update ${new Date().toLocaleString('ko-KR')}`,content,branch:cfg.branch||'main'};
+    if(sha)body.sha=sha;
+    const res=await fetch(url,{method:'PUT',headers:{Authorization:`token ${cfg.token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)});
     if(res.ok){
-      toast('✅ DB 저장 완료!');
+      toast(`✅ 저장 완료! (이미지 ${total}개 + DB)`);
       clearDirty();
     } else {
-      const j = await res.json();
-      toast('❌ 저장 실패: '+(j.message||res.status));
-      btn.textContent='☁️ GitHub 저장'; btn.style.background=''; btn.style.color='';
+      const j=await res.json();
+      toast('❌ DB 저장 실패: '+(j.message||res.status));
+      btn.style.background=''; btn.style.color='';
+      btn.textContent='☁️ GitHub 저장';
     }
   }catch(e){
     toast('❌ 오류: '+e.message);
-    btn.textContent='☁️ GitHub 저장'; btn.style.background=''; btn.style.color='';
+    btn.style.background=''; btn.style.color='';
+    btn.textContent='☁️ GitHub 저장';
   }
   btn.disabled=false;
 }
@@ -961,14 +976,19 @@ function moveCard(ai,si,ci,d){
 
 // ── IMAGE MODAL ────────────────────────────────────────
 
-let imgFileRaw = null; // 원본 File 객체 보관
+let imgFileRaw = null;
+// 대기중인 이미지 업로드 큐: [{cardId, ext, b64, path}]
+let pendingImgUploads = [];
 
 function openImgModal(ai,si,ci){
   imgAlb=ai; imgSet=si; imgCard=ci; imgPending=null; imgFileRaw=null;
   const card = fCard(ai,si,ci); if(!card) return;
   document.getElementById('img-modal-ttl').textContent = `${card.name} 이미지`;
   const prev = document.getElementById('img-preview');
-  prev.innerHTML = card.img ? `<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">` : `<span>이미지 없음</span>`;
+  const hasPending = pendingImgUploads.find(p=>p.cardId===card.id);
+  prev.innerHTML = hasPending
+    ? `<img src="data:image/${hasPending.ext};base64,${hasPending.b64}" style="width:100%;height:100%;object-fit:cover"><div style="font-size:10px;color:var(--warn);text-align:center;margin-top:4px">⏳ 업로드 대기중</div>`
+    : card.img ? `<img src="${card.img}" style="width:100%;height:100%;object-fit:cover">` : `<span>이미지 없음</span>`;
   document.getElementById('img-file').value = '';
   document.getElementById('img-apply-btn').textContent = '적용';
   document.getElementById('img-modal').classList.add('open');
@@ -980,75 +1000,64 @@ function previewImg(inp){
   imgFileRaw = inp.files[0];
   const r = new FileReader();
   r.onload = e=>{
-    imgPending = e.target.result; // base64 for preview only
+    imgPending = e.target.result;
     document.getElementById('img-preview').innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;
   };
   r.readAsDataURL(inp.files[0]);
 }
 
-async function applyImg(){
+function applyImg(){
   const c = fCard(imgAlb,imgSet,imgCard); if(!c) return;
   if(!imgPending){ closeModal('img-modal'); return; }
 
   const cfg = loadGhCfg();
-  const btn = document.getElementById('img-apply-btn');
 
-  // GitHub 설정이 있으면 이미지를 파일로 push
   if(cfg.token && cfg.owner && cfg.repo && imgFileRaw){
-    btn.disabled=true; btn.textContent='⏳ 업로드 중...';
-    try{
-      // 파일 확장자 추출
-      const ext = imgFileRaw.name.split('.').pop().toLowerCase() || 'webp';
-      const imgPath = (cfg.path||'poca_db.json').replace(/[^/]+$/, '') + `images/cards/${c.id}.${ext}`;
-      const imgUrl  = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${imgPath}`;
+    // GitHub 설정 있으면 → 로컬에 base64 임시 저장 + 업로드 큐에 추가
+    const ext = imgFileRaw.name.split('.').pop().toLowerCase() || 'webp';
+    const b64 = imgPending.split(',')[1];
+    const relPath = `./images/cards/${c.id}.${ext}`;
+    const ghPath = (cfg.path||'poca_db.json').replace(/[^/]+$/, '') + `images/cards/${c.id}.${ext}`;
 
-      // base64 데이터만 추출 (data:...;base64, 제거)
-      const b64 = imgPending.split(',')[1];
+    // 기존 큐에 같은 카드 있으면 교체
+    pendingImgUploads = pendingImgUploads.filter(p=>p.cardId!==c.id);
+    pendingImgUploads.push({cardId:c.id, ext, b64, relPath, ghPath});
 
-      // 기존 파일 SHA 확인
-      let sha = null;
-      try{
-        const r = await fetch(`${imgUrl}?ref=${cfg.branch||'main'}`,{headers:{Authorization:`token ${cfg.token}`,'Accept':'application/vnd.github.v3+json'}});
-        if(r.ok){ const j=await r.json(); sha=j.sha; }
-      }catch(e){}
-
-      const body = { message:`[admin] image update: ${c.name}`, content:b64, branch:cfg.branch||'main' };
-      if(sha) body.sha = sha;
-
-      const res = await fetch(imgUrl,{
-        method:'PUT',
-        headers:{Authorization:`token ${cfg.token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
-        body:JSON.stringify(body)
-      });
-
-      if(res.ok){
-        // DB에는 상대 경로만 저장 (로컬)
-        const relPath = `./images/cards/${c.id}.${ext}`;
-        c.img = relPath;
-        saveDB();
-        closeModal('img-modal'); renderSetView();
-        toast(`✅ 이미지 업로드 완료! DB저장은 ☁️ GitHub 저장 버튼을 눌러주세요`);
-        // 변경 뱃지 표시
-        markDirty();
-      } else {
-        const j = await res.json();
-        toast('❌ 이미지 업로드 실패: '+(j.message||res.status));
-      }
-    }catch(e){
-      toast('❌ 오류: '+e.message);
-    }
-    btn.disabled=false; btn.textContent='적용';
+    // DB에는 경로만 저장 (로컬)
+    c.img = relPath;
+    saveDB(); markDirty();
+    closeModal('img-modal'); renderSetView();
+    updatePendingBadge();
+    toast(`🖼 이미지 대기 등록 (${pendingImgUploads.length}개) — ☁️ GitHub 저장으로 한번에 업로드`);
   } else {
-    // GitHub 미설정이면 기존처럼 base64로 로컬 저장
-    if(imgPending) c.img = imgPending;
-    saveDB(); closeModal('img-modal'); renderSetView();
-    toast(cfg.token ? '이미지 저장됨 (GitHub 미설정 — 로컬만)' : '이미지 저장됨 ✓');
+    // GitHub 미설정: 기존처럼 base64로 저장
+    c.img = imgPending;
+    saveDB(); markDirty(); closeModal('img-modal'); renderSetView();
+    toast('이미지 저장됨 ✓');
+  }
+}
+
+function updatePendingBadge(){
+  const btn = document.getElementById('gh-save-btn');
+  if(!btn) return;
+  if(pendingImgUploads.length>0){
+    btn.textContent=`☁️ 저장 (이미지 ${pendingImgUploads.length}개 대기중) ●`;
+    btn.style.background='var(--warn)'; btn.style.color='#000';
+  } else if(_dirty){
+    btn.textContent='☁️ 저장 필요 ●';
+    btn.style.background='var(--warn)'; btn.style.color='#000';
   }
 }
 
 function clearImg(){
   const c = fCard(imgAlb,imgSet,imgCard);
-  if(c){ c.img=null; saveDB(); renderSetView(); }
+  if(c){
+    c.img=null; saveDB(); markDirty();
+    // 대기 큐에서도 제거
+    pendingImgUploads = pendingImgUploads.filter(p=>p.cardId!==c.id);
+    updatePendingBadge();
+    renderSetView();
+  }
   closeModal('img-modal'); toast('이미지 제거됨');
 }
 
