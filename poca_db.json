@@ -3138,6 +3138,62 @@
               "memo": ""
             }
           ]
+        },
+        {
+          "id": "set_mnv5obcxaxc",
+          "name": "더현대서울 LUCKY DRAW (THE HYUNDAI)",
+          "cards": [
+            {
+              "id": "c_mnv5obcxeql",
+              "name": "예준",
+              "img": null,
+              "cardType": "Individual",
+              "member": "예준",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnv5obcx6ws",
+              "name": "노아",
+              "img": null,
+              "cardType": "Individual",
+              "member": "노아",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnv5obcxq9z",
+              "name": "밤비",
+              "img": null,
+              "cardType": "Individual",
+              "member": "밤비",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnv5obcx7vz",
+              "name": "은호",
+              "img": null,
+              "cardType": "Individual",
+              "member": "은호",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnv5obcxagc",
+              "name": "하민",
+              "img": null,
+              "cardType": "Individual",
+              "member": "하민",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            }
+          ]
         }
       ],
       "albumType": "EXCLUSIVE"
