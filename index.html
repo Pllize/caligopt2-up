@@ -1032,16 +1032,8 @@ function renderCollect(){
   const allC=allCards(),haveC=allC.filter(x=>c(x.id)>0).length,metC=allC.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)).length,goalC=allC.filter(x=>g(x.id)>0).length;
   const noGoalHint=goalC===0?`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);margin-bottom:8px;font-size:11px;color:var(--tx2)">🎯 ${lang==='en'?'No targets set. Go to <b>Target</b> tab to set collection goals!':'설정된 목표가 없어요. <b>목표</b> 탭에서 수집 목표를 설정해보세요!'} <button class="btn btn-s btn-sm" style="margin-left:auto;padding:3px 10px;font-size:10px" onclick="goTab('goals')">${lang==='en'?'Go':'이동'}</button></div>`:'';
   const statsHTML=`<div class="stat-chip">${lang==='ko'?'수집':'Collected'} <span>${haveC}/${goalC||allC.length}</span></div>`;
-  // 섹션뷰: 버튼 하나, 플랫뷰: 드롭다운(메타 포함 여부 선택)
-  const extra=f.flatView
-    ? `<div style="position:relative;display:inline-block">
-        <button class="shot-btn" onclick="toggleShotMenu(this)">📸 ▾</button>
-        <div id="shot-menu" style="display:none;position:absolute;right:0;top:100%;margin-top:4px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);padding:4px;white-space:nowrap;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,.15)">
-          <button onclick="closeShotMenu();exportCollectScreenshot(false)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📷 기본 찍기</button>
-          <button onclick="closeShotMenu();exportCollectScreenshot(true)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📋 앨범·세트명 포함</button>
-        </div>
-      </div>`
-    : `<button class="shot-btn" onclick="exportCollectScreenshot(false)">📸</button>`;
+  // 스크린샷 버튼 - 항상 단일 버튼
+  const extra=`<button class="shot-btn" onclick="exportCollectScreenshot(false)">📸</button>`;
   const albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
   const secs=buildSections(albums,f,UI.col,'colSec',false);
   const wrap=f.flatView?secs:`<div class="sets-wrap">${secs}</div>`;
@@ -1095,15 +1087,8 @@ function renderTrade(){
     return;
   }
 
-  // 섹션뷰: 버튼 하나, 플랫뷰: 드롭다운(현재 구조상 동일 함수여도 모드가 다름)
-  const tradeShotBtn=tf.flatView
-    ? `<div style="position:relative;display:inline-block">
-        <button class="shot-btn" onclick="toggleTradeShotMenu(this)">📸 ▾</button>
-        <div id="trade-shot-menu" style="display:none;position:absolute;right:0;top:100%;margin-top:4px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);padding:4px;white-space:nowrap;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,.15)">
-          <button onclick="closeTradeShotMenu();exportScreenshot(false)" style="display:block;width:100%;text-align:left;padding:7px 12px;font-size:11px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--tx);border-radius:6px" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='none'">📷 카드나열 (번호+앨범·세트명)</button>
-        </div>
-      </div>`
-    : `<button class="shot-btn" onclick="exportScreenshot(false)">📸</button>`;
+  // 스크린샷 버튼 - 항상 단일 버튼, 뷰모드에 따라 다르게 찍힘
+  const tradeShotBtn=`<button class="shot-btn" onclick="exportScreenshot(false)">📸</button>`;
   const _tSecBd=!tf.flatView?'var(--blue)':'var(--bd2)';
   const _tSecBg=!tf.flatView?'var(--s3)':'var(--s2)';
   const _tFlatBd=tf.flatView?'var(--blue)':'var(--bd2)';
@@ -1653,13 +1638,11 @@ async function exportScreenshot(withMeta){
   _injectWMOverlay(area);
 
   try{
-    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,allowTaint:true,logging:false,windowWidth:w});
-    let dataUrl;
-    try{ dataUrl=canvas.toDataURL('image/png'); }
-    catch(e){ dataUrl=canvas.toDataURL('image/png'); } // tainted면 이미지 없이라도 저장
+    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,allowTaint:false,logging:false,windowWidth:w,imageTimeout:8000});
     const link=document.createElement('a');
     link.download=`교환_${now.replace(/\./g,'')}.png`;
-    link.href=dataUrl;
+    try{ link.href=canvas.toDataURL('image/png'); }
+    catch(e){ link.href=canvas.toDataURL(); } // tainted fallback
     link.click();toast(t('shotDone'));
   }catch(e){toast(t('shotFail')+e.message);}
   area.innerHTML='';
@@ -1734,12 +1717,11 @@ async function exportCollectScreenshot(withMeta){
   _injectWMOverlay(area);
 
   try{
-    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,allowTaint:true,logging:false,windowWidth:w});
-    let dataUrl;
-    try{ dataUrl=canvas.toDataURL('image/png'); }catch(e){ dataUrl=canvas.toDataURL('image/png'); }
+    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,allowTaint:false,logging:false,windowWidth:w,imageTimeout:8000});
     const link=document.createElement('a');
     link.download=`수집_${now.replace(/\./g,'')}.png`;
-    link.href=dataUrl;
+    try{ link.href=canvas.toDataURL('image/png'); }
+    catch(e){ link.href=canvas.toDataURL(); }
     link.click();toast(t('shotDone'));
   }catch(e){toast(t('shotFail')+e.message);}
   area.innerHTML='';
