@@ -1702,24 +1702,33 @@ async function _drawCard(ctx,card,x,y,cw,mode,showMeta,albColor,albShort,setName
   return totalH;
 }
 
-// 워터마크 그리기
+// 워터마크 그리기 — 별도 canvas에 그린 뒤 합성 (clip/transform 오염 없음)
 function _drawWatermark(ctx,w,h){
-  ctx.save();
-  ctx.globalAlpha=0.07;
-  ctx.fillStyle='#888';
-  ctx.font=`700 9px "Outfit",sans-serif`;
-  ctx.textAlign='left';
-  for(let row=0;row<Math.ceil(h/55)+1;row++){
-    for(let col=0;col<Math.ceil(w/110)+1;col++){
-      ctx.save();
-      const px=col*110+(row%2?55:0)-10;
-      const py=row*55-10;
-      ctx.translate(px,py);
-      ctx.rotate(-22*Math.PI/180);
-      ctx.fillText('CaligoPt2',0,0);
-      ctx.restore();
+  const wc=document.createElement('canvas');
+  wc.width=w*SCALE; wc.height=h*SCALE;
+  const wctx=wc.getContext('2d');
+  wctx.scale(SCALE,SCALE);
+  wctx.font='800 10px "Outfit",sans-serif';
+  wctx.fillStyle='#4f8aff';
+  wctx.globalAlpha=0.18;
+  wctx.textAlign='left';
+  wctx.textBaseline='top';
+  const TEXT='CaligoPt2',SX=100,SY=52,ANG=-22*Math.PI/180;
+  for(let row=-1;row<Math.ceil(h/SY)+1;row++){
+    for(let col=-1;col<Math.ceil(w/SX)+1;col++){
+      const px=col*SX+(row%2===0?0:50);
+      const py=row*SY;
+      wctx.save();
+      wctx.translate(px,py);
+      wctx.rotate(ANG);
+      wctx.fillText(TEXT,0,0);
+      wctx.restore();
     }
   }
+  // 메인 canvas에 합성 — SCALE transform 리셋 후 픽셀 단위로 덮어씀
+  ctx.save();
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.drawImage(wc,0,0);
   ctx.restore();
 }
 
