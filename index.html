@@ -1549,13 +1549,30 @@ function _applyWMtoCanvas(canvas){
 const _wmCache=new Map(); // 미사용, 하위 호환용
 function _cachedSrc(src){ return src||null; }
 
-/* ── 워터마크 HTML 오버레이 삽입 (canvas taint 문제 완전 우회) ── */
+/* ── 이미지 Blob 변환 캐시 (taint 우회 핵심) ── */
+const _blobCache=new Map();
+async function _toBlobUrl(src){
+  if(!src) return null;
+  if(_blobCache.has(src)) return _blobCache.get(src);
+  try{
+    const r=await fetch(src,{cache:'force-cache'});
+    const blob=await r.blob();
+    const url=URL.createObjectURL(blob);
+    _blobCache.set(src,url);
+    return url;
+  }catch(e){ return src; } // 실패시 원본
+}
+
+async function _preloadBlobs(cards){
+  const srcs=[...new Set(cards.filter(x=>x.img).map(x=>x.img))];
+  await Promise.all(srcs.map(_toBlobUrl));
+}
+
+/* ── 워터마크 HTML 오버레이 삽입 ── */
 function _injectWMOverlay(area){
-  // area를 relative로 만들고 WM 텍스트 div를 절대위치로 타일링
   area.style.position='relative';
   const ov=document.createElement('div');
   ov.style.cssText='position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:999';
-  // CSS로 반복 텍스트 생성
   const items=[];
   for(let r=0;r<30;r++){
     for(let c=0;c<20;c++){
@@ -1579,6 +1596,8 @@ async function exportScreenshot(withMeta){
   const hCards=tf.albs.length?hAll.filter(x=>tf.albs.includes(x.aId)):hAll;
   if(!wCards.length&&!hCards.length){toast(t('shotEmpty'));return;}
 
+  // 이미지를 blob URL로 변환 (taint 우회)
+  await _preloadBlobs([...wCards,...hCards]);
 
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   const bg=dark?'#08090f':'#f0f2f9',fg=dark?'#e8edf8':'#141830',tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
@@ -1595,10 +1614,10 @@ async function exportScreenshot(withMeta){
     const stripCol=mode==='w'?'#f43f5e':'#3b82f6';
     const r=findCard(card.id);
     const metaLine=(tf.flatView&&r)?`<div style="padding:1px 3px;font-size:6px;color:${tx2};text-align:center;line-height:1.4;overflow:hidden;background:rgba(0,0,0,.05);word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${r.alb.shortName} ${r.set.name}</div>`:'';
-    // 번호 뱃지 - 플랫뷰, 크기 키움
     const numBadge=(tf.flatView&&idx)?`<div style="position:absolute;top:2px;left:2px;background:rgba(0,0,0,.72);color:#fff;font-size:9px;font-weight:800;border-radius:4px;padding:1px 4px;line-height:1.4;font-family:Outfit,sans-serif">${idx}</div>`:'';
-    const wmSrc=card.img||null;
-    const imgEl=wmSrc?`<img src="${wmSrc}" style="width:100%;height:100%;object-fit:cover">`:`<span style="font-size:6px;color:${tx2}">${card.name}</span>`;
+    // blob URL 사용 (없으면 원본)
+    const imgSrc=card.img?(_blobCache.get(card.img)||card.img):null;
+    const imgEl=imgSrc?`<img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover">`:`<span style="font-size:6px;color:${tx2}">${card.name}</span>`;
     return`<div style="border-radius:4px;overflow:hidden;border:1px solid ${bdCol};position:relative">
       <div style="aspect-ratio:5/7;overflow:hidden;display:flex;align-items:center;justify-content:center;background:${bdCol.replace('.4','.08')};position:relative">
         ${imgEl}${numBadge}
@@ -1648,16 +1667,14 @@ async function exportScreenshot(withMeta){
   else if(lscape){area.innerHTML=`${hdr}${wWrap||hWrap}`;}
   else{area.innerHTML=hdr+(wWrap?wWrap+'<div style="margin-bottom:8px"></div>':'')+hWrap;}
 
-  // 워터마크를 HTML 오버레이로 삽입 (canvas taint 문제 우회)
   _injectWMOverlay(area);
 
   try{
-    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,allowTaint:false,logging:false,windowWidth:w,imageTimeout:8000,
+    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:false,allowTaint:false,logging:false,windowWidth:w,
       ignoreElements:(el)=>el.hasAttribute('data-html2canvas-ignore')||el.tagName==='INS'||el.tagName==='IFRAME'||el.classList.contains('adsbygoogle')});
     const link=document.createElement('a');
     link.download=`교환_${now.replace(/\./g,'')}.png`;
-    try{ link.href=canvas.toDataURL('image/png'); }
-    catch(e){ link.href=canvas.toDataURL(); } // tainted fallback
+    link.href=canvas.toDataURL('image/png');
     link.click();toast(t('shotDone'));
   }catch(e){toast(t('shotFail')+e.message);}
   area.innerHTML='';
@@ -1674,6 +1691,10 @@ async function exportCollectScreenshot(withMeta){
   const f=UI.cf;
   const albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
 
+  // 이미지를 blob URL로 변환 (taint 우회)
+  const allC=[];
+  for(const alb of albums)for(const set of alb.sets)allC.push(...set.cards);
+  await _preloadBlobs(allC);
 
   const cardHtml=(card,alb,set,showMeta)=>{
     const cv=c(card.id),gv=g(card.id),st=sts(card.id);
@@ -1684,8 +1705,9 @@ async function exportCollectScreenshot(withMeta){
     else if(st==='h'){statusTx=`✨${cv}장`;statusBg='rgba(59,130,246,.15)';}
     else if(st==='c'){statusTx=`−${gv-cv}`;statusBg='rgba(244,63,94,.15)';}
     const metaLine=showMeta?`<div style="padding:2px 3px;font-size:6px;color:${tx2};text-align:center;line-height:1.4;overflow:hidden;background:rgba(0,0,0,.06);word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${alb.shortName} ${set.name}</div>`:'';
-    const wmSrc=card.img||null;
-    const imgEl=wmSrc?`<img src="${wmSrc}" style="width:100%;height:100%;object-fit:cover">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:6px;color:${tx2}">${card.name}</div>`;
+    // blob URL 사용
+    const imgSrc=card.img?(_blobCache.get(card.img)||card.img):null;
+    const imgEl=imgSrc?`<img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:6px;color:${tx2}">${card.name}</div>`;
     return`<div style="border-radius:4px;overflow:hidden;border:1.5px solid ${bdr}">
       <div style="aspect-ratio:5/7;overflow:hidden;background:${alb.color}22">${imgEl}</div>
       <div style="padding:2px 3px;background:${statusBg};font-size:7px;font-weight:800;text-align:center;color:${st==='c'?'#f43f5e':st==='m'?'#22c55e':st==='h'?'#3b82f6':'#888'};white-space:nowrap;overflow:hidden">${statusTx||'&nbsp;'}</div>
@@ -1732,12 +1754,11 @@ async function exportCollectScreenshot(withMeta){
   _injectWMOverlay(area);
 
   try{
-    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:true,allowTaint:false,logging:false,windowWidth:w,imageTimeout:8000,
+    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:false,allowTaint:false,logging:false,windowWidth:w,
       ignoreElements:(el)=>el.hasAttribute('data-html2canvas-ignore')||el.tagName==='INS'||el.tagName==='IFRAME'||el.classList.contains('adsbygoogle')});
     const link=document.createElement('a');
     link.download=`수집_${now.replace(/\./g,'')}.png`;
-    try{ link.href=canvas.toDataURL('image/png'); }
-    catch(e){ link.href=canvas.toDataURL(); }
+    link.href=canvas.toDataURL('image/png');
     link.click();toast(t('shotDone'));
   }catch(e){toast(t('shotFail')+e.message);}
   area.innerHTML='';
