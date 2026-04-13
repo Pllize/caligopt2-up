@@ -1522,33 +1522,32 @@ async function loadH2C(){
 const _BC=new Map();
 function _imgToDataUrl(src){
   return new Promise(res=>{
-    // 1차: crossOrigin 없이 (같은 origin이면 taint 없음)
-    const img=new Image();
-    img.onload=()=>{
-      try{
-        const cv=document.createElement('canvas');
-        cv.width=img.naturalWidth||300; cv.height=img.naturalHeight||420;
-        cv.getContext('2d').drawImage(img,0,0);
-        res(cv.toDataURL('image/jpeg',0.85));
-      }catch(e){
-        // 2차: crossOrigin 시도
-        const img2=new Image();
-        img2.crossOrigin='anonymous';
-        img2.onload=()=>{
-          try{
-            const cv=document.createElement('canvas');
-            cv.width=img2.naturalWidth||300; cv.height=img2.naturalHeight||420;
-            cv.getContext('2d').drawImage(img2,0,0);
-            res(cv.toDataURL('image/jpeg',0.85));
-          }catch(e2){ res(null); }
-        };
-        img2.onerror=()=>res(null);
-        img2.src=src+'?_c='+Date.now();
-      }
-    };
-    img.onerror=()=>res(null);
-    img.src=src;
+    // 1차: fetch → blob → dataURL (CORS taint 완전 우회)
+    fetch(src)
+      .then(r=>r.blob())
+      .then(blob=>{
+        const fr=new FileReader();
+        fr.onload=()=>res(fr.result);
+        fr.onerror=()=>_imgToDataUrlFallback(src,res);
+        fr.readAsDataURL(blob);
+      })
+      .catch(()=>_imgToDataUrlFallback(src,res));
   });
+}
+function _imgToDataUrlFallback(src,res){
+  // 2차: crossOrigin img → canvas
+  const img=new Image();
+  img.crossOrigin='anonymous';
+  img.onload=()=>{
+    try{
+      const cv=document.createElement('canvas');
+      cv.width=img.naturalWidth||300; cv.height=img.naturalHeight||420;
+      cv.getContext('2d').drawImage(img,0,0);
+      res(cv.toDataURL('image/jpeg',0.85));
+    }catch(e){ res(null); }
+  };
+  img.onerror=()=>res(null);
+  img.src=src+'?_c='+Date.now();
 }
 async function _blob(src){
   if(!src)return null;
@@ -1600,10 +1599,22 @@ function _h2cOpts(bg,w){
 
 /* 공통 저장 */
 function _save(canvas,name){
-  const link=document.createElement('a');
-  link.download=name;
-  link.href=canvas.toDataURL('image/png');
-  link.click();
+  canvas.toBlob(blob=>{
+    if(!blob||blob.size===0){
+      // fallback: toDataURL
+      const link=document.createElement('a');
+      link.download=name;
+      link.href=canvas.toDataURL('image/png');
+      link.click();
+      return;
+    }
+    const url=URL.createObjectURL(blob);
+    const link=document.createElement('a');
+    link.download=name;
+    link.href=url;
+    link.click();
+    setTimeout(()=>URL.revokeObjectURL(url),3000);
+  },'image/png');
 }
 
 /* ── 카드 HTML 생성 헬퍼 ── */
