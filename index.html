@@ -11,8 +11,8 @@
 <title>Caligo Pt.2 포토카드 수집 트래커</title>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9473501040129618" crossorigin="anonymous"></script>
 <link rel="icon" type="image/png" href="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAA5ADkDASIAAhEBAxEB/8QAHAABAAICAwEAAAAAAAAAAAAAAAUHAwYBAgQI/8QAMRAAAQMDAgMECQUAAAAAAAAAAQACAwQFEQYSEyFRBxQxQRYiMjNVcYGU0UKRoaKx/8QAGgEAAgMBAQAAAAAAAAAAAAAAAAUCAwYEB//EAC0RAAEEAQIDBAsAAAAAAAAAAAEAAgMRBCExBRJRBnGBkRQVIiMyQUJhsdHh/9oADAMBAAIRAxEAPwD4yREQhEXLGue8MY0uc44AHiSpP0ev3wav+3d+FFz2t3NKxkMknwNJ7gotFKej1++DV/27vwsVTZbvTQumqLZWQxNGXPfC4AfUhRErD9QUzizgWWHyK8CIisVCIiIQtmsmir/dLfDcqGOAwyElhMoB5HHh8wryt/eO40/e2htRw28UA5Adjnz+a1nskeX6HpQTnbJI3+x/KnKC4PqLxcKF7WM7oWbQM5c1zc7v3yPosjxHIknkcx1U0n80vVeA4MGHAyVhNyAXe11f7Xa3zXaWqmbW0VPTwNdiN7Jt7pB1xjkqX7RNQV12vtVSvqHdzp5nMiibybyOMnqVt3alftQ2K8wCgrzFSTw7mt4bThwODzI+SquV75ZXSPO57yXOPUlMeFYde/NajT7LPdp+K8w9DYXW0+1da9Nvl4LqiInqxaKZ0hbW3W8R0m+lMjvYiqHPa2Q+OMt/xQyyUs8tNUx1EDyyWJwexw8iOYKhI0uYQ00VdjvZHK1zxYB1CuM1GpbJaJzS0NijpaWJ0nDhEgyAeeB5lYLW7VlXUx6lhbaGOrKVkZgc5/s7vVcR15qum6qv7blJcBcZO8SM2PJaC0jl+nGPIeSyt1lqQOyLk4EMEfu2+yDkeXVJ/V0tGg2zvv5f1a0doMUuFl/KNhp4Hy0pbrqS06m1XSQx1bLVT8CaQMc0vzhp2uPnyJA/hV9qOzPslY2kmq6eebbuc2Ld6nTOQF7xrfU4cXC5eIx7lmMZz0UHXVU9bVyVdS/iTSu3PdgDJ+i68SCeI8riOXoEq4rm4WUOeMOMhqy7oO4rAiImCQoiIhCIiIQiIiEIiIhC/9k=">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-<script src="./watermark.js" defer></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet"></noscript>
 <style>
 :root{
   --bg:#f0f2f9;--s1:#fff;--s2:#f4f6ff;--s3:#e8ecf7;
@@ -109,7 +109,9 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .chev.open{transform:rotate(180deg)}
 .sec-body{padding:6px 7px 8px}
 
-/* ── CARD GRID: always 5 cols inside section blocks ── */
+/* ── LAZY IMG — 뷰포트 밖 이미지 지연 로드 ── */
+.pci img[data-src]{opacity:0;transition:opacity .2s}
+.pci img.img-loaded{opacity:1}
 .pcg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
 /* few: ≤5 cards, cap width so cards don't become huge */
 .pcg.few{grid-template-columns:repeat(var(--few-cols),minmax(0,calc(var(--card-min)*1.7)));justify-content:start}
@@ -551,7 +553,6 @@ let searchQuery={collect:'', goals:''}; // 검색어 상태
 function loadDB(){const s=localStorage.getItem(DB_KEY);if(s)try{DB=JSON.parse(s);}catch(e){}}
 function saveDB(){if(DB)try{localStorage.setItem(DB_KEY,JSON.stringify(DB));}catch(e){}}
 function loadST(){const s=localStorage.getItem(ST_KEY);if(s)try{ST=JSON.parse(s);}catch(e){}ST.goals=ST.goals||{};ST.collected=ST.collected||{};ST.memos=ST.memos||{};ST.hidden=ST.hidden||{};}
-function saveST(){try{localStorage.setItem(ST_KEY,JSON.stringify(ST));}catch(e){}}
 function loadUI(){
   const s=localStorage.getItem(UI_KEY);
   if(s)try{Object.assign(UI,JSON.parse(s));}catch(e){}
@@ -566,7 +567,6 @@ function loadUI(){
   UI.theme=UI.theme||'light';
   UI.sidebarOpen=UI.sidebarOpen!==false;
 }
-function saveUI(){try{localStorage.setItem(UI_KEY,JSON.stringify(UI));}catch(e){}}
 
 /* ══════════════════════════════════
    HELPERS
@@ -578,9 +578,66 @@ const hid= id => !!ST.hidden[id];
 const sp = id => {const cv=c(id),gv=g(id);return gv>0?Math.max(0,cv-gv):cv;};
 const wt = id => g(id)>0?Math.max(0,g(id)-c(id)):0;
 function sts(id){const gv=g(id),cv=c(id);if(!gv&&!cv)return'n';if(!gv&&cv>0)return'h';if(cv<gv)return'c';if(cv===gv)return'm';return'h';}
-function allCards(){if(!DB)return[];const r=[];for(const a of DB.albumTypes)for(const s of a.sets)for(const card of s.cards)r.push({...card,aId:a.id,aN:a.name,aS:a.shortName,aC:a.color,sId:s.id,sN:s.name});return r;}
-function findCard(id){if(!DB)return null;for(const a of DB.albumTypes)for(const s of a.sets)for(const card of s.cards)if(card.id===id)return{card,alb:a,set:s};return null;}
+
+/* ── DB 캐시 (DB 로드/변경 시 갱신) ── */
+let _cardMap=null;   // id → {card,alb,set}
+let _allCardsCache=null;
+function _invalidateDBCache(){_cardMap=null;_allCardsCache=null;}
+function _buildCardMap(){
+  if(_cardMap)return;
+  _cardMap=new Map();
+  if(!DB)return;
+  for(const a of DB.albumTypes)for(const s of a.sets)for(const card of s.cards)
+    _cardMap.set(card.id,{card,alb:a,set:s});
+}
+function allCards(){
+  if(!DB)return[];
+  if(_allCardsCache)return _allCardsCache;
+  _buildCardMap();
+  _allCardsCache=[];
+  for(const a of DB.albumTypes)for(const s of a.sets)for(const card of s.cards)
+    _allCardsCache.push({...card,aId:a.id,aN:a.name,aS:a.shortName,aC:a.color,sId:s.id,sN:s.name});
+  return _allCardsCache;
+}
+function findCard(id){
+  if(!DB)return null;
+  _buildCardMap();
+  return _cardMap.get(id)||null;
+}
 function isLS(){return window.matchMedia('(orientation:landscape)').matches;}
+
+/* ── IntersectionObserver 기반 이미지 지연 로드 ──
+   data-src 속성을 가진 img가 뷰포트에 진입하면 src로 교체.
+   새 카드가 렌더될 때마다 _observeImgs() 호출. */
+const _imgIO=new IntersectionObserver((entries,io)=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting)return;
+    const img=e.target;
+    const src=img.dataset.src;
+    if(src){
+      img.src=src;
+      img.removeAttribute('data-src');
+      img.onload=()=>img.classList.add('img-loaded');
+      img.onerror=()=>img.classList.add('img-loaded'); // 실패해도 fade-in
+    }
+    io.unobserve(img);
+  });
+},{rootMargin:'200px 0px',threshold:0}); // 200px 미리 로드
+
+function _observeImgs(){
+  document.querySelectorAll('img[data-src]').forEach(img=>_imgIO.observe(img));
+}
+
+/* ── 디바운스 저장 (연타 방지, 100ms 후 실제 저장) ── */
+let _stTimer=null,_uiTimer=null;
+function saveST(){
+  clearTimeout(_stTimer);
+  _stTimer=setTimeout(()=>{try{localStorage.setItem(ST_KEY,JSON.stringify(ST));}catch(e){}},100);
+}
+function saveUI(){
+  clearTimeout(_uiTimer);
+  _uiTimer=setTimeout(()=>{try{localStorage.setItem(UI_KEY,JSON.stringify(UI));}catch(e){}},100);
+}
 
 /* FILTER — includes exclude toggles and MMMM fix */
 function cardPassFilter(card, f){
@@ -660,7 +717,7 @@ function cardTileHTML(card,showGoalRow){
   else if(cv>0&&!gv)bdg=`<div class="pbdg h">${cv}</div>`;
   return`<div class="${cls}" data-id="${card.id}">
     <div class="pci" onclick="openFull('${card.id}')">
-      ${card.img?`<img src="${card.img}" alt="${card.name}" loading="lazy" crossorigin="anonymous">`:`<div class="pcph">${card.name}</div>`}
+      ${card.img?`<img data-src="${card.img}" alt="${card.name}" crossorigin="anonymous">`:`<div class="pcph">${card.name}</div>`}
       <div class="pc-ctrl">
         <button class="pcbtn" onclick="subC('${card.id}',event)">−</button>
         <span class="pc-cnt">${cv}</span>
@@ -675,7 +732,12 @@ function cardTileHTML(card,showGoalRow){
     </div></div>`:''}
   </div>`;
 }
-function patchTile(id){
+/* ── patchTile rAF 배치 (연타 시 불필요한 DOM 업데이트 방지) ── */
+const _patchQ=new Set();
+let _patchRaf=null;
+function _flushPatch(){_patchRaf=null;_patchQ.forEach(id=>_doPatchTile(id));_patchQ.clear();}
+function patchTile(id){_patchQ.add(id);if(!_patchRaf)_patchRaf=requestAnimationFrame(_flushPatch);}
+function _doPatchTile(id){
   const tile=document.querySelector(`.pct[data-id="${id}"]`);if(!tile)return;
   const cv=c(id),gv=g(id),s_=sp(id),w_=wt(id),st=sts(id);
   tile.classList.remove('sc','sm','sh','ng');
@@ -695,7 +757,7 @@ function patchTile(id){
 /* ══════════════════════════════════
    ACTIONS
 ══════════════════════════════════ */
-function addC(id,e){if(e)e.stopPropagation();ST.collected[id]=(ST.collected[id]||0)+1;saveST();patchTile(id);const g0=g(id),c0=c(id);if(g0>0&&c0===g0)toast('🎉 달성!');else if(g0>0&&c0>g0)toast(`✨ +${c0-g0}`);}
+function addC(id,e){if(e)e.stopPropagation();ST.collected[id]=(ST.collected[id]||0)+1;saveST();const g0=g(id),c0=c(id);patchTile(id);if(g0>0&&c0===g0)toast(t('achToast'));else if(g0>0&&c0>g0)toast(`✨ +${c0-g0}`);}
 function subC(id,e){if(e)e.stopPropagation();ST.collected[id]=Math.max(0,(ST.collected[id]||0)-1);saveST();patchTile(id);}
 function setGoalById(id,n){if(n<0)n=0;if(n===0)delete ST.goals[id];else ST.goals[id]=n;saveST();}
 function goalAdj(id,d){setGoalById(id,g(id)+d);patchTile(id);const gn=document.querySelector(`[data-gid="${id}"]`);if(gn)gn.textContent=g(id);}
@@ -993,27 +1055,48 @@ function buildSections(albums,f,colMap,onColSec,showGoalRow){
 /* ══════════════════════════════════
    NAVIGATION
 ══════════════════════════════════ */
+const NAV_TABS=[
+  {id:'collect',ico:'📦',li:0},
+  {id:'trade',  ico:'🔄',li:1},
+  {id:'goals',  ico:'🎯',li:2},
+  {id:'notice', ico:'📢',li:3},
+  {id:'usage',  ico:'📖',li:4},
+];
+let _navLang=null; // 마지막 빌드 언어 — 언어 바뀔 때만 재빌드
+
 function renderNav(){
-  const tabLabels=t('tabs');
-  const TABS=[
-    {id:'collect',ico:'📦',label:tabLabels[0]},
-    {id:'trade',  ico:'🔄',label:tabLabels[1]},
-    {id:'goals',  ico:'🎯',label:tabLabels[2]},
-    {id:'notice', ico:'📢',label:tabLabels[3]},
-    {id:'usage',  ico:'📖',label:tabLabels[4]},
-  ];
-  document.getElementById('dtabs').innerHTML=TABS.map(tp=>`<div class="dtab${curTab===tp.id?' on':''}" data-v="${tp.id}" onclick="goTab('${tp.id}')" style="position:relative">${tp.label}${tp.id==='notice'?'<span class="notice-badge" id="nb-dtab"></span>':''}</div>`).join('');
-  document.getElementById('bnav').innerHTML=TABS.map(tp=>`<div class="btab${curTab===tp.id?' on':''}" data-v="${tp.id}" onclick="goTab('${tp.id}')" style="position:relative"><div class="btab-ico">${tp.ico}${tp.id==='notice'?'<span class="notice-badge" id="nb-bnav"></span>':''}</div><div class="btab-lbl">${tp.label}</div></div>`).join('');
-  document.getElementById('ls-nav').innerHTML=TABS.map(tp=>`<div class="ls-tab${curTab===tp.id?' on':''}" data-v="${tp.id}" onclick="goTab('${tp.id}')" style="position:relative"><span class="ls-tab-ico">${tp.ico}</span>${tp.label}${tp.id==='notice'?'<span class="notice-badge" id="nb-ls"></span>':''}</div>`).join('');
+  const labels=t('tabs');
+  const needRebuild=(_navLang!==lang);
+  if(needRebuild){
+    _navLang=lang;
+    document.getElementById('dtabs').innerHTML=NAV_TABS.map(tp=>
+      `<div class="dtab${curTab===tp.id?' on':''}" data-v="${tp.id}" onclick="goTab('${tp.id}')" style="position:relative">${labels[tp.li]}${tp.id==='notice'?'<span class="notice-badge" id="nb-dtab"></span>':''}</div>`
+    ).join('');
+    document.getElementById('bnav').innerHTML=NAV_TABS.map(tp=>
+      `<div class="btab${curTab===tp.id?' on':''}" data-v="${tp.id}" onclick="goTab('${tp.id}')" style="position:relative"><div class="btab-ico">${tp.ico}${tp.id==='notice'?'<span class="notice-badge" id="nb-bnav"></span>':''}</div><div class="btab-lbl">${labels[tp.li]}</div></div>`
+    ).join('');
+    document.getElementById('ls-nav').innerHTML=NAV_TABS.map(tp=>
+      `<div class="ls-tab${curTab===tp.id?' on':''}" data-v="${tp.id}" onclick="goTab('${tp.id}')" style="position:relative"><span class="ls-tab-ico">${tp.ico}</span>${labels[tp.li]}${tp.id==='notice'?'<span class="notice-badge" id="nb-ls"></span>':''}</div>`
+    ).join('');
+  } else {
+    // 언어 동일 — active 클래스만 갱신 (DOM 재생성 없음)
+    document.querySelectorAll('[data-v]').forEach(el=>el.classList.toggle('on',el.dataset.v===curTab));
+  }
   const sb=document.getElementById('ls-sidebar');
   const tog=document.getElementById('ls-toggle');
-  if(sb){sb.classList.toggle('collapsed',!UI.sidebarOpen);tog.textContent=UI.sidebarOpen?'◀':'▶';}
+  if(sb){sb.classList.toggle('collapsed',!UI.sidebarOpen);if(tog)tog.textContent=UI.sidebarOpen?'◀':'▶';}
+}
+function goTab(v){
+  curTab=v;
+  // DOM 재생성 없이 active 클래스만 갱신
+  document.querySelectorAll('[data-v]').forEach(el=>el.classList.toggle('on',el.dataset.v===v));
+  renderCur();
 }
 function lsScreenshot(){
   const f=curTab==='trade'?UI.tf:UI.cf;
   const flat=f.flatView;
   if(curTab==='trade'){
-    exportScreenshot(false);
+    exportScreenshot();
   } else {
     // 섹션뷰면 바로, 플랫뷰면 메타 포함 여부 선택
     if(!flat){ exportCollectScreenshot(false); }
@@ -1024,7 +1107,6 @@ function lsScreenshot(){
   }
 }
 function toggleSidebar(){UI.sidebarOpen=!UI.sidebarOpen;saveUI();renderNav();}
-function goTab(v){curTab=v;document.querySelectorAll('[data-v]').forEach(el=>el.classList.toggle('on',el.dataset.v===v));renderCur();}
 function renderCur(){
   if(!DB&&curTab!=='usage'&&curTab!=='notice'){document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--tx2)">📦 DB 로딩 중...</div>';return;}
   if(curTab==='collect')renderCollect();
@@ -1032,8 +1114,8 @@ function renderCur(){
   else if(curTab==='goals')renderGoals();
   else if(curTab==='notice')renderNotice();
   else renderUsage();
-  // 렌더 후 워터마크 적용
-  requestAnimationFrame(()=>{ if(window.WM)WM.scanAll(); });
+  // 새로 렌더된 data-src 이미지 관찰 등록
+  requestAnimationFrame(_observeImgs);
 }
 
 /* ══════════════════════════════════
@@ -1101,7 +1183,7 @@ function renderTrade(){
   }
 
   // 스크린샷 버튼 - 항상 단일 버튼, 뷰모드에 따라 다르게 찍힘
-  const tradeShotBtn=`<button class="shot-btn" onclick="exportScreenshot(false)">📸</button>`;
+  const tradeShotBtn=`<button class="shot-btn" onclick="exportScreenshot()">📸</button>`;
   const _tSecBd=!tf.flatView?'var(--blue)':'var(--bd2)';
   const _tSecBg=!tf.flatView?'var(--s3)':'var(--s2)';
   const _tFlatBd=tf.flatView?'var(--blue)':'var(--bd2)';
@@ -1171,7 +1253,7 @@ function buildTradeSets(cards,mode){
         const cnt=mode==='want'?wt(card.id):sp(card.id);
         return`<div class="pct" style="border-color:${bdCol}" data-id="${card.id}">
           <div class="pci" onclick="openFull('${card.id}')">
-            ${card.img?`<img src="${card.img}" alt="${card.name}" loading="lazy" crossorigin="anonymous">`:`<div class="pcph">${card.name}</div>`}
+            ${card.img?`<img data-src="${card.img}" alt="${card.name}" crossorigin="anonymous">`:`<div class="pcph">${card.name}</div>`}
           </div>
           <div class="pc-strip" style="color:${txCol};background:${bg}">${mode==='want'?'−':'+'} ${cnt}장</div>
         </div>`;
@@ -1196,7 +1278,7 @@ function buildTradeSets(cards,mode){
           const cnt=mode==='want'?wt(card.id):sp(card.id);
           return`<div class="pct" style="border-color:${bdCol}" data-id="${card.id}">
             <div class="pci" onclick="openFull('${card.id}')">
-              ${card.img?`<img src="${card.img}" alt="${card.name}" loading="lazy" crossorigin="anonymous">`:`<div class="pcph">${card.name}</div>`}
+              ${card.img?`<img data-src="${card.img}" alt="${card.name}" crossorigin="anonymous">`:`<div class="pcph">${card.name}</div>`}
             </div>
             <div class="pc-strip" style="color:${txCol};background:${bg}">${mode==='want'?'−':'+'} ${cnt}장</div>
           </div>`;
@@ -1213,20 +1295,13 @@ function buildTradeSets(cards,mode){
 function openFull(id){
   const r=findCard(id);if(!r)return;
   fsId=id;const{card,alb,set}=r;
-  document.getElementById('fs-img').innerHTML=card.img?`<img class="fsimg" src="${card.img}" alt="${card.name}" crossorigin="anonymous">`:`<div class="fsph-big">📷</div>`;
+  document.getElementById('fs-img').innerHTML=card.img?`<img class="fsimg" src="${card.img}" alt="${card.name}">`:`<div class="fsph-big">📷</div>`;
   document.getElementById('fs-name').textContent=card.name;
   document.getElementById('fs-meta').textContent=`${alb.name} · ${set.name}`;
   document.getElementById('fs-report-form').style.display='none';
   updFull();
   const m=document.getElementById('fs-memo');if(m)m.value=mo(id);
   document.getElementById('fsov').classList.add('open');
-  // 풀스크린 이미지에 워터마크 적용
-  requestAnimationFrame(()=>{
-    if(!window.WM) return;
-    const wrap = document.getElementById('fs-img');
-    const img = wrap && wrap.querySelector('img');
-    if(img) WM.applyImg(img);
-  });
 }
 function updFull(){
   if(!fsId)return;
@@ -1248,7 +1323,7 @@ function updFull(){
   }else{hb.style.display='none';}}
 }
 function closeFull(){document.getElementById('fsov').classList.remove('open');fsId=null;}
-function fsAdj(d){if(!fsId)return;ST.collected[fsId]=Math.max(0,(ST.collected[fsId]||0)+d);saveST();updFull();patchTile(fsId);if(d>0){const gv=g(fsId),cv=c(fsId);if(gv>0&&cv===gv)toast('🎉 달성!');}}
+function fsAdj(d){if(!fsId)return;ST.collected[fsId]=Math.max(0,(ST.collected[fsId]||0)+d);saveST();updFull();patchTile(fsId);if(d>0){const gv=g(fsId),cv=c(fsId);if(gv>0&&cv===gv)toast(t('achToast'));}}
 function fsGoal(d){if(!fsId)return;setGoalById(fsId,g(fsId)+d);updFull();patchTile(fsId);}
 
 /* ── REPORT FORM ── */
@@ -1352,12 +1427,18 @@ function wizApply(){
 ══════════════════════════════════ */
 const NOTICE_KEY='plave_notice_seen_v1';
 const NOTICE_URL='./notices.json';
-
+/* 공지 캐시 — Promise 공유로 중복 fetch 완전 차단 */
+let _noticeData=null;
+let _noticeProm=null;
 function loadNotices(cb){
-  fetch(NOTICE_URL+'?t='+Date.now())
-    .then(r=>r.json())
-    .then(d=>cb(Array.isArray(d)?d:[]))
-    .catch(()=>cb([]));
+  if(_noticeData){cb(_noticeData);return;}
+  if(!_noticeProm){
+    _noticeProm=fetch(NOTICE_URL)
+      .then(r=>r.json())
+      .then(d=>{_noticeData=Array.isArray(d)?d:[];return _noticeData;})
+      .catch(()=>{_noticeData=[];return _noticeData;});
+  }
+  _noticeProm.then(cb);
 }
 
 function getSeenId(){return localStorage.getItem(NOTICE_KEY)||'';}
@@ -1389,6 +1470,8 @@ function checkNoticeBadge(){
 function renderNotice(){
   const el=document.getElementById('page-content');
   el.innerHTML=`<div style="text-align:center;padding:20px;color:var(--tx2);font-size:12px">📢 불러오는 중...</div>`;
+  // 공지 탭 직접 열 때는 캐시 무효화해서 최신 내용 보장
+  _noticesCache=null;
   loadNotices(list=>{
     if(!list.length){
       el.innerHTML=`<div class="notice-empty">📭 등록된 공지가 없어요</div>`;
@@ -2022,25 +2105,43 @@ async function exportCollectScreenshot(withMeta){
   toast(t('shotDone'));
 }
 
-/* ══ 교환/수집 스크린샷: 위 Canvas direct 함수에서 처리 ══ */
-
-function toggleShotMenu(btn){const m=document.getElementById('shot-menu');if(m)m.style.display=m.style.display==='none'?'block':'none';}
-function closeShotMenu(){const m=document.getElementById('shot-menu');if(m)m.style.display='none';}
-function toggleTradeShotMenu(btn){const m=document.getElementById('trade-shot-menu');if(m)m.style.display=m.style.display==='none'?'block':'none';}
-function closeTradeShotMenu(){const m=document.getElementById('trade-shot-menu');if(m)m.style.display='none';}
-document.addEventListener('click',e=>{
-  if(!e.target.closest('#shot-menu')&&!e.target.onclick?.toString().includes('toggleShotMenu')){const m=document.getElementById('shot-menu');if(m)m.style.display='none';}
-  if(!e.target.closest('#trade-shot-menu')&&!e.target.onclick?.toString().includes('toggleTradeShotMenu')){const m=document.getElementById('trade-shot-menu');if(m)m.style.display='none';}
-});
 
 /* ══════════════════════════════════
    SETTINGS / THEME
 ══════════════════════════════════ */
 function showSettings(){document.getElementById('set-ov').classList.add('open');}
 function closeSheet(id){document.getElementById(id).classList.remove('open');}
-function importState(inp){if(!inp.files[0])return;const r=new FileReader();r.onload=e=>{try{ST=JSON.parse(e.target.result);ST.goals=ST.goals||{};ST.collected=ST.collected||{};ST.memos=ST.memos||{};ST.hidden=ST.hidden||{};saveST();closeSheet('set-ov');renderCur();toast(t('restoreToast'));}catch(e){toast(t('restoreErr'));}};r.readAsText(inp.files[0]);}
-function exportState(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(ST,null,2)],{type:'application/json'}));a.download=`포카백업_${new Date().toISOString().split('T')[0]}.json`;a.click();toast(t('backupToast'));}
-function resetState(){if(!confirm(t('resetConfirm')))return;ST={goals:{},collected:{},memos:{},hidden:{}};saveST();closeSheet('set-ov');renderCur();toast(t('resetToast'));}
+function importState(inp){
+  if(!inp.files[0])return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      ST=JSON.parse(e.target.result);
+      ST.goals=ST.goals||{};ST.collected=ST.collected||{};ST.memos=ST.memos||{};ST.hidden=ST.hidden||{};
+      // 즉시 저장 (디바운스 우회)
+      try{localStorage.setItem(ST_KEY,JSON.stringify(ST));}catch(e){}
+      closeSheet('set-ov');renderCur();toast(t('restoreToast'));
+    }catch(e){toast(t('restoreErr'));}
+  };
+  r.readAsText(inp.files[0]);
+}
+function exportState(){
+  // 디바운스 대기 중인 저장 즉시 플러시
+  clearTimeout(_stTimer);try{localStorage.setItem(ST_KEY,JSON.stringify(ST));}catch(e){}
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(ST,null,2)],{type:'application/json'}));
+  a.download=`포카백업_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+  toast(t('backupToast'));
+}
+function resetState(){
+  if(!confirm(t('resetConfirm')))return;
+  ST={goals:{},collected:{},memos:{},hidden:{}};
+  try{localStorage.setItem(ST_KEY,JSON.stringify(ST));}catch(e){}
+  _noticesCache=null;
+  closeSheet('set-ov');renderCur();toast(t('resetToast'));
+}
 function applyTheme(t){document.documentElement.setAttribute('data-theme',t);const b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'🌙':'☀️';const lb=document.getElementById('ls-theme-btn');if(lb)lb.textContent=t==='dark'?'🌙 테마':'☀️ 테마';}
 function toggleTheme(){UI.theme=UI.theme==='dark'?'light':'dark';applyTheme(UI.theme);saveUI();}
 function toast(msg){const w=document.getElementById('tw');const el=document.createElement('div');el.className='toast';el.textContent=msg;w.appendChild(el);setTimeout(()=>el.remove(),2100);}
@@ -2056,13 +2157,16 @@ function init(){
   document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--tx2);font-size:13px">📦 DB 로딩 중...</div>';
   fetch('./poca_db.json')
     .then(r=>r.json())
-    .then(d=>{DB=d;saveDB();renderCur();})
-    .catch(()=>{loadDB();if(DB)renderCur();else document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--want)">⚠️ poca_db.json을 같은 폴더에 두고 웹서버로 열어주세요.</div>';});
+    .then(d=>{DB=d;saveDB();_invalidateDBCache();renderCur();})
+    .catch(()=>{loadDB();if(DB){_invalidateDBCache();renderCur();}else document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--want)">⚠️ poca_db.json을 같은 폴더에 두고 웹서버로 열어주세요.</div>';});
   document.getElementById('main').addEventListener('scroll',function(){const btn=document.getElementById('scroll-top-btn');if(btn)btn.classList.toggle('vis',this.scrollTop>200);},{passive:true});
-  window.addEventListener('orientationchange',()=>setTimeout(()=>{renderNav();renderCur();},200));
-  window.addEventListener('resize',()=>setTimeout(()=>renderNav(),100));
+  // orientation: 300ms 대기 (iOS에서 뷰포트 확정 후 렌더)
+  window.addEventListener('orientationchange',()=>setTimeout(()=>{renderNav();renderCur();},300));
+  // resize: 250ms 디바운스 (연속 이벤트 중 마지막만 처리)
+  let _resizeTimer=null;
+  window.addEventListener('resize',()=>{clearTimeout(_resizeTimer);_resizeTimer=setTimeout(()=>renderNav(),250);});
   // 공지 뱃지 체크 (로딩 후 1.5초 뒤)
-  setTimeout(checkNoticeBadge, 1500);
+  setTimeout(checkNoticeBadge,1500);
   // PWA Service Worker 등록
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js').catch(()=>{});
