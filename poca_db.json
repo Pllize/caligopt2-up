@@ -3275,6 +3275,174 @@
               "memo": ""
             }
           ]
+        },
+        {
+          "id": "set_mnx6wm3dkiu",
+          "name": "위드뮤 (WITHMUU)",
+          "cards": [
+            {
+              "id": "c_mnx6wm3dpll",
+              "name": "예준",
+              "img": "./images/cards/c_mnx6wm3dpll.webp",
+              "cardType": "Individual",
+              "member": "예준",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnx6wm3d3un",
+              "name": "노아",
+              "img": "./images/cards/c_mnx6wm3d3un.webp",
+              "cardType": "Individual",
+              "member": "노아",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnx6wm3dm43",
+              "name": "밤비",
+              "img": "./images/cards/c_mnx6wm3dm43.webp",
+              "cardType": "Individual",
+              "member": "밤비",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnx6wm3dbie",
+              "name": "은호",
+              "img": "./images/cards/c_mnx6wm3dbie.webp",
+              "cardType": "Individual",
+              "member": "은호",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnx6wm3da1n",
+              "name": "하민",
+              "img": "./images/cards/c_mnx6wm3da1n.webp",
+              "cardType": "Individual",
+              "member": "하민",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            }
+          ]
+        },
+        {
+          "id": "set_mnx6xijnriy",
+          "name": "유튜브 (YOUTUBE)",
+          "cards": [
+            {
+              "id": "c_mnx6xijn9ir",
+              "name": "예준",
+              "img": "./images/cards/c_mnx6xijn9ir.webp",
+              "cardType": "Individual",
+              "member": "예준",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnx6xijnsx0",
+              "name": "노아",
+              "img": "./images/cards/c_mnx6xijnsx0.webp",
+              "cardType": "Individual",
+              "member": "노아",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnx6xijn13o",
+              "name": "밤비",
+              "img": "./images/cards/c_mnx6xijn13o.webp",
+              "cardType": "Individual",
+              "member": "밤비",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnx6xijnnxo",
+              "name": "은호",
+              "img": "./images/cards/c_mnx6xijnnxo.webp",
+              "cardType": "Individual",
+              "member": "은호",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnx6xijnd9r",
+              "name": "하민",
+              "img": "./images/cards/c_mnx6xijnd9r.webp",
+              "cardType": "Individual",
+              "member": "하민",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            }
+          ]
+        },
+        {
+          "id": "set_mnx6yhxbmfa",
+          "name": "TME (QQ MUSIC) 오프라인 (OFFLINE)",
+          "cards": [
+            {
+              "id": "c_mnx6yhxbbky",
+              "name": "예준",
+              "img": "./images/cards/c_mnx6yhxbbky.webp",
+              "cardType": "Individual",
+              "member": "예준",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnx6yhxb1zl",
+              "name": "노아",
+              "img": "./images/cards/c_mnx6yhxb1zl.webp",
+              "cardType": "Individual",
+              "member": "노아",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnx6yhxbpg2",
+              "name": "밤비",
+              "img": "./images/cards/c_mnx6yhxbpg2.webp",
+              "cardType": "Individual",
+              "member": "밤비",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnx6yhxb4ge",
+              "name": "은호",
+              "img": "./images/cards/c_mnx6yhxb4ge.webp",
+              "cardType": "Individual",
+              "member": "은호",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mnx6yhxb7no",
+              "name": "하민",
+              "img": "./images/cards/c_mnx6yhxb7no.webp",
+              "cardType": "Individual",
+              "member": "하민",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            }
+          ]
         }
       ],
       "albumType": "EXCLUSIVE"
