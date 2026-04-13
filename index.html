@@ -1498,245 +1498,219 @@ function renderUsage(){
 }
 /* ══════════════════════════════════
    SCREENSHOT
+   전략: 이미지 fetch→blob URL 변환으로 taint 완전 제거
+         워터마크는 onclone에서 DOM 오버레이로 삽입
+         gradient CSS는 onclone에서 제거 (addColorStop 오류 방지)
 ══════════════════════════════════ */
 
-/* Preload images using browser cache — avoids extra CDN hits during screenshot */
-async function preloadImages(cards){
-  const urls=[...new Set(cards.filter(x=>x.img).map(x=>x.img))];
-  await Promise.allSettled(urls.map(url=>new Promise(res=>{
-    fetch(url,{mode:'no-cors',cache:'force-cache'}).then(res).catch(res);
-  })));
-}
+/* html2canvas 로드 (CDN 이중화) */
 async function loadH2C(){
   if(window.html2canvas)return;
-  const urls=[
+  for(const src of[
     'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
     'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js'
-  ];
-  for(const src of urls){
+  ]){
     try{
-      await new Promise((res,rej)=>{
-        const s=document.createElement('script');
-        s.src=src;s.onload=res;s.onerror=rej;
-        document.head.appendChild(s);
-      });
+      await new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});
       if(window.html2canvas)return;
     }catch(e){}
   }
   throw new Error('html2canvas 로드 실패');
 }
 
-/* ── 워터마크: 최종 canvas에 오버레이 (가장 확실하고 빠름) ── */
-function _applyWMtoCanvas(canvas){
-  const ctx=canvas.getContext('2d');
-  const W=canvas.width,H=canvas.height;
-  ctx.save();
-  ctx.globalAlpha=0.13;ctx.fillStyle='#fff';
-  ctx.font=`700 18px Outfit,sans-serif`;
-  ctx.textAlign='center';ctx.textBaseline='middle';
-  const rad=-22*Math.PI/180;
-  ctx.translate(W/2,H/2);ctx.rotate(rad);
-  const SX=104,SY=56;
-  const cols=Math.ceil(Math.sqrt(W*W+H*H)/SX)+2;
-  const rows=Math.ceil(Math.sqrt(W*W+H*H)/SY)+2;
-  for(let r=-rows;r<=rows;r++)
-    for(let c=-cols;c<=cols;c++)
-      ctx.fillText('CaligoPt2',c*SX+(r%2===0?0:SX/2),r*SY);
-  ctx.restore();
-}
-
-// 이미지 src 그대로 사용 (워터마크는 최종 canvas에만 합성)
-const _wmCache=new Map(); // 미사용, 하위 호환용
-function _cachedSrc(src){ return src||null; }
-
-/* ── 이미지 Blob 변환 캐시 (taint 우회 핵심) ── */
-const _blobCache=new Map();
-async function _toBlobUrl(src){
-  if(!src) return null;
-  if(_blobCache.has(src)) return _blobCache.get(src);
+/* 이미지 src → blob URL 변환 캐시 (taint 완전 제거) */
+const _BC=new Map();
+async function _blob(src){
+  if(!src)return null;
+  if(_BC.has(src))return _BC.get(src);
   try{
     const r=await fetch(src,{cache:'force-cache'});
-    const blob=await r.blob();
-    const url=URL.createObjectURL(blob);
-    _blobCache.set(src,url);
-    return url;
-  }catch(e){ return src; } // 실패시 원본
+    const url=URL.createObjectURL(await r.blob());
+    _BC.set(src,url);return url;
+  }catch(e){_BC.set(src,src);return src;}
+}
+async function _preBlob(srcs){
+  await Promise.all([...new Set(srcs.filter(Boolean))].map(_blob));
 }
 
-async function _preloadBlobs(cards){
-  const srcs=[...new Set(cards.filter(x=>x.img).map(x=>x.img))];
-  await Promise.all(srcs.map(_toBlobUrl));
-}
-
-/* ── 워터마크 HTML 오버레이 삽입 ── */
-function _injectWMOverlay(area){
-  area.style.position='relative';
-  const ov=document.createElement('div');
-  ov.style.cssText='position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:999';
-  const items=[];
-  for(let r=0;r<30;r++){
-    for(let c=0;c<20;c++){
-      const x=c*110+(r%2===0?0:55);
-      const y=r*58-20;
-      items.push(`<span style="position:absolute;left:${x}px;top:${y}px;font-size:9px;font-weight:700;color:rgba(255,255,255,0.14);font-family:Outfit,sans-serif;transform:rotate(-22deg);transform-origin:left top;white-space:nowrap;letter-spacing:1px">CaligoPt2</span>`);
-    }
+/* onclone 공통 처리: gradient 제거 + 워터마크 오버레이 삽입 */
+function _onclone(doc,area){
+  // 1) gradient 관련 스타일 제거 (addColorStop 오류 방지)
+  doc.querySelectorAll('*').forEach(el=>{
+    const s=el.style;
+    if(s.background&&s.background.includes('gradient'))s.background='none';
+    if(s.backgroundImage&&s.backgroundImage.includes('gradient'))s.backgroundImage='none';
+    if(s.webkitTextFillColor==='transparent'){s.webkitTextFillColor='';s.color=s.color||'#4f8aff';}
+    if(s.webkitBackgroundClip==='text')s.webkitBackgroundClip='';
+  });
+  // 2) 워터마크 오버레이 삽입
+  const cloneArea=doc.getElementById('shot-area');
+  if(!cloneArea)return;
+  cloneArea.style.position='relative';
+  const ov=doc.createElement('div');
+  ov.style.cssText='position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:9999';
+  let items='';
+  for(let r=0;r<28;r++)for(let c=0;c<18;c++){
+    const x=c*112+(r%2?56:0),y=r*58-10;
+    items+=`<span style="position:absolute;left:${x}px;top:${y}px;font-size:9px;font-weight:700;color:rgba(255,255,255,0.15);font-family:Outfit,sans-serif;transform:rotate(-22deg);transform-origin:left top;white-space:nowrap">CaligoPt2</span>`;
   }
-  ov.innerHTML=items.join('');
-  area.appendChild(ov);
+  ov.innerHTML=items;
+  cloneArea.appendChild(ov);
 }
 
-async function exportScreenshot(withMeta){
+/* 공통 h2c 옵션 */
+function _h2cOpts(bg,w,doc){
+  return{
+    backgroundColor:bg,scale:2,useCORS:false,allowTaint:false,
+    logging:false,windowWidth:w,
+    ignoreElements:el=>el.hasAttribute('data-html2canvas-ignore')||
+      el.tagName==='INS'||el.tagName==='IFRAME'||
+      el.classList.contains('adsbygoogle'),
+    onclone:_onclone
+  };
+}
+
+/* 공통 저장 */
+function _save(canvas,name){
+  const link=document.createElement('a');
+  link.download=name;
+  link.href=canvas.toDataURL('image/png');
+  link.click();
+}
+
+/* ── 카드 HTML 생성 헬퍼 ── */
+function _shotCardHtml(card,mode,idx,tf,tx2,fg){
+  const cnt=mode==='w'?wt(card.id):sp(card.id);
+  const bCol=mode==='w'?'rgba(244,63,94,.4)':'rgba(59,130,246,.4)';
+  const sBg=mode==='w'?'rgba(244,63,94,.1)':'rgba(59,130,246,.1)';
+  const sCol=mode==='w'?'#f43f5e':'#3b82f6';
+  const r=findCard(card.id);
+  const meta=(tf.flatView&&r)?`<div style="padding:1px 3px;font-size:6px;color:${tx2};text-align:center;line-height:1.4;overflow:hidden;background:rgba(0,0,0,.05);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-all">${r.alb.shortName} ${r.set.name}</div>`:'';
+  const badge=(tf.flatView&&idx)?`<div style="position:absolute;top:2px;left:2px;background:rgba(0,0,0,.7);color:#fff;font-size:9px;font-weight:800;border-radius:4px;padding:1px 4px;line-height:1.4;font-family:Outfit,sans-serif">${idx}</div>`:'';
+  const imgSrc=card.img?(_BC.get(card.img)||card.img):null;
+  const imgEl=imgSrc
+    ?`<img src="${imgSrc}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`
+    :`<span style="font-size:6px;color:${tx2};padding:2px">${card.name}</span>`;
+  return`<div style="border-radius:4px;overflow:hidden;border:1px solid ${bCol};position:relative">
+    <div style="position:relative;padding-bottom:140%;overflow:hidden;background:${bCol.replace('.4','.08')}">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+        ${imgEl}${badge}
+      </div>
+    </div>
+    <div style="padding:2px 3px;background:${sBg};font-size:7px;font-weight:800;color:${sCol};text-align:center">${mode==='w'?'−':'+'} ${cnt}</div>
+    ${meta}
+  </div>`;
+}
+
+function _collectCardHtml(card,alb,set,showMeta,tx2){
+  const cv=c(card.id),gv=g(card.id),st=sts(card.id);
+  const bdr=st==='c'?'rgba(244,63,94,.5)':st==='m'?'rgba(34,197,94,.6)':st==='h'?'rgba(59,130,246,.6)':'rgba(0,0,0,.12)';
+  let stTx='',stBg='';
+  if(st==='m'){stTx=`✓${cv}`;stBg='rgba(34,197,94,.15)';}
+  else if(st==='h'&&gv>0){stTx=`+${cv-gv}`;stBg='rgba(59,130,246,.15)';}
+  else if(st==='h'){stTx=`✨${cv}`;stBg='rgba(59,130,246,.15)';}
+  else if(st==='c'){stTx=`−${gv-cv}`;stBg='rgba(244,63,94,.15)';}
+  const stCol=st==='c'?'#f43f5e':st==='m'?'#22c55e':st==='h'?'#3b82f6':'#888';
+  const meta=showMeta?`<div style="padding:1px 3px;font-size:6px;color:${tx2};text-align:center;line-height:1.4;overflow:hidden;background:rgba(0,0,0,.06);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-all">${alb.shortName} ${set.name}</div>`:'';
+  const imgSrc=card.img?(_BC.get(card.img)||card.img):null;
+  const imgEl=imgSrc
+    ?`<img src="${imgSrc}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`
+    :`<span style="font-size:6px;color:${tx2};padding:2px">${card.name}</span>`;
+  return`<div style="border-radius:4px;overflow:hidden;border:1.5px solid ${bdr}">
+    <div style="position:relative;padding-bottom:140%;overflow:hidden;background:${alb.color}22">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">${imgEl}</div>
+    </div>
+    <div style="padding:2px 3px;background:${stBg};font-size:7px;font-weight:800;text-align:center;color:${stCol};white-space:nowrap;overflow:hidden">${stTx||'&nbsp;'}</div>
+    ${meta}
+  </div>`;
+}
+
+/* ══ 교환탭 스크린샷 ══ */
+async function exportScreenshot(){
   toast(t('shotReady'));
   try{await loadH2C();}catch(e){toast(t('shotLib'));return;}
-  const all=allCards();
-  const tf=UI.tf;
+  const all=allCards(),tf=UI.tf;
   const wAll=all.filter(x=>wt(x.id)>0);
   const hAll=all.filter(x=>sp(x.id)>0&&!hid(x.id));
   const wCards=tf.albs.length?wAll.filter(x=>tf.albs.includes(x.aId)):wAll;
   const hCards=tf.albs.length?hAll.filter(x=>tf.albs.includes(x.aId)):hAll;
   if(!wCards.length&&!hCards.length){toast(t('shotEmpty'));return;}
-
-  // 이미지를 blob URL로 변환 (taint 우회)
-  await _preloadBlobs([...wCards,...hCards]);
+  await _preBlob([...wCards,...hCards].map(x=>x.img));
 
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
-  const bg=dark?'#08090f':'#f0f2f9',fg=dark?'#e8edf8':'#141830',tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
+  const bg=dark?'#08090f':'#f0f2f9',fg=dark?'#e8edf8':'#141830',
+        tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
   const now=new Date().toLocaleDateString('ko-KR'),lscape=isLS();
-  const w=lscape?720:360;
-  const PAD=12,GAP=10,innerPad=8;
-  const bothSides=wCards.length>0&&hCards.length>0;
-  const COLS=5;
-
-  const shotCard=(card,mode,idx)=>{
-    const cnt=mode==='w'?wt(card.id):sp(card.id);
-    const bdCol=mode==='w'?'rgba(244,63,94,.4)':'rgba(59,130,246,.4)';
-    const stripBg=mode==='w'?'rgba(244,63,94,.1)':'rgba(59,130,246,.1)';
-    const stripCol=mode==='w'?'#f43f5e':'#3b82f6';
-    const r=findCard(card.id);
-    const metaLine=(tf.flatView&&r)?`<div style="padding:1px 3px;font-size:6px;color:${tx2};text-align:center;line-height:1.4;overflow:hidden;background:rgba(0,0,0,.05);word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${r.alb.shortName} ${r.set.name}</div>`:'';
-    const numBadge=(tf.flatView&&idx)?`<div style="position:absolute;top:2px;left:2px;background:rgba(0,0,0,.72);color:#fff;font-size:9px;font-weight:800;border-radius:4px;padding:1px 4px;line-height:1.4;font-family:Outfit,sans-serif">${idx}</div>`:'';
-    // blob URL 사용 (없으면 원본)
-    const imgSrc=card.img?(_blobCache.get(card.img)||card.img):null;
-    const imgEl=imgSrc?`<img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover">`:`<span style="font-size:6px;color:${tx2}">${card.name}</span>`;
-    return`<div style="border-radius:4px;overflow:hidden;border:1px solid ${bdCol};position:relative">
-      <div style="position:relative;padding-bottom:140%;overflow:hidden;background:${bdCol.replace('.4','.08')}"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
-        ${imgEl}${numBadge}
-      </div></div>
-      <div style="padding:2px 3px;background:${stripBg};font-size:7px;font-weight:800;color:${stripCol};text-align:center">${mode==='w'?'−':'+'} ${cnt}</div>
-      ${metaLine}
-    </div>`;
-  };
+  const w=lscape?720:360,PAD=12,GAP=10,iP=8,COLS=5,both=wCards.length&&hCards.length;
 
   const buildSide=(cards,mode)=>{
-    if(tf.flatView){
-      return`<div style="display:grid;grid-template-columns:repeat(${COLS},1fr);gap:3px">${cards.map((card,i)=>shotCard(card,mode,i+1)).join('')}</div>`;
-    } else {
-      let h='';
-      for(const alb of DB.albumTypes){
-        const ac=cards.filter(x=>x.aId===alb.id);if(!ac.length)continue;
-        const sids=[...new Set(ac.map(x=>x.sId))];
-        for(const sid of sids){
-          const sc=ac.filter(x=>x.sId===sid);
-          const set=alb.sets.find(s=>s.id===sid);if(!set)continue;
-          h+=`<div style="margin-bottom:6px">
-            <div style="font-size:8px;font-weight:700;margin-bottom:2px;display:flex;align-items:center;gap:4px">
-              <span style="background:${alb.color};color:#fff;padding:1px 5px;border-radius:4px;font-size:7px">${alb.shortName}</span>
-              <span style="color:${fg}">${set.name}</span>
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(${COLS},1fr);gap:3px">${sc.map(card=>shotCard(card,mode,0)).join('')}</div>
-          </div>`;
-        }
+    if(tf.flatView)
+      return`<div style="display:grid;grid-template-columns:repeat(${COLS},1fr);gap:3px">${cards.map((card,i)=>_shotCardHtml(card,mode,i+1,tf,tx2,fg)).join('')}</div>`;
+    let h='';
+    for(const alb of DB.albumTypes){
+      const ac=cards.filter(x=>x.aId===alb.id);if(!ac.length)continue;
+      for(const sid of[...new Set(ac.map(x=>x.sId))]){
+        const sc=ac.filter(x=>x.sId===sid);
+        const set=alb.sets.find(s=>s.id===sid);if(!set)continue;
+        h+=`<div style="margin-bottom:6px">
+          <div style="font-size:8px;font-weight:700;margin-bottom:2px;display:flex;align-items:center;gap:4px">
+            <span style="background:${alb.color};color:#fff;padding:1px 5px;border-radius:4px;font-size:7px">${alb.shortName}</span>
+            <span style="color:${fg}">${set.name}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(${COLS},1fr);gap:3px">${sc.map(card=>_shotCardHtml(card,mode,0,tf,tx2,fg)).join('')}</div>
+        </div>`;
       }
-      return h;
     }
+    return h;
   };
 
-  const area=document.getElementById('shot-area');
-  area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:${PAD}px;color:${fg};font-family:'Noto Sans KR',sans-serif`;
-
-  const wLabel=`<div style="font-weight:800;font-size:12px;color:#f43f5e;margin-bottom:5px">🔍 구해요 (WANT) — ${wCards.reduce((a,x)=>a+wt(x.id),0)}장</div>`;
-  const hLabel=`<div style="font-weight:800;font-size:12px;color:#3b82f6;margin-bottom:5px">✨ 있어요 (HAVE) — ${hCards.reduce((a,x)=>a+sp(x.id),0)}장</div>`;
-  const wWrap=wCards.length?`<div style="background:rgba(244,63,94,.07);border:1px solid rgba(244,63,94,.22);border-radius:7px;padding:${innerPad}px;flex:1;min-width:0">${wLabel}${buildSide(wCards,'w')}</div>`:'';
-  const hWrap=hCards.length?`<div style="background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.22);border-radius:7px;padding:${innerPad}px;flex:1;min-width:0">${hLabel}${buildSide(hCards,'h')}</div>`:'';
+  const wL=`<div style="font-weight:800;font-size:12px;color:#f43f5e;margin-bottom:5px">🔍 구해요 — ${wCards.reduce((a,x)=>a+wt(x.id),0)}장</div>`;
+  const hL=`<div style="font-weight:800;font-size:12px;color:#3b82f6;margin-bottom:5px">✨ 있어요 — ${hCards.reduce((a,x)=>a+sp(x.id),0)}장</div>`;
+  const wW=wCards.length?`<div style="background:rgba(244,63,94,.07);border:1px solid rgba(244,63,94,.22);border-radius:7px;padding:${iP}px;flex:1;min-width:0">${wL}${buildSide(wCards,'w')}</div>`:'';
+  const hW=hCards.length?`<div style="background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.22);border-radius:7px;padding:${iP}px;flex:1;min-width:0">${hL}${buildSide(hCards,'h')}</div>`:'';
   const hdr=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid ${bd}">
     <div style="font-weight:800;font-size:13px;color:#4f8aff">Caligo Pt.2 교환 현황${tf.flatView?' · 카드나열':' · 세트별'}</div>
     <div style="font-size:9px;color:${tx2}">${now}</div>
   </div>`;
 
-  if(lscape&&bothSides){area.innerHTML=`${hdr}<div style="display:flex;gap:${GAP}px">${wWrap}${hWrap}</div>`;}
-  else if(lscape){area.innerHTML=`${hdr}${wWrap||hWrap}`;}
-  else{area.innerHTML=hdr+(wWrap?wWrap+'<div style="margin-bottom:8px"></div>':'')+hWrap;}
-
-  _injectWMOverlay(area);
+  const area=document.getElementById('shot-area');
+  area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:${PAD}px;color:${fg};font-family:'Noto Sans KR',sans-serif`;
+  if(lscape&&both)area.innerHTML=`${hdr}<div style="display:flex;gap:${GAP}px">${wW}${hW}</div>`;
+  else if(lscape)area.innerHTML=`${hdr}${wW||hW}`;
+  else area.innerHTML=hdr+(wW?wW+`<div style="margin-bottom:8px"></div>`:'')+hW;
 
   try{
-    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:false,allowTaint:false,logging:false,windowWidth:w,
-      ignoreElements:(el)=>el.hasAttribute('data-html2canvas-ignore')||el.tagName==='INS'||el.tagName==='IFRAME'||el.classList.contains('adsbygoogle'),
-      onclone:(doc)=>{
-        doc.querySelectorAll('*').forEach(el=>{
-          const s=el.style;
-          if(s.background&&s.background.includes('gradient'))s.background='none';
-          if(s.backgroundImage&&s.backgroundImage.includes('gradient'))s.backgroundImage='none';
-          if(s.webkitTextFillColor==='transparent')s.webkitTextFillColor='';
-          if(s.webkitBackgroundClip==='text'){s.webkitBackgroundClip='';s.color=s.color||'#4f8aff';}
-        });
-      }});
-    const link=document.createElement('a');
-    link.download=`교환_${now.replace(/\./g,'')}.png`;
-    link.href=canvas.toDataURL('image/png');
-    link.click();toast(t('shotDone'));
+    const canvas=await html2canvas(area,_h2cOpts(bg,w));
+    _save(canvas,`교환_${now.replace(/\./g,'')}.png`);
+    toast(t('shotDone'));
   }catch(e){toast(t('shotFail')+e.message);}
   area.innerHTML='';
 }
 
+/* ══ 수집탭 스크린샷 ══ */
 async function exportCollectScreenshot(withMeta){
   toast(t('shotReady'));
   try{await loadH2C();}catch(e){toast(t('shotLib'));return;}
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
-  const bg=dark?'#08090f':'#f0f2f9',fg=dark?'#e8edf8':'#141830',tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
+  const bg=dark?'#08090f':'#f0f2f9',fg=dark?'#e8edf8':'#141830',
+        tx2=dark?'#7a8fb0':'#5a6a90',bd=dark?'#1f2535':'#d4daf0';
   const now=new Date().toLocaleDateString('ko-KR'),lscape=isLS();
-  const w=lscape?720:360;
-  const PAD=12,GAP=3,COLS=5;
+  const w=lscape?720:360,PAD=12,GAP=3,COLS=5;
   const f=UI.cf;
   const albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
-
-  // 이미지를 blob URL로 변환 (taint 우회)
-  const allC=[];
-  for(const alb of albums)for(const set of alb.sets)allC.push(...set.cards);
-  await _preloadBlobs(allC);
-
-  const cardHtml=(card,alb,set,showMeta)=>{
-    const cv=c(card.id),gv=g(card.id),st=sts(card.id);
-    const bdr=st==='c'?'rgba(244,63,94,.5)':st==='m'?'rgba(34,197,94,.6)':st==='h'?'rgba(59,130,246,.6)':'rgba(0,0,0,.1)';
-    let statusTx='',statusBg='';
-    if(st==='m'){statusTx=`✓${cv}`;statusBg='rgba(34,197,94,.15)';}
-    else if(st==='h'&&gv>0){statusTx=`+${cv-gv}`;statusBg='rgba(59,130,246,.15)';}
-    else if(st==='h'){statusTx=`✨${cv}장`;statusBg='rgba(59,130,246,.15)';}
-    else if(st==='c'){statusTx=`−${gv-cv}`;statusBg='rgba(244,63,94,.15)';}
-    const metaLine=showMeta?`<div style="padding:2px 3px;font-size:6px;color:${tx2};text-align:center;line-height:1.4;overflow:hidden;background:rgba(0,0,0,.06);word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${alb.shortName} ${set.name}</div>`:'';
-    // blob URL 사용
-    const imgSrc=card.img?(_blobCache.get(card.img)||card.img):null;
-    const imgEl=imgSrc?`<img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:6px;color:${tx2}">${card.name}</div>`;
-    return`<div style="border-radius:4px;overflow:hidden;border:1.5px solid ${bdr}">
-      <div style="position:relative;padding-bottom:140%;overflow:hidden;background:${alb.color}22"><div style="position:absolute;inset:0">${imgEl}</div></div>
-      <div style="padding:2px 3px;background:${statusBg};font-size:7px;font-weight:800;text-align:center;color:${st==='c'?'#f43f5e':st==='m'?'#22c55e':st==='h'?'#3b82f6':'#888'};white-space:nowrap;overflow:hidden">${statusTx||'&nbsp;'}</div>
-      ${metaLine}
-    </div>`;
-  };
-
-  const area=document.getElementById('shot-area');
-  area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:${PAD}px;color:${fg};font-family:'Noto Sans KR',sans-serif`;
+  const allC=[];for(const alb of albums)for(const set of alb.sets)allC.push(...set.cards.map(c=>c.img));
+  await _preBlob(allC);
 
   let body='';
   if(f.flatView){
-    let allFlat=[];
+    let flat=[];
     for(const alb of albums)for(const set of alb.sets){
       let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
       if(f.vis==='have')cards=cards.filter(x=>c(x.id)>0);
       else if(f.vis==='nothave')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
-      allFlat=allFlat.concat(cards.map(card=>({card,alb,set})));
+      flat=flat.concat(cards.map(card=>({card,alb,set})));
     }
-    body=`<div style="display:grid;grid-template-columns:repeat(${COLS},1fr);gap:${GAP}px">${allFlat.map(({card,alb,set})=>cardHtml(card,alb,set,withMeta)).join('')}</div>`;
+    body=`<div style="display:grid;grid-template-columns:repeat(${COLS},1fr);gap:${GAP}px">${flat.map(({card,alb,set})=>_collectCardHtml(card,alb,set,withMeta,tx2)).join('')}</div>`;
   } else {
     let secH='';
     for(const alb of albums)for(const set of alb.sets){
@@ -1749,7 +1723,7 @@ async function exportCollectScreenshot(withMeta){
           <span style="background:${alb.color};color:#fff;padding:1px 6px;border-radius:5px;font-size:8px">${alb.shortName}</span>
           <span style="color:${fg}">${set.name}</span>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(${COLS},1fr);gap:${GAP}px">${cards.map(card=>cardHtml(card,alb,set,false)).join('')}</div>
+        <div style="display:grid;grid-template-columns:repeat(${COLS},1fr);gap:${GAP}px">${cards.map(card=>_collectCardHtml(card,alb,set,false,tx2)).join('')}</div>
       </div>`;
     }
     body=`<div>${secH}</div>`;
@@ -1759,28 +1733,27 @@ async function exportCollectScreenshot(withMeta){
     <div style="font-weight:800;font-size:13px;color:#4f8aff">Caligo Pt.2 수집 현황</div>
     <div style="font-size:9px;color:${tx2}">${now}</div>
   </div>`;
+
+  const area=document.getElementById('shot-area');
+  area.style.cssText=`position:fixed;left:-9999px;top:0;width:${w}px;background:${bg};padding:${PAD}px;color:${fg};font-family:'Noto Sans KR',sans-serif`;
   area.innerHTML=hdr+body;
-  _injectWMOverlay(area);
 
   try{
-    const canvas=await html2canvas(area,{backgroundColor:bg,scale:2,useCORS:false,allowTaint:false,logging:false,windowWidth:w,
-      ignoreElements:(el)=>el.hasAttribute('data-html2canvas-ignore')||el.tagName==='INS'||el.tagName==='IFRAME'||el.classList.contains('adsbygoogle'),
-      onclone:(doc)=>{
-        doc.querySelectorAll('*').forEach(el=>{
-          const s=el.style;
-          if(s.background&&s.background.includes('gradient'))s.background='none';
-          if(s.backgroundImage&&s.backgroundImage.includes('gradient'))s.backgroundImage='none';
-          if(s.webkitTextFillColor==='transparent')s.webkitTextFillColor='';
-          if(s.webkitBackgroundClip==='text'){s.webkitBackgroundClip='';s.color=s.color||'#4f8aff';}
-        });
-      }});
-    const link=document.createElement('a');
-    link.download=`수집_${now.replace(/\./g,'')}.png`;
-    link.href=canvas.toDataURL('image/png');
-    link.click();toast(t('shotDone'));
+    const canvas=await html2canvas(area,_h2cOpts(bg,w));
+    _save(canvas,`수집_${now.replace(/\./g,'')}.png`);
+    toast(t('shotDone'));
   }catch(e){toast(t('shotFail')+e.message);}
   area.innerHTML='';
 }
+
+function toggleShotMenu(btn){const m=document.getElementById('shot-menu');if(m)m.style.display=m.style.display==='none'?'block':'none';}
+function closeShotMenu(){const m=document.getElementById('shot-menu');if(m)m.style.display='none';}
+function toggleTradeShotMenu(btn){const m=document.getElementById('trade-shot-menu');if(m)m.style.display=m.style.display==='none'?'block':'none';}
+function closeTradeShotMenu(){const m=document.getElementById('trade-shot-menu');if(m)m.style.display='none';}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#shot-menu')&&!e.target.onclick?.toString().includes('toggleShotMenu')){const m=document.getElementById('shot-menu');if(m)m.style.display='none';}
+  if(!e.target.closest('#trade-shot-menu')&&!e.target.onclick?.toString().includes('toggleTradeShotMenu')){const m=document.getElementById('trade-shot-menu');if(m)m.style.display='none';}
+});
 
 /* ══════════════════════════════════
    SETTINGS / THEME
