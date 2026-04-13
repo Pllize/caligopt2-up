@@ -1518,16 +1518,44 @@ async function loadH2C(){
   throw new Error('html2canvas 로드 실패');
 }
 
-/* 이미지 src → blob URL 변환 캐시 (taint 완전 제거) */
+/* 이미지 src → dataURL 변환 캐시 (cloned document에서도 동작) */
 const _BC=new Map();
+function _imgToDataUrl(src){
+  return new Promise(res=>{
+    // 1차: crossOrigin 없이 (같은 origin이면 taint 없음)
+    const img=new Image();
+    img.onload=()=>{
+      try{
+        const cv=document.createElement('canvas');
+        cv.width=img.naturalWidth||300; cv.height=img.naturalHeight||420;
+        cv.getContext('2d').drawImage(img,0,0);
+        res(cv.toDataURL('image/jpeg',0.85));
+      }catch(e){
+        // 2차: crossOrigin 시도
+        const img2=new Image();
+        img2.crossOrigin='anonymous';
+        img2.onload=()=>{
+          try{
+            const cv=document.createElement('canvas');
+            cv.width=img2.naturalWidth||300; cv.height=img2.naturalHeight||420;
+            cv.getContext('2d').drawImage(img2,0,0);
+            res(cv.toDataURL('image/jpeg',0.85));
+          }catch(e2){ res(null); }
+        };
+        img2.onerror=()=>res(null);
+        img2.src=src+'?_c='+Date.now();
+      }
+    };
+    img.onerror=()=>res(null);
+    img.src=src;
+  });
+}
 async function _blob(src){
   if(!src)return null;
   if(_BC.has(src))return _BC.get(src);
-  try{
-    const r=await fetch(src,{cache:'force-cache'});
-    const url=URL.createObjectURL(await r.blob());
-    _BC.set(src,url);return url;
-  }catch(e){_BC.set(src,src);return src;}
+  const url=await _imgToDataUrl(src);
+  _BC.set(src, url||src); // 실패시 원본 src 보관
+  return _BC.get(src);
 }
 async function _preBlob(srcs){
   await Promise.all([...new Set(srcs.filter(Boolean))].map(_blob));
@@ -1559,9 +1587,9 @@ function _onclone(doc,area){
 }
 
 /* 공통 h2c 옵션 */
-function _h2cOpts(bg,w,doc){
+function _h2cOpts(bg,w){
   return{
-    backgroundColor:bg,scale:2,useCORS:false,allowTaint:false,
+    backgroundColor:bg,scale:2,useCORS:false,allowTaint:true,
     logging:false,windowWidth:w,
     ignoreElements:el=>el.hasAttribute('data-html2canvas-ignore')||
       el.tagName==='INS'||el.tagName==='IFRAME'||
