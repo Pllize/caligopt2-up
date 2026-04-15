@@ -2034,52 +2034,57 @@
             {
               "id": "c_mnv5obcxeql",
               "name": "예준",
-              "img": null,
+              "img": "./images/cards/c_mnv5obcxeql.webp",
               "cardType": "Individual",
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1
             },
             {
               "id": "c_mnv5obcx6ws",
               "name": "노아",
-              "img": null,
+              "img": "./images/cards/c_mnv5obcx6ws.webp",
               "cardType": "Individual",
               "member": "노아",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1
             },
             {
               "id": "c_mnv5obcxq9z",
               "name": "밤비",
-              "img": null,
+              "img": "./images/cards/c_mnv5obcxq9z.webp",
               "cardType": "Individual",
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1
             },
             {
               "id": "c_mnv5obcx7vz",
               "name": "은호",
-              "img": null,
+              "img": "./images/cards/c_mnv5obcx7vz.webp",
               "cardType": "Individual",
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1
             },
             {
               "id": "c_mnv5obcxagc",
               "name": "하민",
-              "img": null,
+              "img": "./images/cards/c_mnv5obcxagc.webp",
               "cardType": "Individual",
               "member": "하민",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1
             }
           ]
         },
@@ -2263,7 +2268,8 @@
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_pb_vl_2",
@@ -2273,7 +2279,8 @@
               "member": "노아",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_pb_vl_3",
@@ -2283,7 +2290,8 @@
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_pb_vl_4",
@@ -2293,7 +2301,8 @@
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_pb_vl_5",
@@ -2303,7 +2312,8 @@
               "member": "하민",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             }
           ]
         },
@@ -2431,7 +2441,8 @@
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_id_an_2",
@@ -2441,7 +2452,8 @@
               "member": "노아",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_id_an_3",
@@ -2451,7 +2463,8 @@
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_id_an_4",
@@ -2461,7 +2474,8 @@
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_id_an_5",
@@ -2471,7 +2485,8 @@
               "member": "하민",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             }
           ]
         },
@@ -2487,7 +2502,8 @@
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_poca_yp_2",
@@ -2497,7 +2513,8 @@
               "member": "노아",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_poca_yp_3",
@@ -2507,7 +2524,8 @@
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_poca_yp_4",
@@ -2517,7 +2535,8 @@
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_poca_yp_5",
@@ -2527,7 +2546,8 @@
               "member": "하민",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             }
           ]
         },
@@ -2543,7 +2563,8 @@
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_id_oy_2",
@@ -2553,7 +2574,8 @@
               "member": "노아",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_id_oy_3",
@@ -2563,7 +2585,8 @@
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_id_oy_4",
@@ -2573,7 +2596,8 @@
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_id_oy_5",
@@ -2583,7 +2607,8 @@
               "member": "하민",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             }
           ]
         },
@@ -2655,7 +2680,8 @@
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_poca_wv_2",
@@ -2665,7 +2691,8 @@
               "member": "노아",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_poca_wv_3",
@@ -2675,7 +2702,8 @@
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_poca_wv_4",
@@ -2685,7 +2713,8 @@
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "up_poca_wv_5",
@@ -2695,7 +2724,8 @@
               "member": "하민",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             }
           ]
         },
@@ -2813,7 +2843,7 @@
         },
         {
           "id": "set_mnx6xijnriy",
-          "name": "유튜브 (YOUTUBE)",
+          "name": "길보드/유튜브 (YOUTUBE)",
           "cards": [
             {
               "id": "c_mnx6xijn9ir",
@@ -2951,7 +2981,8 @@
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "c_mnrknp7epx5",
@@ -2961,7 +2992,8 @@
               "member": "노아",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "c_mnrknpc6aqg",
@@ -2971,7 +3003,8 @@
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "c_mnrknpgm08j",
@@ -2981,7 +3014,8 @@
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "c_mnrknpm2s00",
@@ -2991,7 +3025,8 @@
               "member": "하민",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             }
           ]
         },
@@ -3007,7 +3042,8 @@
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "c_mnrkpfwowt9",
@@ -3017,7 +3053,8 @@
               "member": "노아",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "c_mnrkpg1k6nf",
@@ -3027,7 +3064,8 @@
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "c_mnrkpg66zfm",
@@ -3037,7 +3075,8 @@
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             },
             {
               "id": "c_mnrkpgbquon",
@@ -3047,7 +3086,8 @@
               "member": "하민",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             }
           ]
         },
@@ -3109,7 +3149,7 @@
         },
         {
           "id": "set_mnv4ji4o4g7",
-          "name": "ASTERUM 433-10 (길보드)",
+          "name": "ASTERUM 433-10 (무신사)",
           "cards": [
             {
               "id": "c_mnv4ji4onzc",
@@ -3491,6 +3531,62 @@
               "id": "up_poca_wm_5",
               "name": "하민",
               "img": "./images/cards/up_poca_wm_5.webp",
+              "cardType": "Individual",
+              "member": "하민",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            }
+          ]
+        },
+        {
+          "id": "set_mo0a0hkrz6n",
+          "name": "블래스트샵 2차 (VLAST SHOP 2nd)",
+          "cards": [
+            {
+              "id": "c_mo0a0hkr20t",
+              "name": "예준",
+              "img": null,
+              "cardType": "Individual",
+              "member": "예준",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mo0a0hkrnil",
+              "name": "노아",
+              "img": null,
+              "cardType": "Individual",
+              "member": "노아",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mo0a0hkrf0w",
+              "name": "밤비",
+              "img": null,
+              "cardType": "Individual",
+              "member": "밤비",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mo0a0hkrlgv",
+              "name": "은호",
+              "img": null,
+              "cardType": "Individual",
+              "member": "은호",
+              "unit": null,
+              "mmmm": null,
+              "memo": ""
+            },
+            {
+              "id": "c_mo0a0hkr1g9",
+              "name": "하민",
+              "img": null,
               "cardType": "Individual",
               "member": "하민",
               "unit": null,
