@@ -422,7 +422,9 @@
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "dakun****@gmail.com"
             },
             {
               "id": "c_mnrkfbk4ta2",
@@ -442,7 +444,9 @@
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "contributor": "dakun****@gmail.com",
+              "imgV": 2
             },
             {
               "id": "c_mnrkfbwlma4",
@@ -452,7 +456,9 @@
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "dakun****@gmail.com"
             },
             {
               "id": "c_mnrkfc2ahne",
@@ -462,7 +468,9 @@
               "member": "하민",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "dakun****@gmail.com"
             }
           ]
         },
