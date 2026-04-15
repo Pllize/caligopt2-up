@@ -2261,29 +2261,28 @@ function init(){
     .then(r=>r.json())
     .then(d=>{
       DB=d;
-      // 원본(imgV 처리 전) DB를 별도 키에 저장 → 다음 로드 시 버전 비교용
-      try{localStorage.setItem(DB_KEY+'_raw',JSON.stringify(d));}catch(e){}
-      // 카드별 imgV 처리:
-      // - imgV 있는 카드만 URL에 ?v=X 추가
-      // - localStorage의 구버전 DB와 비교해 버전이 올라간 카드의 _BC 캐시 삭제
-      const oldDB=_loadRawDB(); // localStorage 원본 (버전 처리 전)
-      const oldImgMap=new Map(); // cardId → {img, imgV}
+      // ① 먼저 구버전 DB를 읽어옴 (비교용)
+      const oldDB=_loadRawDB();
+      const oldImgMap=new Map();
       if(oldDB){
         for(const alb of (oldDB.albumTypes||[]))
           for(const set of alb.sets)
             for(const card of set.cards)
               oldImgMap.set(card.id,{img:card.img,imgV:card.imgV||1});
       }
+      // ② 원본(imgV 처리 전) 새 DB를 저장 → 다음 로드 시 비교 기준
+      try{localStorage.setItem(DB_KEY+'_raw',JSON.stringify(d));}catch(e){}
+      // ③ imgV 처리: URL에 ?v=X 추가 + 구버전 _BC 캐시 삭제
       for(const alb of DB.albumTypes)
         for(const set of alb.sets)
           for(const card of set.cards){
             if(!card.img)continue;
             const newV=card.imgV||1;
             if(newV>1)card.img=card.img+'?v='+newV;
-            // 버전이 올라갔으면 구버전 URL을 _BC에서 제거
+            // 버전이 올라갔으면 구버전 URL을 캐시에서 제거
             const old=oldImgMap.get(card.id);
-            if(old&&old.imgV&&old.imgV<newV){
-              const oldUrl=old.imgV>1?old.img+'?v='+old.imgV:old.img;
+            if(old&&(old.imgV||1)<newV){
+              const oldUrl=(old.imgV||1)>1?old.img+'?v='+(old.imgV||1):old.img;
               _BC.delete(oldUrl);
               _BP.delete(oldUrl);
             }
