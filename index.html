@@ -617,16 +617,84 @@ const _imgIO=new IntersectionObserver((entries,io)=>{
     if(src){
       img.src=src;
       img.removeAttribute('data-src');
-      img.onload=()=>img.classList.add('img-loaded');
-      img.onerror=()=>img.classList.add('img-loaded'); // 실패해도 fade-in
+      img.onload=()=>{img.classList.add('img-loaded');WM.applyImg(img);};
+      img.onerror=()=>img.classList.add('img-loaded');
     }
     io.unobserve(img);
   });
-},{rootMargin:'200px 0px',threshold:0}); // 200px 미리 로드
+},{rootMargin:'200px 0px',threshold:0});
 
 function _observeImgs(){
   document.querySelectorAll('img[data-src]').forEach(img=>_imgIO.observe(img));
 }
+
+/* ══════════════════════════════════
+   SCREEN WATERMARK (화면 표시용)
+   watermark.js 인라인 대체.
+   이미지 위에 Canvas 오버레이로 워터마크 텍스트 렌더.
+   WM.scanAll() — 페이지 내 .pci img 전체 적용
+   WM.applyImg(img) — 단일 img에 적용 (풀스크린)
+══════════════════════════════════ */
+const WM=(()=>{
+  const TEXT='Caligopt2 PLAVE';
+  const ANGLE=-22*Math.PI/180;
+
+  function _apply(img){
+    // 이미 워터마크 적용된 경우 스킵
+    if(img._wmDone)return;
+    // 이미지가 로드되지 않았으면 onload 후 재시도
+    if(!img.complete||!img.naturalWidth){
+      img.addEventListener('load',()=>_apply(img),{once:true});
+      return;
+    }
+    const wrap=img.parentElement;
+    if(!wrap)return;
+    // wrap이 position:relative/absolute인지 확인
+    const ws=getComputedStyle(wrap);
+    if(ws.position==='static')wrap.style.position='relative';
+
+    // 기존 오버레이 제거
+    wrap.querySelectorAll('._wm-ov').forEach(el=>el.remove());
+
+    const ov=document.createElement('canvas');
+    ov.className='_wm-ov';
+    ov.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:10';
+    // 실제 픽셀 크기 맞춤
+    const W=img.offsetWidth||wrap.offsetWidth||100;
+    const H=img.offsetHeight||wrap.offsetHeight||140;
+    ov.width=W*2; ov.height=H*2;
+    const ctx=ov.getContext('2d');
+    ctx.scale(2,2);
+    ctx.font='700 9px "Outfit",sans-serif';
+    ctx.fillStyle='rgba(255,255,255,0.22)';
+    ctx.textAlign='left';
+    ctx.textBaseline='top';
+    const SX=90,SY=36;
+    for(let row=-1;row<Math.ceil(H/SY)+1;row++){
+      for(let col=-1;col<Math.ceil(W/SX)+1;col++){
+        const px=col*SX+(row%2===0?0:31);
+        const py=row*SY;
+        ctx.save();
+        ctx.translate(px,py);
+        ctx.rotate(ANGLE);
+        ctx.fillText(TEXT,0,0);
+        ctx.restore();
+      }
+    }
+    wrap.appendChild(ov);
+    img._wmDone=true;
+  }
+
+  function scanAll(){
+    // .pci 안의 실제 src가 있는 img만 처리 (data-src는 IO 로드 후 처리)
+    document.querySelectorAll('.pci img[src],.fsimg[src]').forEach(_apply);
+  }
+
+  function applyImg(img){_apply(img);}
+
+  return{scanAll,applyImg};
+})();
+window.WM=WM;
 
 /* ── 디바운스 저장 (연타 방지, 100ms 후 실제 저장) ── */
 let _stTimer=null,_uiTimer=null;
@@ -1114,8 +1182,8 @@ function renderCur(){
   else if(curTab==='goals')renderGoals();
   else if(curTab==='notice')renderNotice();
   else renderUsage();
-  // 새로 렌더된 data-src 이미지 관찰 등록
-  requestAnimationFrame(_observeImgs);
+  // 새로 렌더된 data-src 이미지 관찰 등록 + 이미 로드된 이미지 워터마크 적용
+  requestAnimationFrame(()=>{_observeImgs();WM.scanAll();});
 }
 
 /* ══════════════════════════════════
@@ -1302,6 +1370,11 @@ function openFull(id){
   updFull();
   const m=document.getElementById('fs-memo');if(m)m.value=mo(id);
   document.getElementById('fsov').classList.add('open');
+  // 풀스크린 이미지 워터마크
+  requestAnimationFrame(()=>{
+    const img=document.querySelector('#fs-img .fsimg');
+    if(img)WM.applyImg(img);
+  });
 }
 function updFull(){
   if(!fsId)return;
@@ -1796,7 +1869,7 @@ function _drawWatermark(ctx,w,h){
   wctx.globalAlpha=0.18;
   wctx.textAlign='left';
   wctx.textBaseline='top';
-  const TEXT='CaligoPt2',SX=100,SY=52,ANG=-22*Math.PI/180;
+  const TEXT='Caligopt2 PLAVE',SX=130,SY=52,ANG=-22*Math.PI/180;
   for(let row=-1;row<Math.ceil(h/SY)+1;row++){
     for(let col=-1;col<Math.ceil(w/SX)+1;col++){
       const px=col*SX+(row%2===0?0:50);
