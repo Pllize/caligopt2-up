@@ -44,7 +44,9 @@
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: 최플리/soob_bi"
             },
             {
               "id": "c_mnrjrvjl822",
@@ -137,7 +139,9 @@
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: 최플리"
             },
             {
               "id": "poca_B_2",
@@ -286,7 +290,9 @@
               "member": null,
               "unit": "댄라즈",
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: 최플리"
             },
             {
               "id": "c_mnrjppghgs3",
@@ -296,7 +302,9 @@
               "member": null,
               "unit": "댕냥즈",
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: soob_bi_"
             }
           ]
         },
@@ -323,7 +331,8 @@
               "member": null,
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2
             }
           ]
         },
@@ -427,7 +436,9 @@
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: 최플리"
             },
             {
               "id": "c_mnrkbkblqwp",
@@ -437,7 +448,9 @@
               "member": "하민",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: 최플리"
             }
           ]
         },
@@ -465,7 +478,9 @@
               "member": "노아",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: soob_bi_"
             },
             {
               "id": "c_mnrkfbpgovn",
@@ -538,7 +553,9 @@
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: soob_bi_"
             },
             {
               "id": "c_mnrkgrryk1t",
@@ -586,7 +603,9 @@
               "member": null,
               "unit": null,
               "mmmm": "몌무",
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: soob_bi_"
             },
             {
               "id": "c_mnrkhlvoivr",
@@ -596,7 +615,9 @@
               "member": null,
               "unit": null,
               "mmmm": "뫄",
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: soob_bi_"
             },
             {
               "id": "c_mnrkhm0aaw1",
