@@ -56,7 +56,7 @@ textarea{resize:vertical;min-height:44px}
 .card-item-top{display:flex;align-items:flex-start;gap:9px}
 .card-item-body{flex:1;min-width:0}
 .card-item-acts{display:flex;gap:3px;flex-shrink:0;align-items:flex-start}
-.crd-img{width:40px;height:56px;border-radius:4px;overflow:hidden;flex-shrink:0;background:var(--sur3);border:1px solid var(--bd);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--tx3);text-align:center;line-height:1.3;transition:border-color .12s}
+.crd-img{width:40px;height:56px;border-radius:4px;overflow:hidden;flex-shrink:0;background:var(--sur3);border:1px solid var(--bd);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--tx3);text-align:center;line-height:1.3;transition:border-color .12s;position:relative}
 .crd-img:hover{border-color:var(--ac)}
 .crd-img img{width:100%;height:100%;object-fit:cover}
 
@@ -138,16 +138,6 @@ textarea{resize:vertical;min-height:44px}
 .lock-box{background:var(--sur);border:1px solid var(--bd2);border-radius:var(--r);padding:32px 28px;width:100%;max-width:320px;text-align:center;box-shadow:var(--sh)}
 .lock-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;background:linear-gradient(135deg,var(--warn),var(--err));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
 .lock-sub{font-size:11px;color:var(--tx3);margin-bottom:24px}
-.lock-digits{display:flex;justify-content:center;gap:10px;margin-bottom:18px}
-.lock-digit{width:48px;height:56px;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--tx);transition:border-color .15s}
-.lock-digit.filled{border-color:var(--ac);color:var(--ac)}
-.lock-digit.active{border-color:var(--warn);box-shadow:0 0 0 2px rgba(245,158,11,.2)}
-.lock-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
-.lock-key{height:48px;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--r-sm);font-size:18px;font-weight:600;color:var(--tx);cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center}
-.lock-key:hover{background:var(--sur3);border-color:var(--ac);color:var(--ac)}
-.lock-key:active{transform:scale(.95)}
-.lock-key.del{font-size:14px;color:var(--tx3)}
-.lock-key.del:hover{color:var(--err);border-color:var(--err)}
 .lock-err{font-size:11px;color:var(--err);min-height:16px;animation:shake .3s ease}
 @keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
@@ -173,27 +163,15 @@ textarea{resize:vertical;min-height:44px}
   <div class="lock-box">
     <div class="lock-logo">🔐 POCA ADMIN</div>
     <div class="lock-sub">관리자 비밀번호를 입력하세요</div>
-    <div class="lock-digits" id="lock-digits">
-      <div class="lock-digit active" id="ld-0"></div>
-      <div class="lock-digit" id="ld-1"></div>
-      <div class="lock-digit" id="ld-2"></div>
-      <div class="lock-digit" id="ld-3"></div>
-    </div>
-    <div class="lock-keypad">
-      <div class="lock-key" onclick="lockKey('1')">1</div>
-      <div class="lock-key" onclick="lockKey('2')">2</div>
-      <div class="lock-key" onclick="lockKey('3')">3</div>
-      <div class="lock-key" onclick="lockKey('4')">4</div>
-      <div class="lock-key" onclick="lockKey('5')">5</div>
-      <div class="lock-key" onclick="lockKey('6')">6</div>
-      <div class="lock-key" onclick="lockKey('7')">7</div>
-      <div class="lock-key" onclick="lockKey('8')">8</div>
-      <div class="lock-key" onclick="lockKey('9')">9</div>
-      <div class="lock-key del" onclick="lockKey('clear')">✕</div>
-      <div class="lock-key" onclick="lockKey('0')">0</div>
-      <div class="lock-key del" onclick="lockKey('del')">⌫</div>
-    </div>
-    <div class="lock-err" id="lock-err"></div>
+    <input type="password" id="lock-pw-inp"
+      placeholder="비밀번호"
+      style="width:100%;padding:12px 14px;font-size:16px;border-radius:var(--r-sm);background:var(--sur2);border:1px solid var(--bd);color:var(--tx);outline:none;margin-bottom:10px;letter-spacing:.1em"
+      onkeydown="if(event.key==='Enter')lockSubmit()"
+      autofocus>
+    <button onclick="lockSubmit()" style="width:100%;padding:11px;background:var(--ac);color:#fff;border:none;border-radius:var(--r-sm);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">
+      입장
+    </button>
+    <div class="lock-err" id="lock-err" style="margin-top:10px"></div>
   </div>
 </div>
 
@@ -299,55 +277,37 @@ textarea{resize:vertical;min-height:44px}
 
 <script>
 // ── LOCK SCREEN ───────────────────────────────────────
-const ADMIN_PW = '0312';
+const ADMIN_PW = 'Hoyoung0326!';
 const SESSION_KEY = 'poca_admin_auth';
-let lockInput = '';
 
 function lockKey(k){
-  const err = document.getElementById('lock-err');
-  err.textContent = '';
-  if(k === 'clear'){ lockInput = ''; }
-  else if(k === 'del'){ lockInput = lockInput.slice(0,-1); }
-  else if(lockInput.length < 4){ lockInput += k; }
-
-  // update digits
-  for(let i=0;i<4;i++){
-    const d = document.getElementById('ld-'+i);
-    d.textContent = lockInput[i] ? '●' : '';
-    d.className = 'lock-digit' +
-      (lockInput[i] ? ' filled' : '') +
-      (lockInput.length === i ? ' active' : '');
-  }
-
-  if(lockInput.length === 4){
-    if(lockInput === ADMIN_PW){
-      sessionStorage.setItem(SESSION_KEY,'1');
-      document.getElementById('lock-screen').style.display='none';
-      document.getElementById('app-wrap').style.display='flex';
-      document.getElementById('app-wrap').style.flexDirection='column';
-      init();
-    } else {
-      err.textContent = '비밀번호가 틀렸습니다 ✕';
-      lockInput = '';
-      for(let i=0;i<4;i++){
-        const d = document.getElementById('ld-'+i);
-        d.textContent=''; d.className='lock-digit'+(i===0?' active':'');
-      }
-      // shake effect
-      const box = document.querySelector('.lock-box');
-      box.style.animation='none'; box.offsetHeight;
-      box.style.animation='shake .3s ease';
-    }
-  }
+  // 하위 호환용 (직접 호출 없음)
+  const inp = document.getElementById('lock-pw-inp');
+  if(!inp) return;
+  if(k==='clear') inp.value='';
+  else if(k==='del') inp.value=inp.value.slice(0,-1);
+  else inp.value+=k;
 }
 
-// keyboard support for lock screen
-document.addEventListener('keydown', e => {
-  if(document.getElementById('lock-screen').style.display === 'none') return;
-  if(e.key >= '0' && e.key <= '9') lockKey(e.key);
-  else if(e.key === 'Backspace') lockKey('del');
-  else if(e.key === 'Escape') lockKey('clear');
-});
+function lockSubmit(){
+  const inp = document.getElementById('lock-pw-inp');
+  const err = document.getElementById('lock-err');
+  err.textContent='';
+  if(!inp) return;
+  if(inp.value === ADMIN_PW){
+    sessionStorage.setItem(SESSION_KEY,'1');
+    document.getElementById('lock-screen').style.display='none';
+    document.getElementById('app-wrap').style.display='flex';
+    document.getElementById('app-wrap').style.flexDirection='column';
+    init();
+  } else {
+    err.textContent='비밀번호가 틀렸습니다 ✕';
+    inp.value='';
+    const box = document.querySelector('.lock-box');
+    box.style.animation='none'; box.offsetHeight;
+    box.style.animation='shake .3s ease';
+  }
+}
 
 function checkSession(){
   if(sessionStorage.getItem(SESSION_KEY)==='1'){
@@ -377,9 +337,12 @@ const GH_KEY = 'poca_gh_cfg';
 function loadGhCfg(){
   try{ return JSON.parse(localStorage.getItem(GH_KEY))||{}; }catch(e){ return {}; }
 }
+
 function saveGhSettings(){
+  const token = document.getElementById('gh-token').value.trim();
+  if(!token){ toast('⚠️ Token을 입력해주세요'); document.getElementById('gh-token').focus(); return; }
   const cfg = {
-    token:  document.getElementById('gh-token').value.trim(),
+    token,
     owner:  document.getElementById('gh-owner').value.trim(),
     repo:   document.getElementById('gh-repo').value.trim(),
     branch: document.getElementById('gh-branch').value.trim()||'main',
@@ -388,7 +351,7 @@ function saveGhSettings(){
   localStorage.setItem(GH_KEY, JSON.stringify(cfg));
   updateGhStatus();
   closeModal('gh-modal');
-  toast('GitHub 설정 저장됨');
+  toast('GitHub 설정 저장됨 ✅');
 }
 function openGhSettings(){
   const cfg = loadGhCfg();
@@ -767,6 +730,7 @@ function renderSetView(){
       <div class="card-item-top">
         <div class="crd-img" onclick="openImgModal('${a.id}','${s.id}','${card.id}')" title="이미지 설정">
           ${card.img ? `<img src="${card.img}" alt="${escH(card.name)}">` : `<span>📷<br>없음</span>`}
+          ${card.imgV&&card.imgV>1?`<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(245,158,11,.88);color:#000;font-size:8px;font-weight:700;text-align:center;line-height:1.6">v${card.imgV}</div>`:''}
         </div>
         <div class="card-item-body">
           <input value="${escH(card.name)}" oninput="updCard('${a.id}','${s.id}','${card.id}','name',this.value)" style="font-size:12px;padding:4px 8px;font-weight:600">
@@ -1011,29 +975,35 @@ function applyImg(){
   if(!imgPending){ closeModal('img-modal'); return; }
 
   const cfg = loadGhCfg();
+  const isReplace = !!c.img; // 기존 이미지 있으면 교체
 
   if(cfg.token && cfg.owner && cfg.repo && imgFileRaw){
-    // GitHub 설정 있으면 → 로컬에 base64 임시 저장 + 업로드 큐에 추가
     const ext = imgFileRaw.name.split('.').pop().toLowerCase() || 'webp';
     const b64 = imgPending.split(',')[1];
     const relPath = `./images/cards/${c.id}.${ext}`;
     const ghPath = (cfg.path||'poca_db.json').replace(/[^/]+$/, '') + `images/cards/${c.id}.${ext}`;
 
+    // 이미지 교체 시 imgV 자동 증가 (새 이미지면 1 유지)
+    if(isReplace) c.imgV = (c.imgV||1) + 1;
+    else c.imgV = 1;
+
     // 기존 큐에 같은 카드 있으면 교체
     pendingImgUploads = pendingImgUploads.filter(p=>p.cardId!==c.id);
     pendingImgUploads.push({cardId:c.id, ext, b64, relPath, ghPath});
 
-    // DB에는 경로만 저장 (로컬)
     c.img = relPath;
     saveDB(); markDirty();
     closeModal('img-modal'); renderSetView();
     updatePendingBadge();
-    toast(`🖼 이미지 대기 등록 (${pendingImgUploads.length}개) — ☁️ GitHub 저장으로 한번에 업로드`);
+    const vMsg = isReplace ? ` (v${c.imgV} 교체)` : '';
+    toast(`🖼 이미지 대기 등록${vMsg} (${pendingImgUploads.length}개) — ☁️ GitHub 저장으로 업로드`);
   } else {
-    // GitHub 미설정: 기존처럼 base64로 저장
+    // GitHub 미설정: base64 저장, 교체 시 imgV 증가
+    if(isReplace) c.imgV = (c.imgV||1) + 1;
+    else c.imgV = 1;
     c.img = imgPending;
     saveDB(); markDirty(); closeModal('img-modal'); renderSetView();
-    toast('이미지 저장됨 ✓');
+    toast(isReplace ? `이미지 교체됨 (v${c.imgV}) ✓` : '이미지 저장됨 ✓');
   }
 }
 
@@ -1130,9 +1100,9 @@ function renderNoticeListAdmin(list){
   const typeLabel={update:'업데이트',notice:'공지',event:'이벤트'};
   const typeColor={update:'var(--ac)',notice:'var(--warn)',event:'var(--ok)'};
   return list.map((n,i)=>`
-  <div class="card-item">
+  <div class="card-item" id="ni-${n.id}">
     <div class="card-item-top">
-      <div class="card-item-body">
+      <div class="card-item-body" id="nb-${n.id}">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
           <span style="font-size:9px;font-weight:700;color:${typeColor[n.type]||'var(--ac)'};background:rgba(0,0,0,.2);padding:1px 6px;border-radius:8px">${typeLabel[n.type]||n.type}</span>
           <span style="font-size:10px;color:var(--tx3)">${n.date||''}</span>
@@ -1143,10 +1113,49 @@ function renderNoticeListAdmin(list){
       <div class="card-item-acts">
         ${i>0?`<button class="iBtn" onclick="moveNotice(${i},-1)" title="위로">↑</button>`:''}
         ${i<list.length-1?`<button class="iBtn" onclick="moveNotice(${i},1)" title="아래로">↓</button>`:''}
+        <button class="iBtn" onclick="editNotice('${n.id}')" title="수정">✏️</button>
         <button class="iBtn" onclick="deleteNotice('${n.id}')" style="color:var(--err)" title="삭제">🗑</button>
       </div>
     </div>
   </div>`).join('');
+}
+
+function editNotice(id){
+  const list = loadNoticesAdmin();
+  const n = list.find(x=>x.id===id); if(!n) return;
+  const body = document.getElementById('nb-'+id); if(!body) return;
+  const typeOpts = ['update','notice','event'].map(t=>`<option value="${t}"${n.type===t?' selected':''}>${{update:'업데이트',notice:'공지',event:'이벤트'}[t]}</option>`).join('');
+  body.innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+      <select id="ne-type-${id}" style="font-size:11px">${typeOpts}</select>
+      <input type="date" id="ne-date-${id}" value="${n.date||''}" style="font-size:11px">
+    </div>
+    <input id="ne-title-${id}" value="${escH(n.title)}" style="font-size:12px;font-weight:600;margin-bottom:5px">
+    <textarea id="ne-body-${id}" rows="3" style="font-size:11px">${escH(n.body)}</textarea>
+    <div style="display:flex;gap:5px;margin-top:6px">
+      <button class="btn btn-p btn-sm" onclick="saveEditNotice('${id}')">✅ 저장</button>
+      <button class="btn btn-s btn-sm" onclick="cancelEditNotice()">취소</button>
+    </div>`;
+}
+
+function saveEditNotice(id){
+  const list = loadNoticesAdmin();
+  const n = list.find(x=>x.id===id); if(!n) return;
+  const title = document.getElementById('ne-title-'+id).value.trim();
+  if(!title){ toast('제목을 입력하세요'); return; }
+  n.type  = document.getElementById('ne-type-'+id).value;
+  n.date  = document.getElementById('ne-date-'+id).value;
+  n.title = title;
+  n.body  = document.getElementById('ne-body-'+id).value.trim();
+  saveNoticesAdmin(list);
+  document.getElementById('notice-list-admin').innerHTML = renderNoticeListAdmin(list);
+  toast('수정 저장 중...');
+  saveNoticesToGitHub(list);
+}
+
+function cancelEditNotice(){
+  const list = loadNoticesAdmin();
+  document.getElementById('notice-list-admin').innerHTML = renderNoticeListAdmin(list);
 }
 
 function addNotice(){
@@ -1274,7 +1283,7 @@ async function loadDBFromGitHub(){
 
 async function init(){
   updateGhStatus();
-  renderSidebar(); // 초기 "로딩 중" 표시
+  renderSidebar();
 
   // 1순위: 직접 fetch (GitHub Pages / 웹서버)
   try{
