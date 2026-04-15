@@ -112,6 +112,22 @@ input:focus,textarea:focus{border-color:var(--blue)}
 /* ── LAZY IMG — 뷰포트 밖 이미지 지연 로드 ── */
 .pci img[data-src]{opacity:0;transition:opacity .2s}
 .pci img.img-loaded{opacity:1}
+
+/* ── 스크린샷 고정 버튼 ── */
+.shot-fab{
+  position:fixed;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 10px);right:12px;
+  z-index:200;
+  width:48px;height:48px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#4f8aff,#8b5cf6);
+  color:#fff;font-size:22px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 14px rgba(79,138,255,.45);
+  border:none;cursor:pointer;
+  transition:transform .15s,box-shadow .15s;
+}
+.shot-fab:active{transform:scale(.9);}
+@media(orientation:landscape){.shot-fab{bottom:16px;}}
 .pcg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
 /* few: ≤5 cards, cap width so cards don't become huge */
 .pcg.few{grid-template-columns:repeat(var(--few-cols),minmax(0,calc(var(--card-min)*1.7)));justify-content:start}
@@ -283,7 +299,7 @@ iframe[name^="google_ads"]{display:none!important}
       <button class="abtn" id="theme-btn" onclick="toggleTheme()">☀️</button>
       <button class="abtn" id="lang-btn" onclick="toggleLang()" title="EN/KO" style="font-size:10px;font-weight:800;font-family:'Outfit',sans-serif;width:38px">KOR</button>
       <button class="abtn" onclick="location.reload()" title="새로고침" style="font-size:15px">🔄</button>
-      <button class="abtn" onclick="exportState()" title="Save/Backup" style="font-size:15px">💾</button>
+      <button class="abtn" onclick="showSettings()" title="백업/복원" style="font-size:15px">💾</button>
     </div>
   </div>
   <div class="dtabs" id="dtabs"></div>
@@ -294,6 +310,7 @@ iframe[name^="google_ads"]{display:none!important}
 </div>
 
 <button class="scroll-top-btn" id="scroll-top-btn" onclick="document.getElementById('main').scrollTo({top:0,behavior:'smooth'})">↑</button>
+<button class="shot-fab" id="shot-fab" onclick="lsScreenshot()" title="📸 스크린샷">📸</button>
 
 <!-- FULLSCREEN CARD -->
 <div class="fs-ov" id="fsov">
@@ -355,23 +372,35 @@ iframe[name^="google_ads"]{display:none!important}
   <div class="sheet">
     <div class="sh-bar"></div>
     <div class="shdr"><span class="sttl" id="set-ttl">⚙️ 설정</span><button onclick="closeSheet('set-ov')" style="font-size:16px;color:var(--tx2)">✕</button></div>
+
+    <!-- 백업 안내 -->
     <div class="desc" id="set-backup-desc">
       <b>💾 데이터 백업이란?</b><br>
-      목표 수량·수집 개수·메모를 JSON 파일로 저장해요.<br>
-      <br>
-      ✅ 이런 경우에 유용해요:<br>
-      • 폰을 교체하거나 기기를 바꿀 때<br>
-      • 브라우저 캐시·데이터를 삭제할 때<br>
-      • 다른 기기에서 같은 데이터를 쓰고 싶을 때<br>
-      <br>
-      💡 주기적으로 백업해 두는 걸 추천해요!
+      수집 개수·목표 수량·메모를 JSON 파일로 저장해요.<br><br>
+      ✅ <b>이런 경우에 꼭 백업하세요:</b><br>
+      • 📱 폰을 교체하거나 기기를 바꿀 때<br>
+      • 🗑 브라우저 캐시·사이트 데이터를 삭제할 때<br>
+      • 💻 다른 기기에서 같은 데이터를 쓰고 싶을 때<br><br>
+      💡 <b>기기 이전 방법:</b><br>
+      ① 지금 기기에서 <b>백업하기</b> → JSON 파일 저장<br>
+      ② 새 기기에서 이 페이지 접속<br>
+      ③ <b>불러오기</b>로 저장한 JSON 파일 선택<br><br>
+      ⚠️ 데이터는 브라우저 로컬에 저장돼요.<br>
+      브라우저 데이터 삭제 시 사라지므로 주기적 백업을 권장해요!
     </div>
     <button class="btn btn-p btn-full btn-sm" onclick="exportState()" id="set-backup-btn">💾 지금 백업하기</button>
-    <button class="btn btn-s btn-full btn-sm" onclick="document.getElementById('st-inp').click()" id="set-restore-btn">📂 백업 파일로 복원하기</button>
+    <button class="btn btn-s btn-full btn-sm" onclick="document.getElementById('st-inp').click()" id="set-restore-btn" style="margin-top:6px">📂 백업 파일로 불러오기</button>
     <input type="file" id="st-inp" accept=".json" style="display:none" onchange="importState(this)">
-    <div class="desc" style="margin-top:6px" id="set-warn-desc"><b>⚠️ 복원 주의</b><br>백업 파일로 복원하면 현재 기기의 데이터가 파일 내용으로 완전히 덮어씌워져요. 복원 전에 현재 데이터를 먼저 백업하는 걸 권장해요.</div>
-    <hr style="border:none;border-top:1px solid var(--bd);margin:10px 0">
-    <button class="btn-warn" onclick="resetState()" id="set-reset-btn">⚠️ 전체 초기화</button>
+
+    <!-- 복원 주의 -->
+    <div class="desc" style="margin-top:8px;background:rgba(244,63,94,.07);border-color:rgba(244,63,94,.25)" id="set-warn-desc">
+      <b>⚠️ 불러오기 주의사항</b><br>
+      백업 파일로 불러오면 현재 기기의 <b>모든 데이터가 덮어씌워져요.</b><br>
+      불러오기 전에 현재 데이터를 먼저 백업해 두는 걸 권장해요.
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--bd);margin:12px 0">
+    <button class="btn-warn" onclick="resetState()" id="set-reset-btn">⚠️ 전체 초기화 (모든 데이터 삭제)</button>
     <div style="display:flex;justify-content:flex-end;margin-top:12px">
       <button class="btn btn-s btn-sm" onclick="closeSheet('set-ov')" id="set-close-btn">닫기</button>
     </div>
@@ -606,26 +635,24 @@ function findCard(id){
 }
 function isLS(){return window.matchMedia('(orientation:landscape)').matches;}
 
-/* ── IntersectionObserver 기반 이미지 지연 로드 ──
-   data-src 속성을 가진 img가 뷰포트에 진입하면 src로 교체.
-   새 카드가 렌더될 때마다 _observeImgs() 호출. */
+/* ── 이미지 로드 후 워터마크 자동 적용 ──
+   src=로 직접 로드, loading="lazy"로 브라우저 네이티브 지연.
+   IO는 뷰포트 진입 시 WM 적용 트리거로만 사용. */
 const _imgIO=new IntersectionObserver((entries,io)=>{
   entries.forEach(e=>{
     if(!e.isIntersecting)return;
     const img=e.target;
-    const src=img.dataset.src;
-    if(src){
-      img.src=src;
-      img.removeAttribute('data-src');
-      img.onload=()=>{img.classList.add('img-loaded');WM.applyImg(img);};
-      img.onerror=()=>img.classList.add('img-loaded');
+    if(img.complete&&img.naturalWidth){
+      WM.applyImg(img);
+      io.unobserve(img);
+    } else {
+      img.addEventListener('load',()=>{WM.applyImg(img);io.unobserve(img);},{once:true});
     }
-    io.unobserve(img);
   });
-},{rootMargin:'200px 0px',threshold:0});
+},{rootMargin:'50px 0px',threshold:0});
 
 function _observeImgs(){
-  document.querySelectorAll('img[data-src]').forEach(img=>_imgIO.observe(img));
+  document.querySelectorAll('.pci img[src]').forEach(img=>_imgIO.observe(img));
 }
 
 /* ══════════════════════════════════
@@ -785,7 +812,7 @@ function cardTileHTML(card,showGoalRow){
   else if(cv>0&&!gv)bdg=`<div class="pbdg h">${cv}</div>`;
   return`<div class="${cls}" data-id="${card.id}">
     <div class="pci" onclick="openFull('${card.id}')">
-      ${card.img?`<img data-src="${card.img}" alt="${card.name}" crossorigin="anonymous">`:`<div class="pcph">${card.name}</div>`}
+      ${card.img?`<img src="${card.img}" alt="${card.name}" loading="lazy" crossorigin="anonymous">`:`<div class="pcph">${card.name}</div>`}
       <div class="pc-ctrl">
         <button class="pcbtn" onclick="subC('${card.id}',event)">−</button>
         <span class="pc-cnt">${cv}</span>
@@ -1182,6 +1209,9 @@ function renderCur(){
   else if(curTab==='goals')renderGoals();
   else if(curTab==='notice')renderNotice();
   else renderUsage();
+  // 스크린샷 FAB: 수집·교환 탭에서만 표시
+  const fab=document.getElementById('shot-fab');
+  if(fab)fab.style.display=(curTab==='collect'||curTab==='trade')?'flex':'none';
   // 새로 렌더된 data-src 이미지 관찰 등록 + 이미 로드된 이미지 워터마크 적용
   requestAnimationFrame(()=>{_observeImgs();WM.scanAll();});
 }
@@ -1195,12 +1225,10 @@ function renderCollect(){
   const allC=allCards(),haveC=allC.filter(x=>c(x.id)>0).length,metC=allC.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)).length,goalC=allC.filter(x=>g(x.id)>0).length;
   const noGoalHint=goalC===0?`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);margin-bottom:8px;font-size:11px;color:var(--tx2)">🎯 ${lang==='en'?'No targets set. Go to <b>Target</b> tab to set collection goals!':'설정된 목표가 없어요. <b>목표</b> 탭에서 수집 목표를 설정해보세요!'} <button class="btn btn-s btn-sm" style="margin-left:auto;padding:3px 10px;font-size:10px" onclick="goTab('goals')">${lang==='en'?'Go':'이동'}</button></div>`:'';
   const statsHTML=`<div class="stat-chip">${lang==='ko'?'수집':'Collected'} <span>${haveC}/${goalC||allC.length}</span></div>`;
-  // 스크린샷 버튼 - 항상 단일 버튼
-  const extra=`<button class="shot-btn" onclick="exportCollectScreenshot(false)">📸</button>`;
   const albums=f.albs.length?DB.albumTypes.filter(a=>f.albs.includes(a.id)):DB.albumTypes;
   const secs=buildSections(albums,f,UI.col,'colSec',false);
   const wrap=f.flatView?secs:`<div class="sets-wrap">${secs}</div>`;
-  el.innerHTML=noGoalHint+topBarHTML(statsHTML,'collect',f,UI.collapseC,'toggleCollapseC()','renderCollect',extra)+wrap;
+  el.innerHTML=noGoalHint+topBarHTML(statsHTML,'collect',f,UI.collapseC,'toggleCollapseC()','renderCollect','')+wrap;
 }
 
 /* ══════════════════════════════════
@@ -1250,8 +1278,6 @@ function renderTrade(){
     return;
   }
 
-  // 스크린샷 버튼 - 항상 단일 버튼, 뷰모드에 따라 다르게 찍힘
-  const tradeShotBtn=`<button class="shot-btn" onclick="exportScreenshot()">📸</button>`;
   const _tSecBd=!tf.flatView?'var(--blue)':'var(--bd2)';
   const _tSecBg=!tf.flatView?'var(--s3)':'var(--s2)';
   const _tFlatBd=tf.flatView?'var(--blue)':'var(--bd2)';
@@ -1262,7 +1288,6 @@ function renderTrade(){
     <button class="ctrl-btn${!tf.albs.length?' active':''}" onclick="setTradeAlb(null)">${lang==='ko'?'전체':'All'}</button>
     ${DB.albumTypes.map(a=>`<button class="ctrl-btn" onclick="setTradeAlb('${a.id}')" style="${tf.albs.includes(a.id)?`background:${a.color};border-color:${a.color};color:#fff`:`border-color:${a.color}55;color:${a.color}`}">${a.shortName}</button>`).join('')}
     <div class="spacer"></div>
-    ${tradeShotBtn}
     ${tradeViewIcons}
   </div>`;
 
@@ -1321,7 +1346,7 @@ function buildTradeSets(cards,mode){
         const cnt=mode==='want'?wt(card.id):sp(card.id);
         return`<div class="pct" style="border-color:${bdCol}" data-id="${card.id}">
           <div class="pci" onclick="openFull('${card.id}')">
-            ${card.img?`<img data-src="${card.img}" alt="${card.name}" crossorigin="anonymous">`:`<div class="pcph">${card.name}</div>`}
+            ${card.img?`<img src="${card.img}" alt="${card.name}" loading="lazy" crossorigin="anonymous">`:`<div class="pcph">${card.name}</div>`}
           </div>
           <div class="pc-strip" style="color:${txCol};background:${bg}">${mode==='want'?'−':'+'} ${cnt}장</div>
         </div>`;
@@ -1346,7 +1371,7 @@ function buildTradeSets(cards,mode){
           const cnt=mode==='want'?wt(card.id):sp(card.id);
           return`<div class="pct" style="border-color:${bdCol}" data-id="${card.id}">
             <div class="pci" onclick="openFull('${card.id}')">
-              ${card.img?`<img data-src="${card.img}" alt="${card.name}" crossorigin="anonymous">`:`<div class="pcph">${card.name}</div>`}
+              ${card.img?`<img src="${card.img}" alt="${card.name}" loading="lazy" crossorigin="anonymous">`:`<div class="pcph">${card.name}</div>`}
             </div>
             <div class="pc-strip" style="color:${txCol};background:${bg}">${mode==='want'?'−':'+'} ${cnt}장</div>
           </div>`;
