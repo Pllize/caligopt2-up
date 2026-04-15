@@ -532,7 +532,9 @@
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: jin_loid"
             },
             {
               "id": "c_mnrkgridvrs",
@@ -800,7 +802,9 @@
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: jin_loid"
             },
             {
               "id": "c_mnumqrlccpz",
@@ -1134,12 +1138,14 @@
             {
               "id": "c_mnrmbgh11o7",
               "name": "은호",
-              "img": null,
+              "img": "./images/cards/c_mnrmbgh11o7.webp",
               "cardType": "Individual",
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1,
+              "contributor": "제보: jin_loid"
             },
             {
               "id": "c_mnrmbgo9mxu",
