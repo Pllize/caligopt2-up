@@ -113,21 +113,43 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .pci img[data-src]{opacity:0;transition:opacity .2s}
 .pci img.img-loaded{opacity:1}
 
-/* ── 스크린샷 고정 버튼 ── */
+/* ── 스크린샷 FAB ── */
 .shot-fab{
-  position:fixed;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 10px);right:12px;
-  z-index:200;
-  width:48px;height:48px;
+  position:fixed;
+  bottom:calc(60px + env(safe-area-inset-bottom,0px) + 14px);
+  right:12px;
+  z-index:201;
+  width:52px;height:52px;
   border-radius:50%;
   background:linear-gradient(135deg,#4f8aff,#8b5cf6);
-  color:#fff;font-size:22px;
+  color:#fff;font-size:24px;
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 3px 14px rgba(79,138,255,.45);
+  box-shadow:0 4px 18px rgba(79,138,255,.55),0 0 0 3px rgba(255,255,255,.15);
   border:none;cursor:pointer;
   transition:transform .15s,box-shadow .15s;
 }
-.shot-fab:active{transform:scale(.9);}
-@media(orientation:landscape){.shot-fab{bottom:16px;}}
+.shot-fab:active{transform:scale(.88);}
+/* 위로가기 버튼은 FAB 바로 위에 배치 */
+.scroll-top-btn{
+  position:fixed;
+  right:15px;
+  bottom:calc(60px + env(safe-area-inset-bottom,0px) + 80px);
+  width:34px;height:34px;
+  border-radius:50%;
+  background:var(--s1);
+  border:1px solid var(--bd2);
+  color:var(--tx2);font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .2s;
+  z-index:201;
+  box-shadow:0 2px 8px rgba(0,0,0,.18);
+}
+.scroll-top-btn.vis{opacity:1;pointer-events:auto}
+@media(orientation:landscape){
+  .shot-fab{bottom:20px;}
+  .scroll-top-btn{bottom:84px;}
+}
 .pcg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
 /* few: ≤5 cards, cap width so cards don't become huge */
 .pcg.few{grid-template-columns:repeat(var(--few-cols),minmax(0,calc(var(--card-min)*1.7)));justify-content:start}
@@ -239,8 +261,6 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .toast{background:var(--tx);color:var(--bg);padding:7px 16px;border-radius:20px;font-size:12px;font-weight:700;animation:tin .2s,tout .3s 1.8s forwards;white-space:nowrap}
 @keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes tout{to{opacity:0}}
-.scroll-top-btn{position:fixed;right:12px;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 10px);width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;z-index:200;box-shadow:0 2px 10px rgba(79,138,255,.35)}
-@media(orientation:landscape){.scroll-top-btn{bottom:16px}}
 .scroll-top-btn.vis{opacity:1;pointer-events:auto}
 /* ── NOTICE ── */
 .notice-badge{position:absolute;top:-4px;right:-4px;width:8px;height:8px;border-radius:50%;background:var(--want);border:2px solid var(--s1);display:none}
@@ -315,7 +335,10 @@ iframe[name^="google_ads"]{display:none!important}
 <!-- FULLSCREEN CARD -->
 <div class="fs-ov" id="fsov">
   <div class="fs-inner">
-    <div class="fs-img-wrap"><div id="fs-img"></div></div>
+    <div class="fs-img-wrap">
+      <div id="fs-img"></div>
+    </div>
+    <div id="fs-contributor" style="display:none;font-size:10px;color:rgba(255,255,255,.45);text-align:center;margin-top:5px">📸 <span id="fs-contributor-name"></span></div>
     <div class="fs-name" id="fs-name"></div>
     <div class="fs-meta" id="fs-meta"></div>
     <div class="fs-chips" id="fs-chips"></div>
@@ -340,13 +363,7 @@ iframe[name^="google_ads"]{display:none!important}
     <div class="fs-bottom">
       <button class="fs-hide-btn" id="fs-hide-btn" onclick="toggleHide()"></button>
       <textarea class="fs-memo" id="fs-memo" placeholder="메모..." rows="2" oninput="saveMemo()"></textarea>
-      <button class="fs-report-btn" onclick="toggleReportForm()" id="fs-report-toggle-btn">📷 사진/오류 제보</button>
-      <div class="fs-report-form" id="fs-report-form" style="display:none">
-        <div style="font-size:11px;color:rgba(180,140,255,.9);margin-bottom:7px;font-weight:700">📷 사진/오류 제보</div>
-        <textarea id="report-text" rows="3" placeholder="제보 내용을 입력해 주세요 (카드명, 수정 내용 등)..."></textarea>
-        <input type="file" id="report-file" accept="image/*" class="fs-report-file">
-        <button class="fs-report-submit" onclick="submitReport()">제보 보내기 →</button>
-      </div>
+      <button class="fs-report-btn" onclick="window.open('https://open.kakao.com/o/gVl9yBqi','_blank')" id="fs-report-toggle-btn">💬 카드/오류 제보 (오픈카톡)</button>
       <button class="fs-close" onclick="closeFull()" id="fs-close-btn">✕ 닫기</button>
     </div>
   </div>
@@ -430,7 +447,7 @@ const T={
     tabs:['수집','교환','목표','공지','사용법'],
     lsShot:'📸 스크린샷',lsTheme:'☀️ 테마 전환',lsLang:'🌐 English',lsSet:'💾 저장',
     fsFiltTtl:'🔍 필터 설정',fsFiltReset:'초기화',fsFiltApply:'적용',
-    fsLblColl:'수집',fsLblGoal:'목표',fsClose:'✕ 닫기',fsReport:'📷 사진/오류 제보',
+    fsLblColl:'수집',fsLblGoal:'목표',fsClose:'✕ 닫기',fsReport:'💬 카드/오류 제보 (오픈카톡)',
     setTtl:'⚙️ 설정',setBackupBtn:'💾 지금 백업하기',setRestoreBtn:'📂 백업 파일로 복원하기',setResetBtn:'⚠️ 전체 초기화',setCloseBtn:'닫기',
     wizTtl:'🎯 빠른 목표 설정',
     statAll:'전체',statColl:'수집',statGoal:'달성',
@@ -477,7 +494,7 @@ const T={
     tabs:['Collection','Exchange','Target','Notice','How to Use'],
     lsShot:'📸 Screenshot',lsTheme:'☀️ Theme',lsLang:'🌐 한국어',lsSet:'💾 Save',
     fsFiltTtl:'🔍 Filter',fsFiltReset:'Reset',fsFiltApply:'Apply',
-    fsLblColl:'Collected',fsLblGoal:'Target',fsClose:'✕ Close',fsReport:'📷 Photo/Error Report',
+    fsLblColl:'Collected',fsLblGoal:'Target',fsClose:'✕ Close',fsReport:'💬 Card/Error Report (KakaoTalk)',
     setTtl:'⚙️ Settings',setBackupBtn:'💾 Backup Now',setRestoreBtn:'📂 Restore from Backup',setResetBtn:'⚠️ Reset All Data',setCloseBtn:'Close',
     wizTtl:'🎯 Quick Target Setup',
     statAll:'Total',statColl:'Collected',statGoal:'Goal',
@@ -538,8 +555,6 @@ function applyLang(){
   const fcb=document.getElementById('fs-close-btn');if(fcb)fcb.textContent=t('fsClose');
   const frb=document.getElementById('fs-report-toggle-btn');if(frb)frb.textContent=t('fsReport');
   const memo=document.getElementById('fs-memo');if(memo)memo.placeholder=t('memoPlaceholder');
-  const rt=document.getElementById('report-text');if(rt)rt.placeholder=t('reportPlaceholder');
-  const rBtn=document.querySelector('.fs-report-submit');if(rBtn)rBtn.textContent=t('reportSend');
   const setTtl=document.getElementById('set-ttl');if(setTtl)setTtl.textContent=t('setTtl');
   renderNav();
 }
@@ -558,7 +573,6 @@ const MU={
   '은호': ['댕댕즈','노라인','야타즈','댕냥즈'],
   '하민': ['예라인','냥냥즈','댄라즈','댕냥즈'],
 };
-const REPORT_EMAIL='pllize0312@gmail.com';
 
 /* ══════════════════════════════════
    STATE
@@ -1395,9 +1409,13 @@ function openFull(id){
   document.getElementById('fs-img').innerHTML=card.img?`<img class="fsimg" src="${card.img}" alt="${card.name}">`:`<div class="fsph-big">📷</div>`;
   document.getElementById('fs-name').textContent=card.name;
   document.getElementById('fs-meta').textContent=`${alb.name} · ${set.name}`;
-  document.getElementById('fs-report-form').style.display='none';
   updFull();
   const m=document.getElementById('fs-memo');if(m)m.value=mo(id);
+  // 제보자 이름 표시
+  const contrib=card.contributor||'';
+  const cd=document.getElementById('fs-contributor');
+  const cn=document.getElementById('fs-contributor-name');
+  if(cd&&cn){cd.style.display=contrib?'block':'none';cn.textContent=contrib;}
   document.getElementById('fsov').classList.add('open');
   // 풀스크린 이미지 워터마크
   requestAnimationFrame(()=>{
@@ -1428,41 +1446,7 @@ function closeFull(){document.getElementById('fsov').classList.remove('open');fs
 function fsAdj(d){if(!fsId)return;ST.collected[fsId]=Math.max(0,(ST.collected[fsId]||0)+d);saveST();updFull();patchTile(fsId);if(d>0){const gv=g(fsId),cv=c(fsId);if(gv>0&&cv===gv)toast(t('achToast'));}}
 function fsGoal(d){if(!fsId)return;setGoalById(fsId,g(fsId)+d);updFull();patchTile(fsId);}
 
-/* ── REPORT FORM ── */
-function toggleReportForm(){
-  const form=document.getElementById('fs-report-form');
-  form.style.display=form.style.display==='none'?'block':'none';
-}
-async function submitReport(){
-  const textEl=document.getElementById('report-text');
-  const fileEl=document.getElementById('report-file');
-  const txt=textEl.value.trim();
-  if(!txt){toast(t('reportEmpty'));return;}
-  const r=findCard(fsId);
-  const cardInfo=r?`${r.alb.name} › ${r.set.name} › ${r.card.name}`:'Unknown';
-  // Build mailto
-  const subject=encodeURIComponent(`[포카 제보] ${cardInfo}`);
-  const bodyLines=[
-    `카드 정보: ${cardInfo}`,
-    ``,
-    `제보 내용:`,
-    txt,
-    ``,
-    `---`,
-    `Sent from Caligo Pt.2 포토카드 수집 트래커`,
-  ];
-  if(fileEl.files&&fileEl.files[0]){
-    bodyLines.splice(4,0,`첨부 파일: ${fileEl.files[0].name} (이메일에 수동으로 첨부해 주세요)`);
-  }
-  const body=encodeURIComponent(bodyLines.join('\n'));
-  const mailto=`mailto:${REPORT_EMAIL}?subject=${subject}&body=${body}`;
-  // Open mail client
-  window.location.href=mailto;
-  toast(t('reportSent'));
-  // Reset form
-  textEl.value='';fileEl.value='';
-  document.getElementById('fs-report-form').style.display='none';
-}
+/* ── REPORT: 오픈카톡으로 대체됨 ── */
 
 /* ══════════════════════════════════
    WIZARD
@@ -1669,11 +1653,10 @@ function renderUsage(){
   </div>
 
   <div class="use-sec">
-    <h3>📷 카드 사진 / 오류 제보</h3>
+    <h3>💬 카드 사진 / 오류 제보</h3>
     <div style="font-size:12px;color:var(--tx2);line-height:1.9;margin-top:4px">
-      카드 클릭 → <b>📷 사진/오류 제보</b> 버튼<br>
-      내용 작성 후 전송하면 메일 앱이 열려요<br>
-      직접 보내실 경우: <b>${REPORT_EMAIL}</b>
+      카드 클릭 → <b>💬 카드/오류 제보 (오픈카톡)</b> 버튼<br>
+      오픈카톡 채팅방에서 카드명·오류 내용을 알려주세요!
     </div>
   </div>
 

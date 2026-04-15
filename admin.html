@@ -826,6 +826,10 @@ function buildCardModal(card){
     <div class="fg"><label class="fl">메모 💬</label>
       <textarea class="memo-textarea" placeholder="예: 랜덤 포카 SSR · 홀로그램 · 한정 특전 등 특징을 적어주세요" oninput="updEditField('memo',this.value)">${escH(card.memo||'')}</textarea>
     </div>
+    <div class="fg"><label class="fl">📸 제보자 이름 <span style="font-weight:400;color:var(--tx3)">(선택)</span></label>
+      <input id="cm-contributor" value="${escH(card.contributor||'')}" placeholder="제보해 주신 분 닉네임 (비워도 됩니다)" oninput="updEditField('contributor',this.value)">
+      <div style="font-size:10px;color:var(--tx3);margin-top:3px">카드 상세 화면에만 표시됩니다.</div>
+    </div>
     <div style="font-size:10px;color:var(--tx3);padding:6px 8px;background:var(--sur2);border-radius:var(--r-sm);display:flex;gap:10px;flex-wrap:wrap">
       <span><span style="color:var(--tx2)">EN:</span> ${enInfo}</span>
       <span><span style="color:var(--tx2)">ID:</span> ${card.id}</span>
