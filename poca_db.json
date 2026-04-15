@@ -821,52 +821,52 @@
           "cards": [
             {
               "id": "pb_B_1",
-              "name": "예준",
+              "name": "몌무",
               "img": null,
-              "cardType": "Individual",
-              "member": "예준",
+              "cardType": "MMMM",
+              "member": null,
               "unit": null,
-              "mmmm": null,
+              "mmmm": "몌무",
               "memo": ""
             },
             {
               "id": "pb_B_2",
-              "name": "노아",
+              "name": "뫄",
               "img": null,
-              "cardType": "Individual",
-              "member": "노아",
+              "cardType": "MMMM",
+              "member": null,
               "unit": null,
-              "mmmm": null,
+              "mmmm": "뫄",
               "memo": ""
             },
             {
               "id": "pb_B_3",
-              "name": "밤비",
+              "name": "미므",
               "img": null,
-              "cardType": "Individual",
-              "member": "밤비",
+              "cardType": "MMMM",
+              "member": null,
               "unit": null,
-              "mmmm": null,
+              "mmmm": "미므",
               "memo": ""
             },
             {
               "id": "pb_B_4",
-              "name": "은호",
+              "name": "므모",
               "img": null,
-              "cardType": "Individual",
-              "member": "은호",
+              "cardType": "MMMM",
+              "member": null,
               "unit": null,
-              "mmmm": null,
+              "mmmm": "므모",
               "memo": ""
             },
             {
               "id": "c_mnrmaixt48d",
-              "name": "하민",
+              "name": "먀미",
               "img": null,
-              "cardType": "Individual",
-              "member": "하민",
+              "cardType": "MMMM",
+              "member": null,
               "unit": null,
-              "mmmm": null,
+              "mmmm": "먀미",
               "memo": ""
             }
           ]
@@ -1712,7 +1712,7 @@
             {
               "id": "c_9581da3a4",
               "name": "노아",
-              "img": null,
+              "img": "./images/cards/c_9581da3a4.webp",
               "cardType": "Individual",
               "member": "노아",
               "unit": null,
@@ -1732,7 +1732,7 @@
             {
               "id": "c_4406beb1e",
               "name": "은호",
-              "img": null,
+              "img": "./images/cards/c_4406beb1e.webp",
               "cardType": "Individual",
               "member": "은호",
               "unit": null,
@@ -1792,7 +1792,7 @@
             {
               "id": "c_a25551f43",
               "name": "하민",
-              "img": null,
+              "img": "./images/cards/c_a25551f43.webp",
               "cardType": "Individual",
               "member": "하민",
               "unit": null,
