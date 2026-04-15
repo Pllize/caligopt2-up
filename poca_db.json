@@ -1066,7 +1066,7 @@
             {
               "id": "c_mnrmdbebdhx",
               "name": "예준",
-              "img": null,
+              "img": "./images/cards/c_mnrmdbebdhx.webp",
               "cardType": "Individual",
               "member": "예준",
               "unit": null,
@@ -1076,7 +1076,7 @@
             {
               "id": "c_mnrmdbitiur",
               "name": "노아",
-              "img": null,
+              "img": "./images/cards/c_mnrmdbitiur.webp",
               "cardType": "Individual",
               "member": "노아",
               "unit": null,
