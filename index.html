@@ -580,7 +580,11 @@ let searchQuery={collect:'', goals:''}; // 검색어 상태
    STORAGE
 ══════════════════════════════════ */
 function loadDB(){const s=localStorage.getItem(DB_KEY);if(s)try{DB=JSON.parse(s);}catch(e){}}
-function saveDB(){if(DB)try{localStorage.setItem(DB_KEY,JSON.stringify(DB));}catch(e){}}
+function _loadRawDB(){const s=localStorage.getItem(DB_KEY+'_raw');if(s)try{return JSON.parse(s);}catch(e){}return null;}
+function saveDB(){
+  if(!DB)return;
+  try{localStorage.setItem(DB_KEY,JSON.stringify(DB));}catch(e){}
+}
 function loadST(){const s=localStorage.getItem(ST_KEY);if(s)try{ST=JSON.parse(s);}catch(e){}ST.goals=ST.goals||{};ST.collected=ST.collected||{};ST.memos=ST.memos||{};ST.hidden=ST.hidden||{};}
 function loadUI(){
   const s=localStorage.getItem(UI_KEY);
@@ -2255,7 +2259,37 @@ function init(){
   document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--tx2);font-size:13px">📦 DB 로딩 중...</div>';
   fetch('./poca_db.json')
     .then(r=>r.json())
-    .then(d=>{DB=d;saveDB();_invalidateDBCache();renderCur();})
+    .then(d=>{
+      DB=d;
+      // 원본(imgV 처리 전) DB를 별도 키에 저장 → 다음 로드 시 버전 비교용
+      try{localStorage.setItem(DB_KEY+'_raw',JSON.stringify(d));}catch(e){}
+      // 카드별 imgV 처리:
+      // - imgV 있는 카드만 URL에 ?v=X 추가
+      // - localStorage의 구버전 DB와 비교해 버전이 올라간 카드의 _BC 캐시 삭제
+      const oldDB=_loadRawDB(); // localStorage 원본 (버전 처리 전)
+      const oldImgMap=new Map(); // cardId → {img, imgV}
+      if(oldDB){
+        for(const alb of (oldDB.albumTypes||[]))
+          for(const set of alb.sets)
+            for(const card of set.cards)
+              oldImgMap.set(card.id,{img:card.img,imgV:card.imgV||1});
+      }
+      for(const alb of DB.albumTypes)
+        for(const set of alb.sets)
+          for(const card of set.cards){
+            if(!card.img)continue;
+            const newV=card.imgV||1;
+            if(newV>1)card.img=card.img+'?v='+newV;
+            // 버전이 올라갔으면 구버전 URL을 _BC에서 제거
+            const old=oldImgMap.get(card.id);
+            if(old&&old.imgV&&old.imgV<newV){
+              const oldUrl=old.imgV>1?old.img+'?v='+old.imgV:old.img;
+              _BC.delete(oldUrl);
+              _BP.delete(oldUrl);
+            }
+          }
+      saveDB();_invalidateDBCache();renderCur();
+    })
     .catch(()=>{loadDB();if(DB){_invalidateDBCache();renderCur();}else document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--want)">⚠️ poca_db.json을 같은 폴더에 두고 웹서버로 열어주세요.</div>';});
   document.getElementById('main').addEventListener('scroll',function(){const btn=document.getElementById('scroll-top-btn');if(btn)btn.classList.toggle('vis',this.scrollTop>200);},{passive:true});
   // orientation: 300ms 대기 (iOS에서 뷰포트 확정 후 렌더)
