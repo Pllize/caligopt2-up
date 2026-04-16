@@ -704,7 +704,9 @@
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_mnrkif4g51h",
@@ -915,52 +917,57 @@
             {
               "id": "pb_B_1",
               "name": "몌무",
-              "img": null,
+              "img": "./images/cards/pb_B_1.webp",
               "cardType": "MMMM",
               "member": null,
               "unit": null,
               "mmmm": "몌무",
-              "memo": ""
+              "memo": "",
+              "imgV": 1
             },
             {
               "id": "pb_B_2",
               "name": "뫄",
-              "img": null,
+              "img": "./images/cards/pb_B_2.webp",
               "cardType": "MMMM",
               "member": null,
               "unit": null,
               "mmmm": "뫄",
-              "memo": ""
+              "memo": "",
+              "imgV": 1
             },
             {
               "id": "pb_B_3",
               "name": "미므",
-              "img": null,
+              "img": "./images/cards/pb_B_3.webp",
               "cardType": "MMMM",
               "member": null,
               "unit": null,
               "mmmm": "미므",
-              "memo": ""
+              "memo": "",
+              "imgV": 1
             },
             {
               "id": "pb_B_4",
               "name": "므모",
-              "img": null,
+              "img": "./images/cards/pb_B_4.webp",
               "cardType": "MMMM",
               "member": null,
               "unit": null,
               "mmmm": "므모",
-              "memo": ""
+              "memo": "",
+              "imgV": 1
             },
             {
               "id": "c_mnrmaixt48d",
               "name": "먀미",
-              "img": null,
+              "img": "./images/cards/c_mnrmaixt48d.webp",
               "cardType": "MMMM",
               "member": null,
               "unit": null,
               "mmmm": "먀미",
-              "memo": ""
+              "memo": "",
+              "imgV": 1
             }
           ]
         },
@@ -1560,7 +1567,7 @@
           "cards": [
             {
               "id": "c_mnvexpmc926",
-              "name": "예준",
+              "name": "예준 (Caligo)",
               "img": null,
               "cardType": "Individual",
               "member": "예준",
@@ -1570,7 +1577,7 @@
             },
             {
               "id": "c_mnvexpmc2m9",
-              "name": "노아",
+              "name": "노아 (Caligo)",
               "img": null,
               "cardType": "Individual",
               "member": "노아",
@@ -1580,7 +1587,7 @@
             },
             {
               "id": "c_mnvexpmc678",
-              "name": "밤비",
+              "name": "밤비 (Caligo)",
               "img": null,
               "cardType": "Individual",
               "member": "밤비",
@@ -1590,7 +1597,7 @@
             },
             {
               "id": "c_mnvexpmck2r",
-              "name": "은호",
+              "name": "은호 (Caligo)",
               "img": null,
               "cardType": "Individual",
               "member": "은호",
@@ -1600,7 +1607,7 @@
             },
             {
               "id": "c_mnvexpmcwbc",
-              "name": "하민",
+              "name": "하민 (Caligo)",
               "img": null,
               "cardType": "Individual",
               "member": "하민",
@@ -3291,12 +3298,13 @@
             {
               "id": "c_mnv4ji4onzc",
               "name": "예준",
-              "img": null,
+              "img": "./images/cards/c_mnv4ji4onzc.webp",
               "cardType": "Individual",
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1
             },
             {
               "id": "c_mnv4ji4o4dv",
@@ -3331,12 +3339,13 @@
             {
               "id": "c_mnv4ji4obpl",
               "name": "하민",
-              "img": null,
+              "img": "./images/cards/c_mnv4ji4obpl.webp",
               "cardType": "Individual",
               "member": "하민",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1
             }
           ]
         },
@@ -3683,52 +3692,57 @@
             {
               "id": "c_mo0a0hkr20t",
               "name": "예준",
-              "img": null,
+              "img": "./images/cards/c_mo0a0hkr20t.webp",
               "cardType": "Individual",
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1
             },
             {
               "id": "c_mo0a0hkrnil",
               "name": "노아",
-              "img": null,
+              "img": "./images/cards/c_mo0a0hkrnil.webp",
               "cardType": "Individual",
               "member": "노아",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1
             },
             {
               "id": "c_mo0a0hkrf0w",
               "name": "밤비",
-              "img": null,
+              "img": "./images/cards/c_mo0a0hkrf0w.webp",
               "cardType": "Individual",
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1
             },
             {
               "id": "c_mo0a0hkrlgv",
               "name": "은호",
-              "img": null,
+              "img": "./images/cards/c_mo0a0hkrlgv.webp",
               "cardType": "Individual",
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1
             },
             {
               "id": "c_mo0a0hkr1g9",
               "name": "하민",
-              "img": null,
+              "img": "./images/cards/c_mo0a0hkr1g9.webp",
               "cardType": "Individual",
               "member": "하민",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1
             }
           ]
         }
