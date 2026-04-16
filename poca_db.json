@@ -3370,32 +3370,38 @@
             {
               "id": "c_mnv4ji4o4dv",
               "name": "노아",
-              "img": null,
+              "img": "./images/cards/c_mnv4ji4o4dv.webp",
               "cardType": "Individual",
               "member": "노아",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1,
+              "contributor": "제보: seoh_03"
             },
             {
               "id": "c_mnv4ji4oxpy",
               "name": "밤비",
-              "img": null,
+              "img": "./images/cards/c_mnv4ji4oxpy.webp",
               "cardType": "Individual",
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1,
+              "contributor": "제보: seoh_03"
             },
             {
               "id": "c_mnv4ji4oo08",
               "name": "은호",
-              "img": null,
+              "img": "./images/cards/c_mnv4ji4oo08.webp",
               "cardType": "Individual",
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1,
+              "contributor": "제보: seoh_03"
             },
             {
               "id": "c_mnv4ji4obpl",
