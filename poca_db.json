@@ -567,7 +567,9 @@
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: plli.nuoung"
             },
             {
               "id": "c_mnrkgry2kc4",
@@ -668,7 +670,9 @@
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: plli.nuoung"
             },
             {
               "id": "c_mnrkieiku18",
@@ -748,7 +752,9 @@
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: plli.nuoung"
             },
             {
               "id": "c_mnum9zj3jem",
@@ -1024,12 +1030,14 @@
             {
               "id": "c_mnrmap8b4t5",
               "name": "은호",
-              "img": null,
+              "img": "./images/cards/c_mnrmap8b4t5.webp",
               "cardType": "Individual",
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1,
+              "contributor": "제보: plli.nuoung"
             },
             {
               "id": "c_mnrmape2e2u",
@@ -1270,7 +1278,9 @@
               "member": "노아",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: plli.nuoung"
             },
             {
               "id": "inv_B_3",
@@ -1442,7 +1452,9 @@
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: plli.nuoung"
             },
             {
               "id": "c_mnrm7xqt4wn",
@@ -1482,7 +1494,9 @@
               "member": "노아",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: plli.nuoung"
             },
             {
               "id": "c_mnrm7yohy1i",
@@ -2001,7 +2015,9 @@
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: plli.nuoung"
             },
             {
               "id": "c_f67d743a6",
@@ -2097,7 +2113,9 @@
               "member": "하민",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: plli.nuoung"
             }
           ]
         }
