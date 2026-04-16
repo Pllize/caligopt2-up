@@ -935,7 +935,8 @@
               "unit": null,
               "mmmm": "뫄",
               "memo": "",
-              "imgV": 1
+              "imgV": 2,
+              "contributor": "제보: 익명의 플리님"
             },
             {
               "id": "pb_B_3",
@@ -2154,7 +2155,9 @@
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: 익명의 플리님"
             },
             {
               "id": "c_25a751494",
