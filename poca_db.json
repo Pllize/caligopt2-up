@@ -1533,7 +1533,9 @@
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_mnrm7yu1xmk",
@@ -1568,102 +1570,122 @@
             {
               "id": "c_mnvexpmc926",
               "name": "예준 (Caligo)",
-              "img": null,
+              "img": "./images/cards/c_mnvexpmc926.webp",
               "cardType": "Individual",
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_mnvexpmc2m9",
               "name": "노아 (Caligo)",
-              "img": null,
+              "img": "./images/cards/c_mnvexpmc2m9.webp",
               "cardType": "Individual",
               "member": "노아",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_mnvexpmc678",
               "name": "밤비 (Caligo)",
-              "img": null,
+              "img": "./images/cards/c_mnvexpmc678.webp",
               "cardType": "Individual",
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_mnvexpmck2r",
               "name": "은호 (Caligo)",
-              "img": null,
+              "img": "./images/cards/c_mnvexpmck2r.webp",
               "cardType": "Individual",
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_mnvexpmcwbc",
               "name": "하민 (Caligo)",
-              "img": null,
+              "img": "./images/cards/c_mnvexpmcwbc.webp",
               "cardType": "Individual",
               "member": "하민",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_mnvexq3qqm0",
               "name": "예준",
-              "img": null,
+              "img": "./images/cards/c_mnvexq3qqm0.webp",
               "cardType": "Individual",
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_mnvexq3qq58",
               "name": "노아",
-              "img": null,
+              "img": "./images/cards/c_mnvexq3qq58.webp",
               "cardType": "Individual",
               "member": "노아",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_mnvexq3qo95",
               "name": "밤비",
-              "img": null,
+              "img": "./images/cards/c_mnvexq3qo95.webp",
               "cardType": "Individual",
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_mnvexq3qj76",
               "name": "은호",
-              "img": null,
+              "img": "./images/cards/c_mnvexq3qj76.webp",
               "cardType": "Individual",
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_mnvexq3q345",
               "name": "하민",
-              "img": null,
+              "img": "./images/cards/c_mnvexq3q345.webp",
               "cardType": "Individual",
               "member": "하민",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 1,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_mnvexsjw8wx",
@@ -1673,7 +1695,9 @@
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_mnvexsjwps0",
@@ -1683,7 +1707,9 @@
               "member": "노아",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_mnvexsjw4ta",
@@ -1693,7 +1719,9 @@
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_mnvexsjwq50",
@@ -1703,7 +1731,9 @@
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_mnvexsjwr3d",
@@ -1713,7 +1743,9 @@
               "member": "하민",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_mnvexxo888f",
@@ -1723,7 +1755,8 @@
               "member": null,
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "contributor": "제보: 우리복숭아는물어요"
             }
           ]
         }
@@ -1892,7 +1925,9 @@
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: 우리복숭아는물어요"
             },
             {
               "id": "c_4406beb1e",
