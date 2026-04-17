@@ -1792,30 +1792,29 @@ function _roundRect(ctx,x,y,w,h,r){
 // idx: flatView일 때 우상단에 표시할 순서 번호 (0이면 표시 안 함)
 async function _drawCard(ctx,card,x,y,cw,mode,showMeta,albColor,albShort,setName,dark,idx){
   const imgH=Math.round(cw*1.4);
-  const badgeH=16; // 높이 13→16 (가시성 향상)
+  const badgeH=16;
   const metaH=showMeta?20:0;
   const totalH=imgH+badgeH+metaH;
 
   const bCol=mode==='w'?'rgba(244,63,94,.45)':mode==='h'?'rgba(59,130,246,.45)':'rgba(0,0,0,.15)';
-  const sBg=mode==='w'?'#f43f5e':mode==='h'?'#3b82f6':'rgba(0,0,0,.07)'; // 배경 불투명 강화
-  const sCol='#fff'; // 흰색 텍스트로 대비 극대화
+  const sBg=mode==='w'?'rgba(244,63,94,.75)':mode==='h'?'rgba(59,130,246,.75)':'rgba(0,0,0,.35)';
+  const sCol='#fff';
   const bgFill=mode==='collect'?(albColor||'#4f8aff')+'22':mode==='w'?'rgba(244,63,94,.10)':'rgba(59,130,246,.10)';
 
-  // 카드 외곽 (둥근 테두리)
+  // 카드 외곽 clip
   ctx.save();
   _roundRect(ctx,x,y,cw,totalH,3);
   ctx.clip();
 
-  // 이미지 영역 배경
+  // 이미지 배경
   ctx.fillStyle=bgFill;
   ctx.fillRect(x,y,cw,imgH);
 
-  // 이미지 그리기
+  // 이미지
   const dataUrl=card.img?_BC.get(card.img):null;
   if(dataUrl){
     const imgEl=await _loadImgEl(dataUrl);
     if(imgEl){
-      // cover fit
       const ar=imgEl.naturalWidth/imgEl.naturalHeight;
       let sw,sh,sx,sy;
       if(ar>cw/imgH){sh=imgH;sw=sh*ar;sx=x-(sw-cw)/2;sy=y;}
@@ -1824,24 +1823,25 @@ async function _drawCard(ctx,card,x,y,cw,mode,showMeta,albColor,albShort,setName
     }
   }
 
-  // 순서 번호 배지 (우상단, flatView 전용)
+  // 순서 번호 배지 (우상단, flatView 전용) — 반투명 배경 + 큰 숫자
   if(idx){
-    const bw=idx>=10?18:14;
-    const bh=14;
+    const numStr=String(idx);
+    const bw=idx>=100?24:idx>=10?20:16;
+    const bh=16;
     const bx=x+cw-bw-2;
     const by=y+2;
-    ctx.fillStyle='rgba(0,0,0,.72)';
+    ctx.fillStyle='rgba(0,0,0,.55)';
     _roundRect(ctx,bx,by,bw,bh,4);
     ctx.fill();
     ctx.fillStyle='#fff';
-    ctx.font=`800 9px "Outfit",sans-serif`;
+    ctx.font=`800 11px "Outfit",sans-serif`;
     ctx.textAlign='center';
     ctx.textBaseline='middle';
-    ctx.fillText(String(idx),bx+bw/2,by+bh/2);
+    ctx.fillText(numStr,bx+bw/2,by+bh/2);
     ctx.textBaseline='alphabetic';
   }
 
-  // 배지 (mode collect: 상태 뱃지)
+  // 하단 배지 (수량/상태)
   if(mode==='collect'){
     const cv=c(card.id),gv=g(card.id),st=sts(card.id);
     let stTx='';
@@ -1849,7 +1849,7 @@ async function _drawCard(ctx,card,x,y,cw,mode,showMeta,albColor,albShort,setName
     else if(st==='h'&&gv>0)stTx=`+${cv-gv}`;
     else if(st==='h')stTx=`✨${cv}`;
     else if(st==='c')stTx=`−${gv-cv}`;
-    const stBg=st==='m'?'#22c55e':st==='h'?'#3b82f6':st==='c'?'#f43f5e':'rgba(0,0,0,.3)';
+    const stBg=st==='m'?'rgba(34,197,94,.75)':st==='h'?'rgba(59,130,246,.75)':st==='c'?'rgba(244,63,94,.75)':'rgba(0,0,0,.35)';
     ctx.fillStyle=stBg;
     ctx.fillRect(x,y+imgH,cw,badgeH);
     ctx.fillStyle='#fff';
@@ -1861,14 +1861,14 @@ async function _drawCard(ctx,card,x,y,cw,mode,showMeta,albColor,albShort,setName
     ctx.fillStyle=sBg;
     ctx.fillRect(x,y+imgH,cw,badgeH);
     ctx.fillStyle=sCol;
-    ctx.font=`800 9px "Outfit",sans-serif`;
+    ctx.font=`800 10px "Outfit",sans-serif`;
     ctx.textAlign='center';
     ctx.fillText((mode==='w'?'−':'+')+' '+cnt,x+cw/2,y+imgH+11);
   }
 
   // 메타 (앨범 + 세트)
   if(showMeta){
-    ctx.fillStyle=dark?'rgba(255,255,255,.05)':'rgba(0,0,0,.05)';
+    ctx.fillStyle=dark?'rgba(255,255,255,.06)':'rgba(0,0,0,.06)';
     ctx.fillRect(x,y+imgH+badgeH,cw,metaH);
     ctx.fillStyle=dark?'#7a8fb0':'#5a6a90';
     ctx.font=`500 6px "Noto Sans KR",sans-serif`;
@@ -1987,14 +1987,16 @@ async function exportScreenshot(){
   const sideW=lscape&&both?Math.floor((canvasW-PAD*2-GAP*2)/2):canvasW-PAD*2;
   const cw=Math.floor((sideW-GAP*(COLS-1))/COLS);
   const imgH=Math.round(cw*1.4);
-  const badgeH=13;
-  const cardH=imgH+badgeH;
+  const badgeH=16;           // _drawCard와 동일
+  const metaH_flat=20;       // flatView일 때 메타 포함
+  const cardH=imgH+badgeH;             // 세트별: 메타 없음
+  const cardH_flat=imgH+badgeH+metaH_flat; // flatView: 메타 포함
 
-  // 높이 계산 (헤더 + 각 섹션)
+  // 높이 계산
   function calcSideHeight(cards,mode){
     if(tf.flatView){
       const rows=Math.ceil(cards.length/COLS);
-      return rows*(cardH+GAP);
+      return rows*(cardH_flat+GAP);  // flatView는 메타 높이 포함
     }
     let h=0;
     for(const alb of DB.albumTypes){
@@ -2157,7 +2159,7 @@ async function exportCollectScreenshot(withMeta){
   const sideW=canvasW-PAD*2;
   const cw=Math.floor((sideW-GAP*(COLS-1))/COLS);
   const imgH=Math.round(cw*1.4);
-  const badgeH=13;
+  const badgeH=16;           // _drawCard와 동일
   const metaH=withMeta?20:0;
   const cardH=imgH+badgeH+metaH;
 
