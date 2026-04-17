@@ -1789,16 +1789,17 @@ function _roundRect(ctx,x,y,w,h,r){
 }
 
 // 단일 카드 그리기 → 차지하는 높이 반환
-async function _drawCard(ctx,card,x,y,cw,mode,showMeta,albColor,albShort,setName,dark){
+// idx: flatView일 때 우상단에 표시할 순서 번호 (0이면 표시 안 함)
+async function _drawCard(ctx,card,x,y,cw,mode,showMeta,albColor,albShort,setName,dark,idx){
   const imgH=Math.round(cw*1.4);
-  const badgeH=13;
+  const badgeH=16; // 높이 13→16 (가시성 향상)
   const metaH=showMeta?20:0;
   const totalH=imgH+badgeH+metaH;
 
   const bCol=mode==='w'?'rgba(244,63,94,.45)':mode==='h'?'rgba(59,130,246,.45)':'rgba(0,0,0,.15)';
-  const sBg=mode==='w'?'rgba(244,63,94,.13)':mode==='h'?'rgba(59,130,246,.13)':'rgba(0,0,0,.07)';
-  const sCol=mode==='w'?'#f43f5e':mode==='h'?'#3b82f6':dark?'#aaa':'#888';
-  const bgFill=mode==='collect'?(albColor||'#4f8aff')+'22':sBg;
+  const sBg=mode==='w'?'#f43f5e':mode==='h'?'#3b82f6':'rgba(0,0,0,.07)'; // 배경 불투명 강화
+  const sCol='#fff'; // 흰색 텍스트로 대비 극대화
+  const bgFill=mode==='collect'?(albColor||'#4f8aff')+'22':mode==='w'?'rgba(244,63,94,.10)':'rgba(59,130,246,.10)';
 
   // 카드 외곽 (둥근 테두리)
   ctx.save();
@@ -1823,6 +1824,23 @@ async function _drawCard(ctx,card,x,y,cw,mode,showMeta,albColor,albShort,setName
     }
   }
 
+  // 순서 번호 배지 (우상단, flatView 전용)
+  if(idx){
+    const bw=idx>=10?18:14;
+    const bh=14;
+    const bx=x+cw-bw-2;
+    const by=y+2;
+    ctx.fillStyle='rgba(0,0,0,.72)';
+    _roundRect(ctx,bx,by,bw,bh,4);
+    ctx.fill();
+    ctx.fillStyle='#fff';
+    ctx.font=`800 9px "Outfit",sans-serif`;
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(String(idx),bx+bw/2,by+bh/2);
+    ctx.textBaseline='alphabetic';
+  }
+
   // 배지 (mode collect: 상태 뱃지)
   if(mode==='collect'){
     const cv=c(card.id),gv=g(card.id),st=sts(card.id);
@@ -1831,22 +1849,21 @@ async function _drawCard(ctx,card,x,y,cw,mode,showMeta,albColor,albShort,setName
     else if(st==='h'&&gv>0)stTx=`+${cv-gv}`;
     else if(st==='h')stTx=`✨${cv}`;
     else if(st==='c')stTx=`−${gv-cv}`;
-    const stBg=st==='m'?'rgba(34,197,94,.2)':st==='h'?'rgba(59,130,246,.2)':st==='c'?'rgba(244,63,94,.2)':'rgba(0,0,0,.07)';
-    const stCol2=st==='m'?'#22c55e':st==='h'?'#3b82f6':st==='c'?'#f43f5e':dark?'#aaa':'#888';
+    const stBg=st==='m'?'#22c55e':st==='h'?'#3b82f6':st==='c'?'#f43f5e':'rgba(0,0,0,.3)';
     ctx.fillStyle=stBg;
     ctx.fillRect(x,y+imgH,cw,badgeH);
-    ctx.fillStyle=stCol2;
-    ctx.font=`700 7px "Noto Sans KR",sans-serif`;
+    ctx.fillStyle='#fff';
+    ctx.font=`700 9px "Noto Sans KR",sans-serif`;
     ctx.textAlign='center';
-    ctx.fillText(stTx||' ',x+cw/2,y+imgH+9);
+    ctx.fillText(stTx||' ',x+cw/2,y+imgH+11);
   } else {
     const cnt=mode==='w'?wt(card.id):sp(card.id);
     ctx.fillStyle=sBg;
     ctx.fillRect(x,y+imgH,cw,badgeH);
     ctx.fillStyle=sCol;
-    ctx.font=`700 7px "Noto Sans KR",sans-serif`;
+    ctx.font=`800 9px "Outfit",sans-serif`;
     ctx.textAlign='center';
-    ctx.fillText((mode==='w'?'− ':'+ ')+cnt,x+cw/2,y+imgH+9);
+    ctx.fillText((mode==='w'?'−':'+')+' '+cnt,x+cw/2,y+imgH+11);
   }
 
   // 메타 (앨범 + 세트)
@@ -2061,7 +2078,7 @@ async function exportScreenshot(){
         const cardY=cy+row*(cardH+GAP);
         const r=findCard(card.id);
         await _drawCard(ctx,card,cx,cardY,cw2,mode,true,
-          r?.alb.color,r?.alb.shortName,r?.set.name,dark);
+          r?.alb.color,r?.alb.shortName,r?.set.name,dark,i+1); // i+1 = 순서 번호
       }
     } else {
       for(const alb of DB.albumTypes){
@@ -2078,7 +2095,7 @@ async function exportScreenshot(){
             const row=Math.floor(i/COLS);
             const cx=startX+INNER_PAD+col*(cw2+GAP);
             const cardY=cy+row*(cardH+GAP);
-            await _drawCard(ctx,sc[i],cx,cardY,cw2,mode,false,alb.color,alb.shortName,set.name,dark);
+            await _drawCard(ctx,sc[i],cx,cardY,cw2,mode,false,alb.color,alb.shortName,set.name,dark,0);
           }
           cy+=Math.ceil(sc.length/COLS)*(cardH+GAP)+6;
         }
@@ -2170,7 +2187,7 @@ async function exportCollectScreenshot(withMeta){
       const col=i%COLS, row=Math.floor(i/COLS);
       const cx=PAD+col*(cw+GAP);
       const cardY=cy+row*(cardH+GAP);
-      await _drawCard(ctx,card,cx,cardY,cw,'collect',withMeta,alb.color,alb.shortName,set.name,dark);
+      await _drawCard(ctx,card,cx,cardY,cw,'collect',withMeta,alb.color,alb.shortName,set.name,dark,0);
     }
   } else {
     for(const {alb,set,cards} of sections){
@@ -2179,7 +2196,7 @@ async function exportCollectScreenshot(withMeta){
         const col=i%COLS, row=Math.floor(i/COLS);
         const cx=PAD+col*(cw+GAP);
         const cardY=cy+row*(cardH+GAP);
-        await _drawCard(ctx,cards[i],cx,cardY,cw,'collect',withMeta,alb.color,alb.shortName,set.name,dark);
+        await _drawCard(ctx,cards[i],cx,cardY,cw,'collect',withMeta,alb.color,alb.shortName,set.name,dark,0);
       }
       cy+=Math.ceil(cards.length/COLS)*(cardH+GAP)+6;
     }
