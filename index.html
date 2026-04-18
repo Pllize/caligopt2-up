@@ -155,6 +155,11 @@ input:focus,textarea:focus{border-color:var(--blue)}
 .pcg.few{grid-template-columns:repeat(var(--few-cols),minmax(0,80px));justify-content:start}
 /* flat view */
 .pcg-flat{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-min),1fr));gap:4px}
+/* flat view 메타 (앨범+세트명) */
+.flat-card-wrap{display:flex;flex-direction:column;min-width:0}
+.flat-card-meta{padding:2px 2px 0;display:flex;align-items:center;gap:2px;overflow:hidden}
+.flat-alb-tag{border-radius:3px;padding:0 3px;font-size:8px;font-weight:700;color:#fff;white-space:nowrap;flex-shrink:0}
+.flat-set-name{font-size:8px;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* ── CARD TILE ── */
 .pct{border-radius:7px;overflow:hidden;background:var(--s2);border:1px solid var(--bd);transition:border-color .2s,box-shadow .2s;user-select:none;display:flex;flex-direction:column}
@@ -457,7 +462,7 @@ const T={
     filtBtn:'🔍 필터',
     tradeFlatBtn:'📋 카드 나열',
     shotPlain:'📷 보이는 대로 찍기',shotMeta:'📋 카드 정보 포함해서 찍기',
-    visAll:'👁 전체',visHave:'✨ 있는것',visNot:'🔍 없는것',
+    visAll:'전체',visMet:'✓ 목표달성',visExceed:'✨ 목표초과',visLack:'🔍 목표미달',visNone:'○ 목표없음',
     collBtn:'▼ 접기',expandBtn:'▶ 펼치기',shotBtn:'📸',goalReset:'🗑',
     tradeWant:'구해요',tradeHave:'있어요',tradeWantSub:'🔍',tradeHaveSub:'✨',tradeUnit:'개',
     tradeFilt:'앨범 필터',tradeShot:'교환 스크린샷',
@@ -504,7 +509,7 @@ const T={
     filtBtn:'🔍 FILTER',
     tradeFlatBtn:'📋 FLAT VIEW',
     shotPlain:'📷 Screenshot as-is',shotMeta:'📋 Include card info',
-    visAll:'👁 All',visHave:'✨ Have',visNot:'🔍 Need',
+    visAll:'All',visMet:'✓ Met',visExceed:'✨ Exceed',visLack:'🔍 Lacking',visNone:'○ No Goal',
     collBtn:'▼ Collapse',expandBtn:'▶ Expand',shotBtn:'📸',goalReset:'🗑',
     tradeWant:'WANT',tradeHave:'HAVE',tradeWantSub:'🔍',tradeHaveSub:'✨',tradeUnit:'',
     tradeFilt:'Album Filter',tradeShot:'Exchange Screenshot',
@@ -902,8 +907,8 @@ function colAllGoals(){if(!DB)return;for(const a of DB.albumTypes)for(const s of
 function expAllGoals(){UI.mgl={};UI.collapseG=false;saveUI();_renderKeepScroll(renderGoals);toast('모두 펼침');}
 function toggleCollapseG(){if(UI.collapseG)expAllGoals();else colAllGoals();}
 function resetAllGoals(){if(!confirm(t('goalResetConfirm')))return;ST.goals={};saveST();renderGoals();toast(t('goalResetToast'));}
-function cycleVis(fKey,cb){const f=UI[fKey];if(f.vis==='all')f.vis='have';else if(f.vis==='have')f.vis='nothave';else f.vis='all';saveUI();_renderKeepScroll(cb==='renderCollect'?renderCollect:cb==='renderGoals'?renderGoals:renderCur);}
-function visLabel(vis){if(vis==='have')return t('visHave');if(vis==='nothave')return t('visNot');return t('visAll');}
+function cycleVis(fKey,cb){const f=UI[fKey];const order=['all','met','exceed','lack','none'];const i=order.indexOf(f.vis);f.vis=order[(i+1)%order.length];saveUI();_renderKeepScroll(cb==='renderCollect'?renderCollect:cb==='renderGoals'?renderGoals:renderCur);}
+function visLabel(vis){if(vis==='met')return t('visMet');if(vis==='exceed')return t('visExceed');if(vis==='lack')return t('visLack');if(vis==='none')return t('visNone');return t('visAll');}
 
 /* ══════════════════════════════════
    FILTER PANEL
@@ -1128,14 +1133,20 @@ function buildSections(albums,f,colMap,onColSec,showGoalRow){
       for(const set of alb.sets){
         if(sq&&!set.name.toLowerCase().includes(sq)&&!alb.name.toLowerCase().includes(sq))continue;
         let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
-        if(f.vis==='have')cards=cards.filter(x=>c(x.id)>0);
-        else if(f.vis==='nothave')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
+        if(f.vis==='met')cards=cards.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)&&c(x.id)===g(x.id));
+        else if(f.vis==='exceed')cards=cards.filter(x=>g(x.id)>0&&c(x.id)>g(x.id));
+        else if(f.vis==='lack')cards=cards.filter(x=>g(x.id)>0&&c(x.id)<g(x.id));
+        else if(f.vis==='none')cards=cards.filter(x=>g(x.id)===0);
         flatCards=flatCards.concat(cards.map(card=>({...card,aId:alb.id,aC:alb.color})));
       }
     }
     if(!flatCards.length)return`<div style="padding:20px;text-align:center;color:var(--tx2);font-size:12px">${sq?`"${sq}" 검색 결과가 없어요.`:'해당하는 카드가 없어요.'}</div>`;
     return`<div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:8px">
-      <div class="pcg-flat">${flatCards.map(card=>cardTileHTML(card,showGoalRow)).join('')}</div>
+      <div class="pcg-flat">${flatCards.map(card=>{
+        const r=findCard(card.id);
+        const metaTag=r?`<div class="flat-card-meta"><span class="flat-alb-tag" style="background:${r.alb.color}">${r.alb.shortName}</span><span class="flat-set-name">${r.set.name}</span></div>`:'';
+        return`<div class="flat-card-wrap">${cardTileHTML(card,showGoalRow)}${metaTag}</div>`;
+      }).join('')}</div>
     </div>`;
   }
 
@@ -1144,8 +1155,10 @@ function buildSections(albums,f,colMap,onColSec,showGoalRow){
     for(const set of alb.sets){
       if(sq&&!set.name.toLowerCase().includes(sq)&&!alb.name.toLowerCase().includes(sq))continue;
       let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
-      if(f.vis==='have')cards=cards.filter(x=>c(x.id)>0);
-      else if(f.vis==='nothave')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
+      if(f.vis==='met')cards=cards.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)&&c(x.id)===g(x.id));
+      else if(f.vis==='exceed')cards=cards.filter(x=>g(x.id)>0&&c(x.id)>g(x.id));
+      else if(f.vis==='lack')cards=cards.filter(x=>g(x.id)>0&&c(x.id)<g(x.id));
+      else if(f.vis==='none')cards=cards.filter(x=>g(x.id)===0);
       if(!cards.length)continue;
       const isC=!!colMap[set.id];
       const t2=set.cards.filter(x=>g(x.id)>0).length;
@@ -2014,7 +2027,7 @@ async function exportScreenshot(){
   }
 
   const HDR_H=32;
-  const LABEL_H=18; // 구해요/있어요 라벨
+  const LABEL_H=24; // 구해요/있어요 라벨 (15px 폰트 + 여백)
   const INNER_PAD=8;
 
   let canvasH;
@@ -2061,11 +2074,11 @@ async function exportScreenshot(){
     _roundRect(ctx,startX,startY,sw,innerH+INNER_PAD,7);
     ctx.stroke();
 
-    // 라벨
+    // 라벨 (더 크게)
     ctx.fillStyle=lCol;
-    ctx.font=`800 12px "Outfit",sans-serif`;
+    ctx.font=`800 15px "Outfit",sans-serif`;
     ctx.textAlign='left';
-    ctx.fillText(lbl,startX+INNER_PAD,startY+INNER_PAD+10);
+    ctx.fillText(lbl,startX+INNER_PAD,startY+INNER_PAD+13);
 
     let cy=startY+INNER_PAD+LABEL_H;
     const cInnerW=sw-INNER_PAD*2;
@@ -2083,6 +2096,7 @@ async function exportScreenshot(){
           r?.alb.color,r?.alb.shortName,r?.set.name,dark,i+1); // i+1 = 순서 번호
       }
     } else {
+      let globalIdx=1; // 세트뷰에서도 전체 누적 번호
       for(const alb of DB.albumTypes){
         const ac=cards.filter(x=>x.aId===alb.id);
         if(!ac.length)continue;
@@ -2097,7 +2111,7 @@ async function exportScreenshot(){
             const row=Math.floor(i/COLS);
             const cx=startX+INNER_PAD+col*(cw2+GAP);
             const cardY=cy+row*(cardH+GAP);
-            await _drawCard(ctx,sc[i],cx,cardY,cw2,mode,false,alb.color,alb.shortName,set.name,dark,0);
+            await _drawCard(ctx,sc[i],cx,cardY,cw2,mode,false,alb.color,alb.shortName,set.name,dark,globalIdx++);
           }
           cy+=Math.ceil(sc.length/COLS)*(cardH+GAP)+6;
         }
@@ -2142,8 +2156,10 @@ async function exportCollectScreenshot(withMeta){
   for(const alb of albums){
     for(const set of alb.sets){
       let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
-      if(f.vis==='have')cards=cards.filter(x=>c(x.id)>0);
-      else if(f.vis==='nothave')cards=cards.filter(x=>c(x.id)===0&&g(x.id)>0);
+      if(f.vis==='met')cards=cards.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)&&c(x.id)===g(x.id));
+      else if(f.vis==='exceed')cards=cards.filter(x=>g(x.id)>0&&c(x.id)>g(x.id));
+      else if(f.vis==='lack')cards=cards.filter(x=>g(x.id)>0&&c(x.id)<g(x.id));
+      else if(f.vis==='none')cards=cards.filter(x=>g(x.id)===0);
       if(!cards.length)continue;
       sections.push({alb,set,cards});
     }
