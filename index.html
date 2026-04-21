@@ -824,6 +824,13 @@ function cardPassFilter(card, f){
   }
   return true;
 }
+function _applyVis(cards,vis){
+  if(vis==='met')return cards.filter(x=>g(x.id)>0&&c(x.id)===g(x.id));
+  if(vis==='exceed')return cards.filter(x=>g(x.id)>0&&c(x.id)>g(x.id));
+  if(vis==='lack')return cards.filter(x=>g(x.id)>0&&c(x.id)<g(x.id));
+  if(vis==='none')return cards.filter(x=>g(x.id)===0);
+  return cards;
+}
 function hasFilter(f){return f.albs.length||f.members.length||f.units.length||f.mmms.length||f.excUnits||f.excAll||f.excMmmm;}
 
 /* ══════════════════════════════════
@@ -1159,10 +1166,7 @@ function buildSections(albums,f,colMap,onColSec,showGoalRow){
       for(const set of alb.sets){
         if(sq&&!matchSearch(set.name,sq)&&!matchSearch(alb.name,sq))continue;
         let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
-        if(f.vis==='met')cards=cards.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)&&c(x.id)===g(x.id));
-        else if(f.vis==='exceed')cards=cards.filter(x=>g(x.id)>0&&c(x.id)>g(x.id));
-        else if(f.vis==='lack')cards=cards.filter(x=>g(x.id)>0&&c(x.id)<g(x.id));
-        else if(f.vis==='none')cards=cards.filter(x=>g(x.id)===0);
+        cards=_applyVis(cards,f.vis);
         const filteredCards=sq?cards.filter(card=>matchSearch(card.name,sq)||matchSearch(set.name,sq)||matchSearch(alb.name,sq)):cards;
 flatCards=flatCards.concat(filteredCards.map(card=>({...card,aId:alb.id,aC:alb.color})));
       }
@@ -1182,10 +1186,7 @@ flatCards=flatCards.concat(filteredCards.map(card=>({...card,aId:alb.id,aC:alb.c
     for(const set of alb.sets){
       if(sq&&!matchSearch(set.name,sq)&&!matchSearch(alb.name,sq))continue;
       let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
-      if(f.vis==='met')cards=cards.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)&&c(x.id)===g(x.id));
-      else if(f.vis==='exceed')cards=cards.filter(x=>g(x.id)>0&&c(x.id)>g(x.id));
-      else if(f.vis==='lack')cards=cards.filter(x=>g(x.id)>0&&c(x.id)<g(x.id));
-      else if(f.vis==='none')cards=cards.filter(x=>g(x.id)===0);
+      cards=_applyVis(cards,f.vis);
       if(!cards.length)continue;
       const isC=!!colMap[set.id];
       const t2=set.cards.filter(x=>g(x.id)>0).length;
@@ -1850,7 +1851,7 @@ function _roundRect(ctx,x,y,w,h,r){
 
 // 단일 카드 그리기 → 차지하는 높이 반환
 // idx: flatView일 때 우상단에 표시할 순서 번호 (0이면 표시 안 함)
-async function _drawCard(ctx,card,x,y,cw,mode,showMeta,albColor,albShort,setName,dark,idx){
+async function _drawCard(ctx,card,x,y,cw,mode,showMeta,albColor,albShort,setName,dark,idx=0){
   const imgH=Math.round(cw*1.4);
   const badgeH=16;
   const metaH=showMeta?20:0;
@@ -1983,11 +1984,30 @@ function _drawHeader(ctx,w,dark,title){
   const tx2=dark?'#7a8fb0':'#5a6a90';
   const bd=dark?'#1f2535':'#d4daf0';
   const now=new Date().toLocaleDateString('ko-KR');
+  const nowW=52; // 날짜 영역 예약 너비
+  const maxTitleW=w-12-nowW-8; // 타이틀 최대 너비
+
+  // 폰트 크기를 줄여가며 맞춤 (13→11→9px)
+  let fontSize=13;
+  ctx.font=`800 ${fontSize}px "Outfit",sans-serif`;
+  let titleText=title;
+  // 넘치면 폰트 축소
+  if(ctx.measureText(titleText).width>maxTitleW){
+    fontSize=11;
+    ctx.font=`800 ${fontSize}px "Outfit",sans-serif`;
+  }
+  // 그래도 넘치면 말줄임
+  if(ctx.measureText(titleText).width>maxTitleW){
+    while(titleText.length>4&&ctx.measureText(titleText+'…').width>maxTitleW){
+      titleText=titleText.slice(0,-1);
+    }
+    titleText+='…';
+  }
+
   const hh=32;
   ctx.fillStyle='#4f8aff';
-  ctx.font=`800 13px "Outfit",sans-serif`;
   ctx.textAlign='left';
-  ctx.fillText(title,12,20);
+  ctx.fillText(titleText,12,20);
   ctx.fillStyle=tx2;
   ctx.font=`400 9px "Noto Sans KR",sans-serif`;
   ctx.textAlign='right';
@@ -2141,11 +2161,11 @@ async function exportScreenshot(separate=false){
         const cx=startX+INNER_PAD+col*(cw2+GAP);
         const cardY=cy+row*(cardH+GAP);
         const r=findCard(card.id);
-        await _drawCard(ctx,card,cx,cardY,cw2,mode,true,
-          r?.alb.color,r?.alb.shortName,r?.set.name,dark,i+1); // i+1 = 순서 번호
+        await _drawCard(dc,card,cx,cardY,cw2,mode,true,
+          r?.alb.color,r?.alb.shortName,r?.set.name,dark,i+1);
       }
     } else {
-      let globalIdx=1; // 세트뷰에서도 전체 누적 번호
+      let globalIdx=1;
       for(const alb of DB.albumTypes){
         const ac=cards.filter(x=>x.aId===alb.id);
         if(!ac.length)continue;
@@ -2154,13 +2174,13 @@ async function exportScreenshot(separate=false){
           if(!sc.length)continue;
           const set=alb.sets.find(s=>s.id===sid);
           if(!set)continue;
-          cy+=_drawSecLabel(ctx,startX+INNER_PAD,cy,cInnerW,alb.color,alb.shortName,set.name,dark)+4;
+          cy+=_drawSecLabel(dc,startX+INNER_PAD,cy,cInnerW,alb.color,alb.shortName,set.name,dark)+4;
           for(let i=0;i<sc.length;i++){
             const col=i%COLS;
             const row=Math.floor(i/COLS);
             const cx=startX+INNER_PAD+col*(cw2+GAP);
             const cardY=cy+row*(cardH+GAP);
-            await _drawCard(ctx,sc[i],cx,cardY,cw2,mode,false,alb.color,alb.shortName,set.name,dark,globalIdx++);
+            await _drawCard(dc,sc[i],cx,cardY,cw2,mode,false,alb.color,alb.shortName,set.name,dark,globalIdx++);
           }
           cy+=Math.ceil(sc.length/COLS)*(cardH+GAP)+6;
         }
@@ -2227,10 +2247,7 @@ async function exportCollectScreenshot(withMeta){
   for(const alb of albums){
     for(const set of alb.sets){
       let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
-      if(f.vis==='met')cards=cards.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)&&c(x.id)===g(x.id));
-      else if(f.vis==='exceed')cards=cards.filter(x=>g(x.id)>0&&c(x.id)>g(x.id));
-      else if(f.vis==='lack')cards=cards.filter(x=>g(x.id)>0&&c(x.id)<g(x.id));
-      else if(f.vis==='none')cards=cards.filter(x=>g(x.id)===0);
+      cards=_applyVis(cards,f.vis);
       if(!cards.length)continue;
       sections.push({alb,set,cards});
     }
@@ -2278,7 +2295,7 @@ async function exportCollectScreenshot(withMeta){
       const col=i%COLS, row=Math.floor(i/COLS);
       const cx=PAD+col*(cw+GAP);
       const cardY=cy+row*(cardH+GAP);
-      await _drawCard(ctx,card,cx,cardY,cw,'collect',withMeta,alb.color,alb.shortName,set.name,dark,0);
+      await _drawCard(ctx,card,cx,cardY,cw,'collect',withMeta,alb.color,alb.shortName,set.name,dark);
     }
   } else {
     for(const {alb,set,cards} of sections){
@@ -2287,7 +2304,7 @@ async function exportCollectScreenshot(withMeta){
         const col=i%COLS, row=Math.floor(i/COLS);
         const cx=PAD+col*(cw+GAP);
         const cardY=cy+row*(cardH+GAP);
-        await _drawCard(ctx,cards[i],cx,cardY,cw,'collect',withMeta,alb.color,alb.shortName,set.name,dark,0);
+        await _drawCard(ctx,cards[i],cx,cardY,cw,'collect',withMeta,alb.color,alb.shortName,set.name,dark);
       }
       cy+=Math.ceil(cards.length/COLS)*(cardH+GAP)+6;
     }
