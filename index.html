@@ -1853,7 +1853,7 @@ function _roundRect(ctx,x,y,w,h,r){
 // idx: flatView일 때 우상단에 표시할 순서 번호 (0이면 표시 안 함)
 async function _drawCard(ctx,card,x,y,cw,mode,showMeta,albColor,albShort,setName,dark,idx=0){
   const imgH=Math.round(cw*1.4);
-  const badgeH=16;
+  const badgeH=20;
   const metaH=showMeta?20:0;
   const totalH=imgH+badgeH+metaH;
 
@@ -1916,7 +1916,9 @@ async function _drawCard(ctx,card,x,y,cw,mode,showMeta,albColor,albShort,setName
     ctx.fillStyle='#fff';
     ctx.font=`700 9px "Noto Sans KR",sans-serif`;
     ctx.textAlign='center';
-    ctx.fillText(stTx||' ',x+cw/2,y+imgH+11);
+    ctx.textBaseline='middle';
+    ctx.fillText(stTx||' ',x+cw/2,y+imgH+badgeH/2);
+    ctx.textBaseline='alphabetic';
   } else {
     const cnt=mode==='w'?wt(card.id):sp(card.id);
     ctx.fillStyle=sBg;
@@ -1924,7 +1926,9 @@ async function _drawCard(ctx,card,x,y,cw,mode,showMeta,albColor,albShort,setName
     ctx.fillStyle=sCol;
     ctx.font=`800 10px "Outfit",sans-serif`;
     ctx.textAlign='center';
-    ctx.fillText((mode==='w'?'−':'+')+' '+cnt,x+cw/2,y+imgH+11);
+    ctx.textBaseline='middle';
+    ctx.fillText((mode==='w'?'−':'+')+' '+cnt,x+cw/2,y+imgH+badgeH/2);
+    ctx.textBaseline='alphabetic';
   }
 
   // 메타 (앨범 + 세트)
@@ -1935,7 +1939,9 @@ async function _drawCard(ctx,card,x,y,cw,mode,showMeta,albColor,albShort,setName
     ctx.font=`500 6px "Noto Sans KR",sans-serif`;
     ctx.textAlign='center';
     const metaTx=`${albShort} ${setName}`;
-    ctx.fillText(metaTx.length>12?metaTx.slice(0,11)+'…':metaTx,x+cw/2,y+imgH+badgeH+7);
+    ctx.textBaseline='middle';
+    ctx.fillText(metaTx.length>12?metaTx.slice(0,11)+'…':metaTx,x+cw/2,y+imgH+badgeH+metaH/2);
+    ctx.textBaseline='alphabetic';
   }
 
   // 테두리
@@ -2024,20 +2030,20 @@ function _drawHeader(ctx,w,dark,title){
 // 섹션 라벨 그리기 → 높이 반환
 function _drawSecLabel(ctx,x,y,w,albColor,albShort,setName,dark){
   const fg=dark?'#e8edf8':'#141830';
-  const h=16;
+  const h=14;
   // 앨범 칩
   ctx.fillStyle=albColor||'#4f8aff';
-  _roundRect(ctx,x,y+1,Math.min(albShort.length*7+10,60),14,4);
+  _roundRect(ctx,x,y+1,Math.min(albShort.length*7+10,60),12,4);
   ctx.fill();
   ctx.fillStyle='#fff';
   ctx.font=`700 7px "Outfit",sans-serif`;
   ctx.textAlign='center';
-  ctx.fillText(albShort,x+Math.min(albShort.length*7+10,60)/2,y+10);
+  ctx.fillText(albShort,x+Math.min(albShort.length*7+10,60)/2,y+9);
   // 세트명
   ctx.fillStyle=fg;
   ctx.font=`500 9px "Noto Sans KR",sans-serif`;
   ctx.textAlign='left';
-  ctx.fillText(setName,x+Math.min(albShort.length*7+10,60)+6,y+10);
+  ctx.fillText(setName,x+Math.min(albShort.length*7+10,60)+6,y+9);
   return h;
 }
 
@@ -2059,7 +2065,7 @@ async function exportScreenshot(separate=false){
   const bg=dark?'#08090f':'#f0f2f9';
   const fg=dark?'#e8edf8':'#141830';
 
-  const PAD=12,GAP=3,COLS=5;
+  const PAD=8,GAP=3,COLS=5;
   const both=wCards.length&&hCards.length;
   const canvasW=lscape?720:360;
 
@@ -2067,16 +2073,16 @@ async function exportScreenshot(separate=false){
   const sideW=lscape&&both?Math.floor((canvasW-PAD*2-GAP*2)/2):canvasW-PAD*2;
   const cw=Math.floor((sideW-GAP*(COLS-1))/COLS);
   const imgH=Math.round(cw*1.4);
-  const badgeH=16;           // _drawCard와 동일
+  const badgeH=20;           // _drawCard와 동일
   const metaH_flat=20;       // flatView일 때 메타 포함
   const cardH=imgH+badgeH;             // 세트별: 메타 없음
   const cardH_flat=imgH+badgeH+metaH_flat; // flatView: 메타 포함
 
-  // 높이 계산
+  // 높이 계산 — 마지막 row 뒤 trailing GAP 제거 (rows-1 gaps만)
   function calcSideHeight(cards,mode){
     if(tf.flatView){
       const rows=Math.ceil(cards.length/COLS);
-      return rows*(cardH_flat+GAP);  // flatView는 메타 높이 포함
+      return rows*cardH_flat+(rows>1?(rows-1)*GAP:0);
     }
     let h=0;
     for(const alb of DB.albumTypes){
@@ -2085,17 +2091,17 @@ async function exportScreenshot(separate=false){
       for(const sid of[...new Set(ac.map(x=>x.sId))]){
         const sc=ac.filter(x=>x.sId===sid);
         if(!sc.length)continue;
-        h+=16+4; // 섹션 라벨
+        h+=14+3; // 섹션 라벨+gap
         const rows=Math.ceil(sc.length/COLS);
-        h+=rows*(cardH+GAP)+6;
+        h+=rows*cardH+(rows>1?(rows-1)*GAP:0)+4;
       }
     }
     return h;
   }
 
   const HDR_H=32;
-  const LABEL_H=24;
-  const INNER_PAD=6; // 내부 패딩 8→6 축소
+  const LABEL_H=20;
+  const INNER_PAD=4;
 
   let canvasH;
   if(lscape&&both){
@@ -2174,7 +2180,7 @@ async function exportScreenshot(separate=false){
           if(!sc.length)continue;
           const set=alb.sets.find(s=>s.id===sid);
           if(!set)continue;
-          cy+=_drawSecLabel(dc,startX+INNER_PAD,cy,cInnerW,alb.color,alb.shortName,set.name,dark)+4;
+          cy+=_drawSecLabel(dc,startX+INNER_PAD,cy,cInnerW,alb.color,alb.shortName,set.name,dark)+3;
           for(let i=0;i<sc.length;i++){
             const col=i%COLS;
             const row=Math.floor(i/COLS);
@@ -2182,7 +2188,8 @@ async function exportScreenshot(separate=false){
             const cardY=cy+row*(cardH+GAP);
             await _drawCard(dc,sc[i],cx,cardY,cw2,mode,false,alb.color,alb.shortName,set.name,dark,globalIdx++);
           }
-          cy+=Math.ceil(sc.length/COLS)*(cardH+GAP)+6;
+          const rows2=Math.ceil(sc.length/COLS);
+          cy+=rows2*cardH+(rows2>1?(rows2-1)*GAP:0)+4;
         }
       }
     }
@@ -2190,11 +2197,10 @@ async function exportScreenshot(separate=false){
 
   const now=new Date().toLocaleDateString('ko-KR').replace(/\./g,'');
 
-  // 세로모드 각각 저장 — 메인 캔버스 렌더 건너뜀
+  // 세로모드 각각 저장 — 두 캔버스 병렬 렌더 후 빠르게 순차 다운로드
   if(!lscape&&separate){
-    async function saveSingle(cards,mode,suffix){
-      if(!cards.length)return;
-      // 높이: 헤더 + 패딩 + 박스(라벨+카드+inner패딩*2)
+    async function buildBlob(cards,mode){
+      if(!cards.length)return null;
       const boxH=LABEL_H+calcSideHeight(cards,mode)+INNER_PAD*2;
       const sH=HDR_H+PAD+boxH+PAD;
       const {cv:cv2,ctx:ctx2}=_mkCanvas(canvasW,sH);
@@ -2204,23 +2210,26 @@ async function exportScreenshot(separate=false){
       _drawHeader(ctx2,canvasW,dark,t2);
       await drawSide(cards,mode,PAD,HDR_H+PAD,canvasW-PAD*2,ctx2);
       _drawWatermark(ctx2,canvasW,sH);
-      // toBlob은 비동기이므로 Promise로 감싸서 순서 보장
-      await new Promise(res=>{
-        cv2.toBlob(blob=>{
-          if(blob&&blob.size>0){
-            const url=URL.createObjectURL(blob);
-            const a=document.createElement('a');
-            a.download=`교환_${suffix}_${now}.png`;
-            a.href=url;a.click();
-            setTimeout(()=>URL.revokeObjectURL(url),3000);
-          }
-          res();
-        },'image/png');
-      });
+      return new Promise(res=>cv2.toBlob(b=>res(b&&b.size>0?b:null),'image/png'));
     }
-    if(wCards.length)await saveSingle(wCards,'w','구해요');
-    // 있어요는 0.5초 간격 두고 저장 (브라우저 다운로드 중복 방지)
-    if(hCards.length)await new Promise(r=>setTimeout(r,500)).then(()=>saveSingle(hCards,'h','있어요'));
+    // 두 캔버스를 병렬로 렌더링 (빠를수록 user-gesture 만료 전에 저장 가능)
+    const [wBlob,hBlob]=await Promise.all([
+      buildBlob(wCards,'w'),
+      buildBlob(hCards,'h')
+    ]);
+    function dlBlob(blob,suffix){
+      if(!blob)return;
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.download=`교환_${suffix}_${now}.png`;
+      a.href=url;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(url),3000);
+    }
+    dlBlob(wBlob,'구해요');
+    if(hBlob)setTimeout(()=>dlBlob(hBlob,'있어요'),350);
     toast(t('shotDone'));
     return;
   }
@@ -2272,24 +2281,26 @@ async function exportCollectScreenshot(withMeta){
   // 프리로드
   await _preload(sections.flatMap(s=>s.cards.map(c=>c.img)));
 
-  const PAD=12,GAP=3;
+  const PAD=8,GAP=3;
   const COLS=lscape?8:5;
   const canvasW=lscape?720:360;
   const sideW=canvasW-PAD*2;
   const cw=Math.floor((sideW-GAP*(COLS-1))/COLS);
   const imgH=Math.round(cw*1.4);
-  const badgeH=16;           // _drawCard와 동일
+  const badgeH=20;           // _drawCard와 동일
   const metaH=withMeta?20:0;
   const cardH=imgH+badgeH+metaH;
 
-  // 높이 계산
+  // 높이 계산 — trailing GAP 제거 (rows-1 gaps만)
   let totalH=32+PAD; // 헤더
   if(f.flatView){
     const allCards2=sections.flatMap(s=>s.cards);
-    totalH+=Math.ceil(allCards2.length/COLS)*(cardH+GAP)+PAD;
+    const fRows=Math.ceil(allCards2.length/COLS);
+    totalH+=fRows*cardH+(fRows>1?(fRows-1)*GAP:0)+PAD;
   } else {
     for(const {cards} of sections){
-      totalH+=16+4+Math.ceil(cards.length/COLS)*(cardH+GAP)+6;
+      const rows=Math.ceil(cards.length/COLS);
+      totalH+=14+3+rows*cardH+(rows>1?(rows-1)*GAP:0)+4;
     }
     totalH+=PAD;
   }
@@ -2314,14 +2325,15 @@ async function exportCollectScreenshot(withMeta){
     }
   } else {
     for(const {alb,set,cards} of sections){
-      cy+=_drawSecLabel(ctx,PAD,cy,sideW,alb.color,alb.shortName,set.name,dark)+4;
+      cy+=_drawSecLabel(ctx,PAD,cy,sideW,alb.color,alb.shortName,set.name,dark)+3;
       for(let i=0;i<cards.length;i++){
         const col=i%COLS, row=Math.floor(i/COLS);
         const cx=PAD+col*(cw+GAP);
         const cardY=cy+row*(cardH+GAP);
         await _drawCard(ctx,cards[i],cx,cardY,cw,'collect',withMeta,alb.color,alb.shortName,set.name,dark);
       }
-      cy+=Math.ceil(cards.length/COLS)*(cardH+GAP)+6;
+      const rows=Math.ceil(cards.length/COLS);
+      cy+=rows*cardH+(rows>1?(rows-1)*GAP:0)+4;
     }
   }
 
