@@ -126,8 +126,10 @@ input:focus,textarea:focus{border-color:var(--blue)}
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 4px 18px rgba(79,138,255,.55),0 0 0 3px rgba(255,255,255,.15);
   border:none;cursor:pointer;
-  transition:transform .15s,box-shadow .15s;
+  transition:transform .15s,box-shadow .15s,opacity .4s;
+  opacity:1;
 }
+.shot-fab.fab-dim{opacity:0.25;}
 .shot-fab:active{transform:scale(.88);}
 /* 위로가기 버튼은 FAB 바로 위에 배치 */
 .scroll-top-btn{
@@ -757,7 +759,34 @@ function saveUI(){
   _uiTimer=setTimeout(()=>{try{localStorage.setItem(UI_KEY,JSON.stringify(UI));}catch(e){}},100);
 }
 
+/* ══════════════════════════════════
+   초성 검색
+══════════════════════════════════ */
+const _CHO=['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+function _getCho(ch){
+  const code=ch.charCodeAt(0)-0xAC00;
+  if(code<0||code>11171)return ch;
+  return _CHO[Math.floor(code/588)];
+}
+function _toCho(str){return [...str].map(_getCho).join('');}
+function matchSearch(target,query){
+  if(!query)return true;
+  const q=query.trim().toLowerCase();
+  if(!q)return true;
+  const t=target.toLowerCase();
+  // 일반 포함 검색
+  if(t.includes(q))return true;
+  // 초성 검색 (쿼리가 전부 초성인 경우)
+  const isCho=[...'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ'];
+  if([...q].every(c=>isCho.includes(c))){
+    return _toCho(target).includes(q);
+  }
+  return false;
+}
+
 /* FILTER — includes exclude toggles and MMMM fix */
+function _getF(){return curFilterTarget==='collect'?UI.cf:UI.mf;}
+
 function cardPassFilter(card, f){
   const ct=card.cardType;
   // 단체 제외
@@ -825,7 +854,6 @@ function pcgAttrs(n){
 }
 function cardTileHTML(card,showGoalRow){
   const cv=c(card.id),gv=g(card.id),s_=sp(card.id),w_=wt(card.id),st=sts(card.id);
-  const hasMemo=mo(card.id).trim().length>0;
   let cls='pct';
   if(st==='c')cls+=' sc';else if(st==='m')cls+=' sm';else if(st==='h')cls+=' sh';else if(st==='n')cls+=' ng';
   let bdg='';
@@ -882,9 +910,7 @@ function goalAdj(id,d){setGoalById(id,g(id)+d);patchTile(id);const gn=document.q
 function toggleHide(){
   if(!fsId)return;
   const isH=hid(fsId);
-  const msg=isH
-    ?(lang==='en'?'Re-add to the HAVE list?':'다시 있어요 목록에 표시할까요?')
-    :(lang==='en'?'Exclude from the exchange (HAVE) list?\n(Collected count is preserved)':'있어요 목록에서 숨길까요? (수집 수는 유지됩니다)');
+  const msg=isH?t('showConfirm'):t('hideConfirm');
   if(!confirm(msg))return;
   if(isH)delete ST.hidden[fsId];else ST.hidden[fsId]=true;
   saveST();updFull();renderCur();
@@ -998,43 +1024,43 @@ function renderFilterPanel(f){
 
 // ── 필터 액션 함수들 ──
 function filtMemberAll(){
-  const f=curFilterTarget==='collect'?UI.cf:UI.mf;
+  const f=_getF();
   f.members=[];f.excUnitsArr=[];
   saveUI();renderFilterPanel(f);
 }
 function filtToggleMember(m,el){
-  const f=curFilterTarget==='collect'?UI.cf:UI.mf;
+  const f=_getF();
   const i=f.members.indexOf(m);
   if(i>=0)f.members.splice(i,1);else f.members.push(m);
   f.excUnitsArr=f.excUnitsArr||[];
   saveUI();renderFilterPanel(f);
 }
 function filtToggleUnitExclude(u,el){
-  const f=curFilterTarget==='collect'?UI.cf:UI.mf;
+  const f=_getF();
   f.excUnitsArr=f.excUnitsArr||[];
   const i=f.excUnitsArr.indexOf(u);
   if(i>=0)f.excUnitsArr.splice(i,1);else f.excUnitsArr.push(u);
   saveUI();renderFilterPanel(f);
 }
 function filtSetExcUnits(val,el){
-  const f=curFilterTarget==='collect'?UI.cf:UI.mf;
+  const f=_getF();
   f.excUnits=val;saveUI();renderFilterPanel(f);
 }
 function filtSetExcAll(val,el){
-  const f=curFilterTarget==='collect'?UI.cf:UI.mf;
+  const f=_getF();
   f.excAll=val;saveUI();renderFilterPanel(f);
 }
 function filtMmmmAll(){
-  const f=curFilterTarget==='collect'?UI.cf:UI.mf;
+  const f=_getF();
   f.excMmmm=false;f.mmms=[];saveUI();renderFilterPanel(f);
 }
 function filtSetExcMmmm(el){
-  const f=curFilterTarget==='collect'?UI.cf:UI.mf;
+  const f=_getF();
   f.excMmmm=!f.excMmmm;if(f.excMmmm)f.mmms=[];
   saveUI();renderFilterPanel(f);
 }
 function filtToggleMmmm(m,el){
-  const f=curFilterTarget==='collect'?UI.cf:UI.mf;
+  const f=_getF();
   f.excMmmm=false;
   f.mmms=f.mmms||[];
   const i=f.mmms.indexOf(m);
@@ -1042,10 +1068,10 @@ function filtToggleMmmm(m,el){
   saveUI();renderFilterPanel(f);
 }
 function toggleFchip(el){el.classList.toggle('on');}
-function toggleFchipExc(el,key){el.classList.toggle('on');const f=curFilterTarget==='collect'?UI.cf:UI.mf;f[key]=el.classList.contains('on');saveUI();}
+function toggleFchipExc(el,key){el.classList.toggle('on');const f=_getF();f[key]=el.classList.contains('on');saveUI();}
 
 function applyFilter(){
-  const f=curFilterTarget==='collect'?UI.cf:UI.mf;
+  const f=_getF();
   // units (manual선택만)
   f.units=[];document.querySelectorAll('#filt-body [data-fk="units"].on').forEach(el=>f.units.push(el.dataset.fv));
   // mmms (individual)
@@ -1053,7 +1079,7 @@ function applyFilter(){
   saveUI();closeSheet('filt-ov');renderCur();
 }
 function resetCurFilter(){
-  const f=curFilterTarget==='collect'?UI.cf:UI.mf;
+  const f=_getF();
   f.albs=[];f.members=[];f.units=[];f.mmms=[];
   f.excUnits=false;f.excAll=false;f.excMmmm=false;f.excUnitsArr=[];
   saveUI();renderFilterPanel(f);
@@ -1131,13 +1157,14 @@ function buildSections(albums,f,colMap,onColSec,showGoalRow){
     let flatCards=[];
     for(const alb of albums){
       for(const set of alb.sets){
-        if(sq&&!set.name.toLowerCase().includes(sq)&&!alb.name.toLowerCase().includes(sq))continue;
+        if(sq&&!matchSearch(set.name,sq)&&!matchSearch(alb.name,sq))continue;
         let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
         if(f.vis==='met')cards=cards.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)&&c(x.id)===g(x.id));
         else if(f.vis==='exceed')cards=cards.filter(x=>g(x.id)>0&&c(x.id)>g(x.id));
         else if(f.vis==='lack')cards=cards.filter(x=>g(x.id)>0&&c(x.id)<g(x.id));
         else if(f.vis==='none')cards=cards.filter(x=>g(x.id)===0);
-        flatCards=flatCards.concat(cards.map(card=>({...card,aId:alb.id,aC:alb.color})));
+        const filteredCards=sq?cards.filter(card=>matchSearch(card.name,sq)||matchSearch(set.name,sq)||matchSearch(alb.name,sq)):cards;
+flatCards=flatCards.concat(filteredCards.map(card=>({...card,aId:alb.id,aC:alb.color})));
       }
     }
     if(!flatCards.length)return`<div style="padding:20px;text-align:center;color:var(--tx2);font-size:12px">${sq?`"${sq}" 검색 결과가 없어요.`:'해당하는 카드가 없어요.'}</div>`;
@@ -1153,7 +1180,7 @@ function buildSections(albums,f,colMap,onColSec,showGoalRow){
   let secs='';
   for(const alb of albums){
     for(const set of alb.sets){
-      if(sq&&!set.name.toLowerCase().includes(sq)&&!alb.name.toLowerCase().includes(sq))continue;
+      if(sq&&!matchSearch(set.name,sq)&&!matchSearch(alb.name,sq))continue;
       let cards=set.cards.filter(card=>cardPassFilter({...card,aId:alb.id},f));
       if(f.vis==='met')cards=cards.filter(x=>g(x.id)>0&&c(x.id)>=g(x.id)&&c(x.id)===g(x.id));
       else if(f.vis==='exceed')cards=cards.filter(x=>g(x.id)>0&&c(x.id)>g(x.id));
@@ -1222,9 +1249,14 @@ function lsScreenshot(){
   const f=curTab==='trade'?UI.tf:UI.cf;
   const flat=f.flatView;
   if(curTab==='trade'){
-    exportScreenshot();
+    if(!isLS()){
+      // 세로모드: 구해요/있어요 각각 저장 여부 선택
+      const sep=confirm(lang==='ko'?'구해요 / 있어요를 각각 따로 저장할까요?\n(확인=각각 저장 / 취소=한 장으로)':'Save WANT and HAVE separately?\n(OK=Separate / Cancel=Combined)');
+      exportScreenshot(sep);
+    } else {
+      exportScreenshot(false);
+    }
   } else {
-    // 섹션뷰면 바로, 플랫뷰면 메타 포함 여부 선택
     if(!flat){ exportCollectScreenshot(false); }
     else {
       const choice=confirm(lang==='ko'?'카드 정보(앨범·세트명) 포함해서 찍을까요?\n\n확인=포함 / 취소=기본':'Include card info (album·set name)?\n\nOK=Include / Cancel=Basic');
@@ -1753,26 +1785,41 @@ function _loadImgEl(dataUrl){
   });
 }
 
-/* ── 공통 저장 ── */
+/* ── 공통 저장 + 공유 ── */
 function _save(canvas,name){
   canvas.toBlob(blob=>{
     if(!blob||blob.size===0){
-      // fallback
-      try{
-        const a=document.createElement('a');
-        a.download=name;
-        a.href=canvas.toDataURL('image/png');
-        a.click();
-      }catch(e){toast('저장 실패: '+e.message);}
+      try{const a=document.createElement('a');a.download=name;a.href=canvas.toDataURL('image/png');a.click();}catch(e){toast('저장 실패: '+e.message);}
       return;
     }
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a');
-    a.download=name;
-    a.href=url;
-    a.click();
-    setTimeout(()=>URL.revokeObjectURL(url),5000);
+    a.download=name;a.href=url;a.click();
+    setTimeout(()=>{
+      _showShareToast(blob,name);
+      URL.revokeObjectURL(url);
+    },600);
   },'image/png');
+}
+
+function _showShareToast(blob,name){
+  // 모바일 Web Share API — 카카오·X·스레드·인스타 등 앱에서 직접 선택
+  if(navigator.share&&navigator.canShare){
+    const file=new File([blob],name,{type:'image/png'});
+    if(navigator.canShare({files:[file]})){
+      const w=document.getElementById('tw');
+      const el=document.createElement('div');
+      el.className='toast';
+      el.style.cssText='cursor:pointer;background:var(--blue);color:#fff;padding:8px 18px;display:flex;align-items:center;gap:6px;border-radius:20px;font-size:12px;font-weight:700';
+      el.innerHTML='📤 공유하기';
+      el.onclick=()=>{
+        navigator.share({files:[file],title:'Caligo Pt.2 포카 현황'}).catch(()=>{});
+        el.remove();
+      };
+      w.appendChild(el);
+      setTimeout(()=>{if(el.parentNode)el.remove();},4000);
+    }
+  }
 }
 
 /* ── Canvas 직접 렌더 ── */
@@ -1975,7 +2022,7 @@ function _drawSecLabel(ctx,x,y,w,albColor,albShort,setName,dark){
 }
 
 /* ══ 교환탭 스크린샷 (Canvas direct) ══ */
-async function exportScreenshot(){
+async function exportScreenshot(separate=false){
   toast(t('shotReady'));
   const all=allCards(),tf=UI.tf;
   const wAll=all.filter(x=>wt(x.id)>0);
@@ -2054,10 +2101,12 @@ async function exportScreenshot(){
   ctx.fillRect(0,0,canvasW,canvasH);
 
   // 헤더
-  const title=`Caligo Pt.2 교환 현황${tf.flatView?' · 카드나열':' · 세트별'}`;
+  const albLabelT=tf.albs.length?` — ${tf.albs.map(id=>DB.albumTypes.find(a=>a.id===id)?.shortName||'').join('·')}`:'';
+  const title=`Caligo Pt.2 교환 현황${albLabelT}${tf.flatView?' · 카드나열':' · 세트별'}`;
   _drawHeader(ctx,canvasW,dark,title);
 
-  async function drawSide(cards,mode,startX,startY,sw){
+  async function drawSide(cards,mode,startX,startY,sw,ctxOverride){
+    const dc=ctxOverride||ctx;
     const lCol=mode==='w'?'#f43f5e':'#3b82f6';
     const lBg=mode==='w'?'rgba(244,63,94,.07)':'rgba(59,130,246,.07)';
     const lBd=mode==='w'?'rgba(244,63,94,.22)':'rgba(59,130,246,.22)';
@@ -2066,19 +2115,19 @@ async function exportScreenshot(){
 
     // 박스 배경 (높이는 나중에)
     const innerH=LABEL_H+calcSideHeight(cards,mode)+INNER_PAD;
-    ctx.fillStyle=lBg;
-    _roundRect(ctx,startX,startY,sw,innerH+INNER_PAD,7);
-    ctx.fill();
-    ctx.strokeStyle=lBd;
-    ctx.lineWidth=1;
-    _roundRect(ctx,startX,startY,sw,innerH+INNER_PAD,7);
-    ctx.stroke();
+    dc.fillStyle=lBg;
+    _roundRect(dc,startX,startY,sw,innerH+INNER_PAD,7);
+    dc.fill();
+    dc.strokeStyle=lBd;
+    dc.lineWidth=1;
+    _roundRect(dc,startX,startY,sw,innerH+INNER_PAD,7);
+    dc.stroke();
 
     // 라벨 (더 크게)
-    ctx.fillStyle=lCol;
-    ctx.font=`800 15px "Outfit",sans-serif`;
-    ctx.textAlign='left';
-    ctx.fillText(lbl,startX+INNER_PAD,startY+INNER_PAD+13);
+    dc.fillStyle=lCol;
+    dc.font=`800 15px "Outfit",sans-serif`;
+    dc.textAlign='left';
+    dc.fillText(lbl,startX+INNER_PAD,startY+INNER_PAD+13);
 
     let cy=startY+INNER_PAD+LABEL_H;
     const cInnerW=sw-INNER_PAD*2;
@@ -2119,6 +2168,28 @@ async function exportScreenshot(){
     }
   }
 
+  const now=new Date().toLocaleDateString('ko-KR').replace(/\./g,'');
+
+  // 세로모드 각각 저장 — 메인 캔버스 렌더 건너뜀
+  if(!lscape&&separate){
+    async function saveSingle(cards,mode,suffix){
+      if(!cards.length)return;
+      const sH=HDR_H+PAD+LABEL_H+calcSideHeight(cards,mode)+INNER_PAD*2+PAD;
+      const {cv:cv2,ctx:ctx2}=_mkCanvas(canvasW,sH);
+      ctx2.fillStyle=bg;ctx2.fillRect(0,0,canvasW,sH);
+      const modeLabel=mode==='w'?'구해요':'있어요';
+      const t2=`Caligo Pt.2 교환 — ${modeLabel}${albLabelT}${tf.flatView?' · 카드나열':' · 세트별'}`;
+      _drawHeader(ctx2,canvasW,dark,t2);
+      await drawSide(cards,mode,PAD,HDR_H+PAD,canvasW-PAD*2,ctx2);
+      _drawWatermark(ctx2,canvasW,sH);
+      _save(cv2,`교환_${suffix}_${now}.png`);
+    }
+    if(wCards.length)await saveSingle(wCards,'w','구해요');
+    if(hCards.length)await saveSingle(hCards,'h','있어요');
+    toast(t('shotDone'));
+    return;
+  }
+
   let drawY=HDR_H+PAD;
   if(lscape&&both){
     const sw=Math.floor((canvasW-PAD*2-GAP*2)/2);
@@ -2138,7 +2209,7 @@ async function exportScreenshot(){
   }
 
   _drawWatermark(ctx,canvasW,canvasH);
-  _save(cv,`교환_${new Date().toLocaleDateString('ko-KR').replace(/\./g,'')}.png`);
+  _save(cv,`교환_${now}.png`);
   toast(t('shotDone'));
 }
 
@@ -2195,7 +2266,9 @@ async function exportCollectScreenshot(withMeta){
   ctx.fillStyle=bg;
   ctx.fillRect(0,0,canvasW,totalH);
 
-  _drawHeader(ctx,canvasW,dark,t('colShotHdr'));
+  const albLabel=f.albs.length?` — ${f.albs.map(id=>DB.albumTypes.find(a=>a.id===id)?.shortName||'').join('·')}`:'';
+  const collectTitle=`${t('colShotHdr')}${albLabel}${f.flatView?' · 카드나열':' · 세트별'}`;
+  _drawHeader(ctx,canvasW,dark,collectTitle);
   let cy=32+PAD;
 
   if(f.flatView){
@@ -2224,7 +2297,6 @@ async function exportCollectScreenshot(withMeta){
   _save(cv,`수집_${new Date().toLocaleDateString('ko-KR').replace(/\./g,'')}.png`);
   toast(t('shotDone'));
 }
-
 
 /* ══════════════════════════════════
    SETTINGS / THEME
@@ -2308,7 +2380,17 @@ function init(){
       saveDB();_invalidateDBCache();renderCur();
     })
     .catch(()=>{loadDB();if(DB){_invalidateDBCache();renderCur();}else document.getElementById('page-content').innerHTML='<div style="padding:24px;text-align:center;color:var(--want)">⚠️ poca_db.json을 같은 폴더에 두고 웹서버로 열어주세요.</div>';});
-  document.getElementById('main').addEventListener('scroll',function(){const btn=document.getElementById('scroll-top-btn');if(btn)btn.classList.toggle('vis',this.scrollTop>200);},{passive:true});
+  document.getElementById('main').addEventListener('scroll',function(){
+    const btn=document.getElementById('scroll-top-btn');
+    if(btn)btn.classList.toggle('vis',this.scrollTop>200);
+    // FAB 자동 흐리기: 스크롤 중엔 반투명, 2.5초 후 복원
+    const fab=document.getElementById('shot-fab');
+    if(fab){
+      fab.classList.add('fab-dim');
+      clearTimeout(fab._dimTimer);
+      fab._dimTimer=setTimeout(()=>fab.classList.remove('fab-dim'),2500);
+    }
+  },{passive:true});
   // orientation: 300ms 대기 (iOS에서 뷰포트 확정 후 렌더)
   window.addEventListener('orientationchange',()=>setTimeout(()=>{renderNav();renderCur();},300));
   // resize: 250ms 디바운스 (연속 이벤트 중 마지막만 처리)
