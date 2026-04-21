@@ -2094,8 +2094,8 @@ async function exportScreenshot(separate=false){
   }
 
   const HDR_H=32;
-  const LABEL_H=24; // 구해요/있어요 라벨 (15px 폰트 + 여백)
-  const INNER_PAD=8;
+  const LABEL_H=24;
+  const INNER_PAD=6; // 내부 패딩 8→6 축소
 
   let canvasH;
   if(lscape&&both){
@@ -2108,7 +2108,7 @@ async function exportScreenshot(separate=false){
     canvasH=HDR_H+PAD+LABEL_H+calcSideHeight(cards,mode)+INNER_PAD*2+PAD;
   } else {
     let h=HDR_H+PAD;
-    if(wCards.length)h+=LABEL_H+calcSideHeight(wCards,'w')+INNER_PAD*2+GAP*2;
+    if(wCards.length)h+=LABEL_H+calcSideHeight(wCards,'w')+INNER_PAD*2+4;
     if(hCards.length)h+=LABEL_H+calcSideHeight(hCards,'h')+INNER_PAD*2;
     h+=PAD;
     canvasH=h;
@@ -2194,7 +2194,9 @@ async function exportScreenshot(separate=false){
   if(!lscape&&separate){
     async function saveSingle(cards,mode,suffix){
       if(!cards.length)return;
-      const sH=HDR_H+PAD+LABEL_H+calcSideHeight(cards,mode)+INNER_PAD*2+PAD;
+      // 높이: 헤더 + 패딩 + 박스(라벨+카드+inner패딩*2)
+      const boxH=LABEL_H+calcSideHeight(cards,mode)+INNER_PAD*2;
+      const sH=HDR_H+PAD+boxH+PAD;
       const {cv:cv2,ctx:ctx2}=_mkCanvas(canvasW,sH);
       ctx2.fillStyle=bg;ctx2.fillRect(0,0,canvasW,sH);
       const modeLabel=mode==='w'?'구해요':'있어요';
@@ -2202,10 +2204,23 @@ async function exportScreenshot(separate=false){
       _drawHeader(ctx2,canvasW,dark,t2);
       await drawSide(cards,mode,PAD,HDR_H+PAD,canvasW-PAD*2,ctx2);
       _drawWatermark(ctx2,canvasW,sH);
-      _save(cv2,`교환_${suffix}_${now}.png`);
+      // toBlob은 비동기이므로 Promise로 감싸서 순서 보장
+      await new Promise(res=>{
+        cv2.toBlob(blob=>{
+          if(blob&&blob.size>0){
+            const url=URL.createObjectURL(blob);
+            const a=document.createElement('a');
+            a.download=`교환_${suffix}_${now}.png`;
+            a.href=url;a.click();
+            setTimeout(()=>URL.revokeObjectURL(url),3000);
+          }
+          res();
+        },'image/png');
+      });
     }
     if(wCards.length)await saveSingle(wCards,'w','구해요');
-    if(hCards.length)await saveSingle(hCards,'h','있어요');
+    // 있어요는 0.5초 간격 두고 저장 (브라우저 다운로드 중복 방지)
+    if(hCards.length)await new Promise(r=>setTimeout(r,500)).then(()=>saveSingle(hCards,'h','있어요'));
     toast(t('shotDone'));
     return;
   }
