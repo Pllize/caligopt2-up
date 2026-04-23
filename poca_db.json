@@ -243,7 +243,7 @@
               "img": "./images/cards/c_mnrjpof5ibh.webp",
               "cardType": "Unit",
               "member": null,
-              "unit": "쁜라인",
+              "unit": "댄라즈",
               "mmmm": null,
               "memo": "",
               "imgV": 2,
@@ -288,7 +288,7 @@
               "img": "./images/cards/c_mnrjpp83vio.webp",
               "cardType": "Unit",
               "member": null,
-              "unit": "댄라즈",
+              "unit": "쁜라인",
               "mmmm": null,
               "memo": "",
               "imgV": 2,
@@ -2227,7 +2227,9 @@
               "member": "예준",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: seoh_03"
             },
             {
               "id": "c_mnx6xijnsx0",
@@ -2237,7 +2239,9 @@
               "member": "노아",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: seoh_03"
             },
             {
               "id": "c_mnx6xijn13o",
@@ -2247,7 +2251,9 @@
               "member": "밤비",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: seoh_03"
             },
             {
               "id": "c_mnx6xijnnxo",
@@ -2257,7 +2263,9 @@
               "member": "은호",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: seoh_03"
             },
             {
               "id": "c_mnx6xijnd9r",
@@ -2267,7 +2275,9 @@
               "member": "하민",
               "unit": null,
               "mmmm": null,
-              "memo": ""
+              "memo": "",
+              "imgV": 2,
+              "contributor": "제보: seoh_03"
             }
           ]
         },
@@ -2660,7 +2670,8 @@
               "unit": null,
               "mmmm": null,
               "memo": "",
-              "imgV": 1
+              "imgV": 2,
+              "contributor": "제보: soob_bi_, 익명의플리님"
             },
             {
               "id": "c_mo0a0hkrnil",
@@ -2671,7 +2682,8 @@
               "unit": null,
               "mmmm": null,
               "memo": "",
-              "imgV": 1
+              "imgV": 2,
+              "contributor": "제보: soob_bi_, 익명의플리님"
             },
             {
               "id": "c_mo0a0hkrf0w",
@@ -2682,7 +2694,8 @@
               "unit": null,
               "mmmm": null,
               "memo": "",
-              "imgV": 1
+              "imgV": 2,
+              "contributor": "제보: soob_bi_, 익명의플리님"
             },
             {
               "id": "c_mo0a0hkrlgv",
@@ -2693,7 +2706,8 @@
               "unit": null,
               "mmmm": null,
               "memo": "",
-              "imgV": 1
+              "imgV": 2,
+              "contributor": "제보: soob_bi_, 익명의플리님"
             },
             {
               "id": "c_mo0a0hkr1g9",
@@ -2704,7 +2718,8 @@
               "unit": null,
               "mmmm": null,
               "memo": "",
-              "imgV": 1
+              "imgV": 2,
+              "contributor": "제보: soob_bi_, 익명의플리님"
             }
           ]
         },
