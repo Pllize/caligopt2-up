@@ -1562,8 +1562,8 @@ function wizApply(){
 ══════════════════════════════════ */
 
 // ── Supabase 설정 (배포 전 본인 프로젝트 값으로 교체) ──
-const SUPA_URL = 'https://svwdfqwgriwnywrnyldc.supabase.co';
-const SUPA_KEY = 'sb_publishable_hUdoDafcfq0dP2DhrrtH5w_T_VxSYzw';
+const SUPA_URL = 'https://YOUR_PROJECT.supabase.co';
+const SUPA_KEY = 'YOUR_ANON_KEY';
 
 async function _supa(method, path, body){
   const r = await fetch(SUPA_URL + path, {
@@ -1604,6 +1604,7 @@ const CONTACT_OPTS=[
   {k:'threads',label:'스레드',  icon:'🧵', ph:'@아이디'},
   {k:'insta',  label:'인스타',  icon:'📸', ph:'@아이디'},
   {k:'wechat', label:'위챗',    icon:'🟢', ph:'위챗 ID'},
+  {k:'etc',    label:'기타',    icon:'📩', ph:'연락 가능한 방법을 입력해 주세요'},
 ];
 
 /* ── 메인 렌더 ── */
@@ -1687,10 +1688,48 @@ async function renderMatchingHome(el){
     <div style="font-size:10px;color:var(--tx2);background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:2px 8px">${MX.user.nickname}</div>
     <div style="flex:1"></div>
     <button onclick="openMXRegister()" style="padding:6px 13px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border-radius:var(--r-sm);font-family:'Outfit',sans-serif;font-weight:700;font-size:11px;border:none;cursor:pointer">＋ 등록</button>
-    <button onclick="_clearMXUser();renderMatching()" style="padding:6px 10px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);font-size:10px;font-weight:600;color:var(--tx2);cursor:pointer">로그아웃</button>
+    <button onclick="showMXAccountMenu()" style="padding:6px 10px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);font-size:10px;font-weight:600;color:var(--tx2);cursor:pointer">⚙️</button>
   </div>
   <div id="mx-list-wrap"><div style="text-align:center;padding:20px;color:var(--tx2);font-size:12px">📋 목록 불러오는 중...</div></div>`;
   await renderMXList();
+}
+
+function showMXAccountMenu(){
+  const existing=document.getElementById('mx-acct-ov');if(existing){existing.remove();return;}
+  const html=`<div id="mx-acct-ov" style="position:fixed;inset:0;z-index:500;background:rgba(8,9,15,.7);display:flex;align-items:center;justify-content:center" onclick="if(event.target===this)this.remove()">
+    <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:18px;width:260px;display:flex;flex-direction:column;gap:8px">
+      <div style="font-weight:800;font-size:13px;margin-bottom:4px">계정 설정</div>
+      <button onclick="document.getElementById('mx-acct-ov').remove();_clearMXUser();renderMatching()" style="padding:10px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;color:var(--tx);text-align:left">🚪 로그아웃</button>
+      <button onclick="document.getElementById('mx-acct-ov').remove();deleteMXAccount()" style="padding:10px;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.3);border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;color:var(--want);text-align:left">🗑 계정 및 모든 글 삭제</button>
+      <button onclick="document.getElementById('mx-acct-ov').remove()" style="padding:8px;background:none;border:none;font-size:11px;color:var(--tx3);cursor:pointer">닫기</button>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+
+async function deleteMXAccount(){
+  if(!MX.user)return;
+  if(!confirm('계정과 등록한 모든 교환 글을 삭제할까요?\n이 작업은 되돌릴 수 없어요.'))return;
+  const pin=prompt('확인을 위해 PIN 6자리를 입력해 주세요:');
+  if(!pin){toast('취소됐어요.');return;}
+  try{
+    const ph=await _hash(MX.user.nickname+':'+pin);
+    const users=await _supa('GET',`/rest/v1/mx_users?id=eq.${MX.user.id}&select=pin_hash`);
+    if(!users||!users.length||users[0].pin_hash!==ph){toast('PIN이 틀렸어요.');return;}
+    // 내 글의 카드/제안 먼저 삭제
+    const myPosts=await _supa('GET',`/rest/v1/mx_posts?user_id=eq.${MX.user.id}&select=id`);
+    for(const p of(myPosts||[])){
+      await _supa('DELETE',`/rest/v1/mx_proposals?post_id=eq.${p.id}`);
+      await _supa('DELETE',`/rest/v1/mx_cards?post_id=eq.${p.id}`);
+    }
+    await _supa('DELETE',`/rest/v1/mx_posts?user_id=eq.${MX.user.id}`);
+    // 내가 보낸 제안도 삭제
+    await _supa('DELETE',`/rest/v1/mx_proposals?from_user_id=eq.${MX.user.id}`);
+    await _supa('DELETE',`/rest/v1/mx_users?id=eq.${MX.user.id}`);
+    _clearMXUser();
+    toast('계정이 삭제됐어요.');
+    renderMatching();
+  }catch(e){toast('오류: '+e.message);}
 }
 
 /* ── 게시글 목록 ── */
@@ -1765,31 +1804,39 @@ function buildMXCard(p){
 
 /* ── 상세 / 비교 모달 ── */
 async function openMXDetail(postId){
-  // 상세 데이터 가져오기
   try{
-    const posts=await _supa('GET',`/rest/v1/mx_posts?id=eq.${postId}&select=*,mx_users(nickname),mx_cards(card_id,mode)`);
+    const posts=await _supa('GET',`/rest/v1/mx_posts?id=eq.${postId}&select=*,mx_users(id,nickname),mx_cards(card_id,mode)`);
     if(!posts||!posts.length)return;
     const p=posts[0];
     const nick=p.mx_users?.nickname||'?';
+    const postOwnerId=p.mx_users?.id||p.user_id;
     const cards=p.mx_cards||[];
     const wants=cards.filter(c=>c.mode==='want').map(c=>c.card_id);
     const haves=cards.filter(c=>c.mode==='have').map(c=>c.card_id);
+    const isMe=MX.user&&p.user_id===MX.user.id;
 
-    // 내 수집과 겹치는 카드 계산
+    // 내 수집 데이터
     const myHaveIds=allCards().filter(x=>sp(x.id)>0).map(x=>x.id);
     const myWantIds=allCards().filter(x=>wt(x.id)>0).map(x=>x.id);
 
+    // ⭐ 상호 교환 가능: 상대 구해요 ∩ 내 있어요  AND  상대 있어요 ∩ 내 구해요
+    const mutualGive=wants.filter(id=>myHaveIds.includes(id)); // 내가 줄 수 있음
+    const mutualGet=haves.filter(id=>myWantIds.includes(id));  // 내가 받을 수 있음
+    // 진짜 상호교환: 둘 다 있어야 함
+    const isMutual=mutualGive.length>0&&mutualGet.length>0;
+
     function cardRow(id,mode){
-      const r=findCard(id);
-      if(!r)return'';
+      const r=findCard(id);if(!r)return'';
       const card=r.card;
-      const canGive=mode==='want'&&myHaveIds.includes(id);
-      const canGet=mode==='have'&&myWantIds.includes(id);
-      const glow=canGive||canGet;
-      const badge=canGive?'<span style="background:rgba(34,197,94,.2);color:var(--ok);font-size:8px;padding:1px 4px;border-radius:4px;font-weight:700">줄수있음</span>'
-                 :canGet?'<span style="background:rgba(79,138,255,.2);color:var(--blue);font-size:8px;padding:1px 4px;border-radius:4px;font-weight:700">받을수있음</span>':'';
-      return`<div style="display:flex;align-items:center;gap:6px;padding:5px 7px;border-radius:6px;${glow?'background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.25)':'background:var(--s2);border:1px solid transparent'}">
-        ${card.img?`<img src="${card.img}" style="width:28px;height:39px;object-fit:cover;border-radius:4px" loading="lazy">`:'<div style="width:28px;height:39px;background:var(--s3);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px">📷</div>'}
+      const isGive=mode==='want'&&myHaveIds.includes(id);
+      const isGet=mode==='have'&&myWantIds.includes(id);
+      const mutual=isGive&&mutualGet.length>0||isGet&&mutualGive.length>0;
+      let badge='';
+      if(isGive) badge=`<span style="background:rgba(34,197,94,.2);color:var(--ok);font-size:8px;padding:1px 5px;border-radius:4px;font-weight:800">줄수있음</span>`;
+      else if(isGet) badge=`<span style="background:rgba(79,138,255,.2);color:var(--blue);font-size:8px;padding:1px 5px;border-radius:4px;font-weight:800">받을수있음</span>`;
+      const glow=isGive||isGet;
+      return`<div style="display:flex;align-items:center;gap:6px;padding:5px 7px;border-radius:6px;${glow?'background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.3)':'background:var(--s2);border:1px solid transparent'}">
+        ${card.img?`<img src="${card.img}" style="width:26px;height:36px;object-fit:cover;border-radius:4px" loading="lazy">`:'<div style="width:26px;height:36px;background:var(--s3);border-radius:4px"></div>'}
         <div style="flex:1;min-width:0">
           <div style="font-size:10px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${card.name}</div>
           <div style="font-size:9px;color:var(--tx3)">${r.alb.shortName} · ${r.set.name}</div>
@@ -1798,38 +1845,112 @@ async function openMXDetail(postId){
       </div>`;
     }
 
+    // 상호교환 섹션
+    const mutualSection=(!isMe&&isMutual)?`
+    <div style="background:rgba(34,197,94,.08);border:1.5px solid rgba(34,197,94,.35);border-radius:var(--r-sm);padding:10px;margin-bottom:12px">
+      <div style="font-size:11px;font-weight:800;color:var(--ok);margin-bottom:6px">⭐ 상호 교환 가능!</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <div>
+          <div style="font-size:9px;color:var(--ok);font-weight:700;margin-bottom:4px">내가 줄 수 있는 카드</div>
+          ${mutualGive.map(id=>{const r=findCard(id);return r?`<div style="font-size:10px;padding:2px 0">${r.card.name}</div>`:''}).join('')}
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--blue);font-weight:700;margin-bottom:4px">내가 받을 수 있는 카드</div>
+          ${mutualGet.map(id=>{const r=findCard(id);return r?`<div style="font-size:10px;padding:2px 0">${r.card.name}</div>`:''}).join('')}
+        </div>
+      </div>
+    </div>`:'';
+
     const contactOpt=CONTACT_OPTS.find(o=>o.k===p.contact_type);
+
+    // 제안 목록 불러오기
+    const proposals=await _supa('GET',`/rest/v1/mx_proposals?post_id=eq.${postId}&select=*,mx_users(nickname)&order=created_at.asc`);
+    const myProposals=(proposals||[]).filter(pr=>MX.user&&pr.from_user_id===MX.user.id);
+    const ownerProposals=(proposals||[]);
+
+    // 제안 섹션: 게시글 주인만 전체 볼 수 있고, 제안자는 본인것만 볼 수 있음
+    const visibleProps=isMe?ownerProposals:myProposals;
+    const proposalSection=`
+    <div style="margin-top:14px;border-top:1px solid var(--bd);padding-top:12px">
+      <div style="font-size:11px;font-weight:800;margin-bottom:8px">${isMe?`📬 받은 제안 (${ownerProposals.length})`:'💌 제안하기'}</div>
+      ${visibleProps.length?visibleProps.map(pr=>{
+        const fromNick=pr.mx_users?.nickname||'?';
+        const dt=new Date(pr.created_at).toLocaleDateString('ko-KR',{month:'short',day:'numeric'});
+        const canDel=MX.user&&(pr.from_user_id===MX.user.id||isMe);
+        return`<div style="background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);padding:9px 11px;margin-bottom:6px">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+            <span style="font-size:10px;font-weight:700">${isMe?fromNick:'나'}</span>
+            <span style="font-size:9px;color:var(--tx3)">${dt}</span>
+            ${canDel?`<button onclick="deleteMXProposal('${pr.id}','${postId}')" style="margin-left:auto;font-size:9px;color:var(--want);background:none;border:1px solid rgba(244,63,94,.3);border-radius:4px;padding:1px 6px;cursor:pointer">삭제</button>`:''}
+          </div>
+          <div style="font-size:11px;color:var(--tx);line-height:1.6">${pr.memo}</div>
+        </div>`;
+      }).join(''):'<div style="font-size:11px;color:var(--tx3);margin-bottom:8px">'+(isMe?'아직 받은 제안이 없어요.':'')+'</div>'}
+      ${!isMe?`<div style="margin-top:6px">
+        <textarea id="mx-proposal-input" rows="2" placeholder="${nick}님에게 제안이나 메모를 남겨보세요..." style="width:100%;padding:8px 10px;font-size:12px;border-radius:var(--r-sm);resize:none"></textarea>
+        <button onclick="submitMXProposal('${postId}')" style="margin-top:6px;width:100%;padding:9px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border-radius:var(--r-sm);font-weight:800;font-size:12px;border:none;cursor:pointer">제안 보내기 →</button>
+        <div style="font-size:9px;color:var(--tx3);margin-top:4px;text-align:center">게시글 등록자에게만 보여요</div>
+      </div>`:''}`+`
+    </div>`;
+
     const modalHtml=`
     <div id="mx-detail-ov" style="position:fixed;inset:0;z-index:500;background:rgba(8,9,15,.85);display:flex;align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeMXDetail()">
-      <div style="background:var(--s1);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:500px;max-height:90svh;overflow-y:auto;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <div style="background:var(--s1);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:500px;max-height:92svh;overflow-y:auto;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
           <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:15px">${nick}님의 교환 글</div>
           <div style="flex:1"></div>
           <button onclick="closeMXDetail()" style="font-size:18px;color:var(--tx2);background:none;border:none;cursor:pointer">✕</button>
         </div>
-        ${p.memo?`<div style="font-size:12px;color:var(--tx2);background:var(--s2);border-radius:var(--r-sm);padding:10px;margin-bottom:12px">${p.memo}</div>`:''}
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+        ${mutualSection}
+        ${p.memo?`<div style="font-size:12px;color:var(--tx2);background:var(--s2);border-radius:var(--r-sm);padding:10px;margin-bottom:10px">${p.memo}</div>`:''}
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
           <div>
-            <div style="font-size:10px;font-weight:800;color:var(--want);margin-bottom:6px">🔍 구해요 (${wants.length})</div>
-            <div style="display:flex;flex-direction:column;gap:4px">${wants.map(id=>cardRow(id,'want')).join('')}</div>
+            <div style="font-size:10px;font-weight:800;color:var(--want);margin-bottom:5px">🔍 구해요 (${wants.length})</div>
+            <div style="display:flex;flex-direction:column;gap:3px">${wants.map(id=>cardRow(id,'want')).join('')}</div>
           </div>
           <div>
-            <div style="font-size:10px;font-weight:800;color:var(--have);margin-bottom:6px">✨ 있어요 (${haves.length})</div>
-            <div style="display:flex;flex-direction:column;gap:4px">${haves.map(id=>cardRow(id,'have')).join('')}</div>
+            <div style="font-size:10px;font-weight:800;color:var(--have);margin-bottom:5px">✨ 있어요 (${haves.length})</div>
+            <div style="display:flex;flex-direction:column;gap:3px">${haves.map(id=>cardRow(id,'have')).join('')}</div>
           </div>
         </div>
-        <div style="background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);padding:12px">
-          <div style="font-size:10px;color:var(--tx2);margin-bottom:6px">연락처</div>
-          <div style="font-size:13px;font-weight:700">${contactOpt?.icon||'📩'} ${contactOpt?.label||''}</div>
-          <div style="font-size:12px;color:var(--blue);margin-top:3px;word-break:break-all">${p.contact_value||''}</div>
+        <div style="background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);padding:10px">
+          <div style="font-size:9px;color:var(--tx2);margin-bottom:4px">연락처</div>
+          <div style="font-size:12px;font-weight:700">${contactOpt?.icon||'📩'} ${contactOpt?.label||''}</div>
+          <div style="font-size:12px;color:var(--blue);margin-top:2px;word-break:break-all">${p.contact_value||''}</div>
         </div>
-        <button onclick="closeMXDetail()" style="margin-top:12px;width:100%;padding:11px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);font-weight:700;font-size:12px;cursor:pointer;color:var(--tx)">닫기</button>
+        ${proposalSection}
       </div>
     </div>`;
     document.body.insertAdjacentHTML('beforeend',modalHtml);
   }catch(e){toast('오류: '+e.message);}
 }
 function closeMXDetail(){const el=document.getElementById('mx-detail-ov');if(el)el.remove();}
+
+async function submitMXProposal(postId){
+  if(!MX.user){toast('로그인이 필요해요.');return;}
+  const memo=(document.getElementById('mx-proposal-input')?.value||'').trim();
+  if(!memo){toast('내용을 입력해 주세요.');return;}
+  try{
+    await _supa('POST','/rest/v1/mx_proposals',{
+      post_id:postId,
+      from_user_id:MX.user.id,
+      memo,
+    });
+    toast('✅ 제안을 보냈어요!');
+    closeMXDetail();
+    await openMXDetail(postId);
+  }catch(e){toast('오류: '+e.message);}
+}
+
+async function deleteMXProposal(proposalId,postId){
+  if(!confirm('이 제안을 삭제할까요?'))return;
+  try{
+    await _supa('DELETE',`/rest/v1/mx_proposals?id=eq.${proposalId}`);
+    toast('삭제됐어요.');
+    closeMXDetail();
+    await openMXDetail(postId);
+  }catch(e){toast('오류: '+e.message);}
+}
 
 /* ── 삭제 ── */
 async function deleteMXPost(postId){
@@ -1889,83 +2010,67 @@ function buildMXCardPicker(mode){
   const sel=mode==='want'?_mxReg.wantIds:_mxReg.haveIds;
   const color=mode==='want'?'var(--want)':'var(--have)';
   const label=mode==='want'?'구해요':'있어요';
-
-  // 카드 목록: DB에서 불러와 멤버별 그룹
   if(!DB) return'<div style="color:var(--tx2);font-size:12px;padding:10px">DB 로딩 중...</div>';
 
-  // 텍스트 입력 방식
-  let textInputSection=`
-  <div style="margin-bottom:12px">
-    <div style="font-size:10px;color:var(--tx2);margin-bottom:5px">카드 이름으로 검색 (쉼표로 여러 개)</div>
-    <div style="display:flex;gap:6px">
-      <input id="mx-search-${mode}" type="text" placeholder="예: 하민 포카, 노아 탤런트..." style="flex:1;padding:8px 10px;font-size:12px;border-radius:var(--r-sm)">
-      <button onclick="mxSearchCards('${mode}')" style="padding:8px 12px;background:var(--blue);color:#fff;border-radius:var(--r-sm);font-size:11px;font-weight:700;border:none;cursor:pointer">검색</button>
-    </div>
-    <div id="mx-search-results-${mode}" style="margin-top:8px;max-height:180px;overflow-y:auto"></div>
-  </div>`;
+  // 내 구해요/있어요 목록 불러오기
+  const myList = mode==='want'
+    ? allCards().filter(x=>wt(x.id)>0)
+    : allCards().filter(x=>sp(x.id)>0&&!hid(x.id));
 
-  // 선택된 카드 표시
-  const selCards=[...sel].map(id=>{const r=findCard(id);return r?r:null;}).filter(Boolean);
-  const selSection=selCards.length?`
-  <div>
-    <div style="font-size:10px;font-weight:700;color:${color};margin-bottom:5px">선택된 카드 (${sel.size}개)</div>
-    <div style="display:flex;flex-wrap:wrap;gap:4px">
-      ${selCards.map(({card,alb})=>`
-        <div style="background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:3px 8px;display:flex;align-items:center;gap:4px">
-          <span style="font-size:10px">${alb.shortName} ${card.name}</span>
-          <button onclick="_mxReg.${mode==='want'?'wantIds':'haveIds'}.delete('${card.id}');document.getElementById('mx-reg-body').innerHTML=buildMXCardPicker('${mode}')" style="font-size:11px;color:var(--want);background:none;border:none;cursor:pointer">✕</button>
-        </div>`).join('')}
-    </div>
-  </div>`:'<div style="font-size:10px;color:var(--tx3)">아직 선택한 카드 없음</div>';
+  if(!myList.length){
+    return`<div style="text-align:center;padding:20px;color:var(--tx2);font-size:12px;background:var(--s2);border-radius:var(--r-sm)">
+      ${mode==='want'?'🔍 구해요 목록이 비어있어요.<br>교환 탭에서 목표를 설정하면 자동으로 채워져요.':'✨ 있어요 목록이 비어있어요.<br>목표보다 더 모은 카드가 생기면 표시돼요.'}
+    </div>`;
+  }
+
+  // 앨범별 그룹
+  const byAlb={};
+  for(const card of myList){
+    if(!byAlb[card.aId])byAlb[card.aId]={alb:DB.albumTypes.find(a=>a.id===card.aId),cards:[]};
+    byAlb[card.aId].cards.push(card);
+  }
+
+  const listHTML=Object.values(byAlb).map(({alb,cards})=>{
+    if(!alb)return'';
+    return`<div style="margin-bottom:10px">
+      <div style="font-size:9px;font-weight:800;color:#fff;background:${alb.color};display:inline-block;padding:2px 7px;border-radius:5px;margin-bottom:5px">${alb.shortName}</div>
+      <div style="display:flex;flex-direction:column;gap:3px">
+        ${cards.map(card=>{
+          const on=sel.has(card.id);
+          const cnt=mode==='want'?wt(card.id):sp(card.id);
+          return`<div onclick="mxToggleMyCard('${card.id}','${mode}')" style="display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:7px;cursor:pointer;background:${on?'var(--s3)':'var(--s2)'};border:1.5px solid ${on?(mode==='want'?'var(--want)':'var(--have)'):'var(--bd)'}">
+            ${card.img?`<img src="${card.img}" style="width:22px;height:31px;object-fit:cover;border-radius:3px" loading="lazy">`:'<div style="width:22px;height:31px;background:var(--s3);border-radius:3px"></div>'}
+            <div style="flex:1;min-width:0">
+              <div style="font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${card.name}</div>
+              <div style="font-size:9px;color:var(--tx3)">${card.sN} · ${mode==='want'?'−':'+'} ${cnt}장</div>
+            </div>
+            <div style="font-size:16px">${on?'✅':'○'}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
 
   return`<div>
-    <div style="font-size:11px;color:var(--tx2);margin-bottom:10px">${label} 카드를 선택하거나 검색하세요</div>
-    ${textInputSection}
-    ${selSection}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-size:11px;color:var(--tx2)">내 <b style="color:${color}">${label}</b> 목록에서 선택하세요</div>
+      <div style="font-size:10px;font-weight:700;color:${color}">${sel.size}개 선택됨</div>
+    </div>
+    <div style="max-height:300px;overflow-y:auto;padding-right:2px">${listHTML}</div>
   </div>`;
 }
 
-function mxSearchCards(mode){
-  const query=(document.getElementById(`mx-search-${mode}`)?.value||'').trim();
-  const resEl=document.getElementById(`mx-search-results-${mode}`);
-  if(!resEl)return;
-  if(!query){resEl.innerHTML='';return;}
-  const terms=query.split(/[,，\s]+/).filter(Boolean);
-  const results=allCards().filter(card=>terms.some(term=>matchSearch(card.name,term)||matchSearch(card.sN,term)||matchSearch(card.aN,term)));
-  const sel=mode==='want'?_mxReg.wantIds:_mxReg.haveIds;
-  if(!results.length){resEl.innerHTML='<div style="font-size:10px;color:var(--tx3);padding:5px">검색 결과 없음</div>';return;}
-  resEl.innerHTML=`<div style="display:flex;flex-direction:column;gap:3px">${results.slice(0,20).map(card=>{
-    const on=sel.has(card.id);
-    return`<div onclick="mxToggleCard('${card.id}','${mode}')" style="display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:6px;cursor:pointer;background:${on?'var(--s3)':'var(--s2)'};border:1px solid ${on?'var(--blue)':'var(--bd)'}">
-      ${card.img?`<img src="${card.img}" style="width:20px;height:28px;object-fit:cover;border-radius:3px" loading="lazy">`:'<div style="width:20px;height:28px;background:var(--s3);border-radius:3px"></div>'}
-      <div style="flex:1;min-width:0">
-        <div style="font-size:10px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${card.name}</div>
-        <div style="font-size:9px;color:var(--tx3)">${card.aS} · ${card.sN}</div>
-      </div>
-      <div style="font-size:14px">${on?'✅':'○'}</div>
-    </div>`;
-  }).join('')}</div>`;
-}
-
-function mxToggleCard(cardId,mode){
+function mxToggleMyCard(cardId,mode){
   const sel=mode==='want'?_mxReg.wantIds:_mxReg.haveIds;
   if(sel.has(cardId))sel.delete(cardId);else sel.add(cardId);
-  // 검색 결과 & 선택 목록 업데이트 (모달 전체 재렌더 없이)
-  mxSearchCards(mode);
-  const selCards=[...sel].map(id=>{const r=findCard(id);return r?r:null;}).filter(Boolean);
-  // 선택된 섹션만 업데이트
-  const body=document.getElementById('mx-reg-body');
-  if(body) body.innerHTML=buildMXCardPicker(mode);
-  // 검색어 복원
-  const inp=document.getElementById(`mx-search-${mode}`);
-  if(inp&&inp.value) mxSearchCards(mode);
+  document.getElementById('mx-reg-body').innerHTML=buildMXCardPicker(mode);
 }
 
 function buildMXContactStep(){
   const cur=CONTACT_OPTS.find(o=>o.k===_mxReg.contactType)||CONTACT_OPTS[0];
   return`<div style="display:flex;flex-direction:column;gap:12px">
     <div>
-      <div style="font-size:10px;color:var(--tx2);margin-bottom:6px;font-weight:600">연락처 종류</div>
+      <div style="font-size:10px;color:var(--tx2);margin-bottom:6px;font-weight:600">연락처 종류 <span style="color:var(--want)">*</span></div>
       <div style="display:flex;flex-wrap:wrap;gap:5px">
         ${CONTACT_OPTS.map(o=>`
           <button onclick="_mxReg.contactType='${o.k}';document.getElementById('mx-reg-body').innerHTML=buildMXContactStep()" style="padding:5px 11px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;background:${_mxReg.contactType===o.k?'var(--blue)':'var(--s2)'};color:${_mxReg.contactType===o.k?'#fff':'var(--tx2)'};border:1.5px solid ${_mxReg.contactType===o.k?'var(--blue)':'var(--bd)'}">${o.icon} ${o.label}</button>
@@ -1973,8 +2078,9 @@ function buildMXContactStep(){
       </div>
     </div>
     <div>
-      <div style="font-size:10px;color:var(--tx2);margin-bottom:5px;font-weight:600">${cur.icon} ${cur.label}</div>
+      <div style="font-size:10px;color:var(--tx2);margin-bottom:5px;font-weight:600">${cur.icon} ${cur.label} <span style="color:var(--want)">*</span></div>
       <input id="mx-contact-val" type="text" placeholder="${cur.ph}" value="${_mxReg.contactVal||''}" oninput="_mxReg.contactVal=this.value" style="width:100%;padding:9px 11px;font-size:13px;border-radius:var(--r-sm)">
+      <div id="mx-contact-err" style="color:var(--want);font-size:10px;margin-top:4px;min-height:14px"></div>
     </div>
     <div>
       <div style="font-size:10px;color:var(--tx2);margin-bottom:5px;font-weight:600">메모 (선택)</div>
@@ -1989,7 +2095,12 @@ function buildMXContactStep(){
 async function submitMXPost(){
   if(!MX.user){toast('로그인이 필요해요.');return;}
   const contactVal=(document.getElementById('mx-contact-val')?.value||_mxReg.contactVal||'').trim();
-  if(!contactVal){toast('연락처를 입력해 주세요.');return;}
+  if(!contactVal){
+    const errEl=document.getElementById('mx-contact-err');
+    if(errEl)errEl.textContent='연락처를 입력해 주세요.';
+    toast('연락처를 입력해 주세요.');
+    return;
+  }
   if(!_mxReg.wantIds.size&&!_mxReg.haveIds.size){toast('구해요 또는 있어요 카드를 선택해 주세요.');return;}
   const memo=(document.getElementById('mx-memo')?.value||_mxReg.memo||'').trim();
   try{
