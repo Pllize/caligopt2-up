@@ -1687,16 +1687,22 @@ async function doMXLogin(){
   }
 }
 
-/* ── 홈 (목록 + 등록 버튼) ── */
+/* ── 홈 (목록 + 등록 버튼 + 검색/필터) ── */
+let _mxFilter={search:'',onlyMine:false};
+
 async function renderMatchingHome(el){
   const isAdmin=MX.user?.isAdmin;
   el.innerHTML=`
-  <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap">
     <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px">💱 교환매칭</div>
     <div style="font-size:10px;color:var(--tx2);background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:2px 8px">${MX.user.nickname}${isAdmin?' 👑':''}</div>
     <div style="flex:1"></div>
     ${!isAdmin?`<button onclick="openMXRegister()" style="padding:6px 13px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border-radius:var(--r-sm);font-family:'Outfit',sans-serif;font-weight:700;font-size:11px;border:none;cursor:pointer">＋ 등록</button>`:''}
     <button onclick="showMXAccountMenu()" style="padding:6px 10px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);font-size:10px;font-weight:600;color:var(--tx2);cursor:pointer">⚙️</button>
+  </div>
+  <div style="display:flex;gap:5px;margin-bottom:8px">
+    <input id="mx-search-inp" type="text" placeholder="닉네임 또는 #번호 검색..." value="${_mxFilter.search}" oninput="_mxFilter.search=this.value;renderMXList()" style="flex:1;padding:7px 10px;font-size:12px;border-radius:var(--r-sm)">
+    <button id="mx-mine-btn" onclick="_mxFilter.onlyMine=!_mxFilter.onlyMine;document.getElementById('mx-mine-btn').style.background=_mxFilter.onlyMine?'var(--blue)':'var(--s2)';document.getElementById('mx-mine-btn').style.color=_mxFilter.onlyMine?'#fff':'var(--tx2)';document.getElementById('mx-mine-btn').style.borderColor=_mxFilter.onlyMine?'var(--blue)':'var(--bd)';renderMXList()" style="padding:7px 11px;font-size:11px;font-weight:700;border-radius:var(--r-sm);background:${_mxFilter.onlyMine?'var(--blue)':'var(--s2)'};color:${_mxFilter.onlyMine?'#fff':'var(--tx2)'};border:1.5px solid ${_mxFilter.onlyMine?'var(--blue)':'var(--bd)'};cursor:pointer;white-space:nowrap">내 글만</button>
   </div>
   <div id="mx-list-wrap"><div style="text-align:center;padding:20px;color:var(--tx2);font-size:12px">📋 목록 불러오는 중...</div></div>`;
   await renderMXList();
@@ -1738,35 +1744,52 @@ async function deleteMXAccount(){
   }catch(e){toast('오류: '+e.message);}
 }
 
-/* ── 게시글 목록 (매칭 점수순 정렬) ── */
+/* ── 게시글 목록 (매칭 점수순 + 검색/필터/번호) ── */
 async function renderMXList(){
   const wrap=document.getElementById('mx-list-wrap');
   if(!wrap)return;
   const isAdmin=MX.user?.isAdmin;
   try{
-    const posts=await _supa('GET','/rest/v1/mx_posts?select=*,mx_users(id,nickname),mx_cards(card_id,mode)&order=created_at.desc&limit=100');
+    const posts=await _supa('GET','/rest/v1/mx_posts?select=*,mx_users(id,nickname),mx_cards(card_id,mode)&order=created_at.asc&limit=200');
     if(!posts||!posts.length){
       wrap.innerHTML=`<div style="text-align:center;padding:30px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx2);font-size:12px">📭 아직 등록된 교환 글이 없어요.<br><b>+ 등록</b> 버튼으로 첫 번째 글을 올려보세요!</div>`;
       return;
     }
-    // 매칭 점수 계산 후 정렬
+    // 등록번호 부여 (오래된 순 = 낮은 번호)
+    const withNum=posts.map((p,i)=>({...p,_num:i+1}));
+
+    // 검색 필터
+    const sq=(_mxFilter.search||'').trim().toLowerCase().replace('#','');
+    let filtered=withNum;
+    if(sq){
+      filtered=withNum.filter(p=>{
+        const nick=(p.mx_users?.nickname||'').toLowerCase();
+        return nick.includes(sq)||String(p._num)===sq;
+      });
+    }
+    if(_mxFilter.onlyMine&&MX.user&&!MX.user.isAdmin){
+      filtered=filtered.filter(p=>p.user_id===MX.user.id);
+    }
+
+    // 매칭 점수 계산 후 정렬 (내 글 최상단)
     const myHaveIds=DB?allCards().filter(x=>sp(x.id)>0).map(x=>x.id):[];
     const myWantIds=DB?allCards().filter(x=>wt(x.id)>0).map(x=>x.id):[];
-    const scored=posts.map(p=>{
+    const scored=filtered.map(p=>{
       const cards=p.mx_cards||[];
       const wants=cards.filter(c=>c.mode==='want').map(c=>c.card_id);
       const haves=cards.filter(c=>c.mode==='have').map(c=>c.card_id);
-      const score=(MX.user&&p.user_id===MX.user.id)?-1:
-        wants.filter(id=>myHaveIds.includes(id)).length+haves.filter(id=>myWantIds.includes(id)).length;
+      const isMe=MX.user&&p.user_id===MX.user.id;
+      const score=isMe?99999:wants.filter(id=>myHaveIds.includes(id)).length+haves.filter(id=>myWantIds.includes(id)).length;
       return{...p,_score:score};
     });
-    // 내 글은 맨 위, 그 다음 매칭 점수 높은 순
     scored.sort((a,b)=>{
       const aMe=MX.user&&a.user_id===MX.user.id?1:0;
       const bMe=MX.user&&b.user_id===MX.user.id?1:0;
       if(aMe!==bMe)return bMe-aMe;
       return b._score-a._score;
     });
+
+    if(!scored.length){wrap.innerHTML=`<div style="text-align:center;padding:20px;color:var(--tx2);font-size:12px">검색 결과가 없어요.</div>`;return;}
     wrap.innerHTML=scored.map(p=>buildMXCard(p,isAdmin)).join('');
   }catch(e){
     wrap.innerHTML=`<div style="color:var(--want);font-size:11px;padding:12px">오류: ${e.message}<br><small>Supabase 설정을 확인해 주세요.</small></div>`;
@@ -1781,6 +1804,8 @@ function buildMXCard(p, isAdmin){
   const isMe=MX.user&&p.user_id===MX.user.id;
   const dt=new Date(p.created_at).toLocaleDateString('ko-KR',{month:'short',day:'numeric'});
   const canDelete=isMe||isAdmin;
+  const num=p._num?`#${p._num}`:'';
+  const statusLabel={'open':'🟢','done':'✅','pause':'⏸'}[p.status||'open']||'🟢';
 
   // 매칭 뱃지
   let matchBadge='';
@@ -1795,7 +1820,6 @@ function buildMXCard(p, isAdmin){
       matchBadge=`<span style="background:rgba(79,138,255,.12);border:1px solid rgba(79,138,255,.3);color:var(--blue);border-radius:8px;padding:2px 7px;font-size:9px;font-weight:800;font-family:'Outfit',sans-serif">🔗 매칭 ${canGive+canGet}개</span>`;
   }
 
-  // 카드 사진 그리드 (최대 5장 + 나머지)
   function photoRow(ids,mode){
     if(!ids.length)return`<div style="font-size:9px;color:var(--tx3);padding:4px">없음</div>`;
     const show=ids.slice(0,5);
@@ -1805,9 +1829,7 @@ function buildMXCard(p, isAdmin){
       ${show.map(id=>{
         const r=findCard(id);
         return r?.card.img
-          ?`<div style="position:relative;width:36px;flex-shrink:0">
-              <img src="${r.card.img}" style="width:36px;height:50px;object-fit:cover;border-radius:5px;border:1.5px solid ${bdCol}" loading="lazy">
-            </div>`
+          ?`<img src="${r.card.img}" style="width:36px;height:50px;object-fit:cover;border-radius:5px;border:1.5px solid ${bdCol}" loading="lazy">`
           :`<div style="width:36px;height:50px;background:var(--s3);border-radius:5px;border:1.5px solid ${bdCol};display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--tx3)">📷</div>`;
       }).join('')}
       ${rest>0?`<div style="width:36px;height:50px;background:var(--s3);border-radius:5px;border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--tx2)">+${rest}</div>`:''}
@@ -1817,13 +1839,15 @@ function buildMXCard(p, isAdmin){
   const contactIcon=CONTACT_OPTS.find(o=>o.k===p.contact_type)?.icon||'📩';
 
   return`<div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:12px;margin-bottom:8px">
-    <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:5px;margin-bottom:8px;flex-wrap:wrap">
+      <span style="font-family:'Outfit',sans-serif;font-size:10px;color:var(--tx3);font-weight:700">${num}</span>
+      <span style="font-size:10px">${statusLabel}</span>
       <span style="font-family:'Outfit',sans-serif;font-weight:700;font-size:12px">${nick}</span>
       ${isMe?'<span style="background:var(--blue);color:#fff;font-size:8px;padding:1px 5px;border-radius:5px;font-weight:700">나</span>':''}
-      ${isAdmin&&!isMe?'<span style="background:var(--warn);color:#fff;font-size:8px;padding:1px 5px;border-radius:5px;font-weight:700">관리자뷰</span>':''}
       ${matchBadge}
       <span style="flex:1"></span>
       <span style="font-size:9px;color:var(--tx3)">${dt}</span>
+      ${isMe?`<button onclick="openMXEdit('${p.id}')" style="font-size:9px;color:var(--blue);background:none;border:1px solid rgba(79,138,255,.3);border-radius:4px;padding:2px 6px;cursor:pointer">수정</button>`:''}
       ${canDelete?`<button onclick="deleteMXPost('${p.id}')" style="font-size:9px;color:var(--want);background:none;border:1px solid rgba(244,63,94,.3);border-radius:4px;padding:2px 6px;cursor:pointer">삭제</button>`:''}
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
@@ -1941,7 +1965,7 @@ async function _renderMXDetailModal(p,postId){
   const statusLabel={'open':'🟢 교환중','done':'✅ 교환완료','pause':'⏸ 잠시중단'}[p.status||'open']||'🟢 교환중';
 
   const modalHtml=`
-  <div id="mx-detail-ov" style="position:fixed;inset:0;z-index:500;background:rgba(8,9,15,.85);display:flex;align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeMXDetail()">
+  <div id="mx-detail-ov" style="position:fixed;inset:0;z-index:600;background:rgba(8,9,15,.88);display:flex;align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeMXDetail()">
     <div style="background:var(--s1);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:520px;max-height:92svh;overflow-y:auto;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
         <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:15px">${nick}님의 교환 글</div>
@@ -1984,7 +2008,12 @@ async function _renderMXDetailModal(p,postId){
             <div style="font-size:11px;color:var(--tx);line-height:1.6;white-space:pre-wrap">${pr.memo}</div>
           </div>`;
         }).join(''):`<div style="font-size:11px;color:var(--tx3);margin-bottom:8px">${isMe||isAdmin?'아직 받은 제안이 없어요.':''}</div>`}
-        ${!isMe&&!isAdmin?proposalInput():''}
+        ${!isMe&&!isAdmin?`<div id="mx-proposal-wrap">
+          <div id="mx-check-hint" style="font-size:10px;color:var(--tx2);background:rgba(79,138,255,.08);border:1px solid rgba(79,138,255,.2);border-radius:var(--r-sm);padding:7px;margin-bottom:6px">${_mxDetailState.giveChecked.size>0||_mxDetailState.getChecked.size>0?`✅ 선택: 줄 카드 ${_mxDetailState.giveChecked.size}개 / 받을 카드 ${_mxDetailState.getChecked.size}개`:'카드를 탭해서 교환할 카드를 선택하세요'}</div>
+          <textarea id="mx-proposal-input" rows="3" placeholder="${nick}님에게 제안이나 메모를 남겨보세요..." style="width:100%;padding:8px 10px;font-size:12px;border-radius:var(--r-sm);resize:none"></textarea>
+          <button onclick="submitMXProposal('${postId}')" style="margin-top:6px;width:100%;padding:9px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border-radius:var(--r-sm);font-weight:800;font-size:12px;border:none;cursor:pointer">제안 보내기 →</button>
+          <div style="font-size:9px;color:var(--tx3);margin-top:4px;text-align:center">게시글 등록자에게만 보여요</div>
+        </div>`:''}
       </div>
     </div>
   </div>`;
@@ -1994,43 +2023,72 @@ async function _renderMXDetailModal(p,postId){
 function mxToggleDetailCheck(cardId,mode,postId){
   const checkSet=mode==='want'?_mxDetailState.giveChecked:_mxDetailState.getChecked;
   if(checkSet.has(cardId))checkSet.delete(cardId);else checkSet.add(cardId);
-  // 제안 입력란만 업데이트
+
+  // 체크 오버레이 토글
   const modal=document.getElementById('mx-detail-ov');
   if(!modal)return;
-  // 체크 표시 토글 (해당 카드 타일만)
-  const allTiles=modal.querySelectorAll('[data-card-id]');
-  // 전체 재렌더 대신 제안 입력란 갱신
-  const propWrap=document.getElementById('mx-proposal-wrap');
-  if(propWrap){
-    // 선택 카운트 업데이트
-    const giveNames=[..._mxDetailState.giveChecked].map(id=>{const r=findCard(id);return r?r.card.name:'?';}).join(', ');
-    const getNames=[..._mxDetailState.getChecked].map(id=>{const r=findCard(id);return r?r.card.name:'?';}).join(', ');
-    const inp=document.getElementById('mx-proposal-input');
-    if(inp&&!inp.value.trim()){
-      const autoText=(giveNames||getNames)?`[줄 카드: ${giveNames||'미선택'} / 받을 카드: ${getNames||'미선택'}]\n`:'';
-      inp.value=autoText;
-    }
-  }
-  // 간단히 체크마크 토글
   modal.querySelectorAll('div[onclick*="mxToggleDetailCheck"]').forEach(el=>{
     const fn=el.getAttribute('onclick')||'';
     const m=fn.match(/mxToggleDetailCheck\('([^']+)','([^']+)'/);
     if(!m)return;
-    const [,id,md]=m;
+    const[,id,md]=m;
     const set=md==='want'?_mxDetailState.giveChecked:_mxDetailState.getChecked;
-    const overlay=el.querySelector('.mx-check-overlay');
-    if(overlay)el.removeChild(overlay);
+    let overlay=el.querySelector('.mx-check-overlay');
     if(set.has(id)){
-      const ov=document.createElement('div');
-      ov.className='mx-check-overlay';
-      ov.style.cssText='position:absolute;inset:0;background:rgba(79,138,255,.3);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:18px;pointer-events:none';
-      ov.textContent='✅';
-      el.appendChild(ov);
+      if(!overlay){
+        overlay=document.createElement('div');
+        overlay.className='mx-check-overlay';
+        overlay.style.cssText='position:absolute;inset:0;background:rgba(79,138,255,.35);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:18px;pointer-events:none';
+        overlay.textContent='✅';
+        el.appendChild(overlay);
+      }
+    } else {
+      if(overlay)overlay.remove();
     }
   });
-  // 선택 상태 힌트 업데이트
+
+  // 힌트 텍스트 업데이트
   const hint=document.getElementById('mx-check-hint');
-  if(hint)hint.textContent=`✅ 선택: 줄 카드 ${_mxDetailState.giveChecked.size}개 / 받을 카드 ${_mxDetailState.getChecked.size}개`;
+  if(hint){
+    const gc=_mxDetailState.giveChecked.size;
+    const gtc=_mxDetailState.getChecked.size;
+    hint.textContent=gc>0||gtc>0?`✅ 선택됨: 줄 카드 ${gc}개 / 받을 카드 ${gtc}개`:'카드를 탭해서 교환할 카드를 선택하세요';
+  }
+
+  // 제안 textarea 자동 채우기
+  const inp=document.getElementById('mx-proposal-input');
+  if(inp){
+    const giveNames=[..._mxDetailState.giveChecked].map(id=>{const r=findCard(id);return r?r.card.name:'?';});
+    const getNames=[..._mxDetailState.getChecked].map(id=>{const r=findCard(id);return r?r.card.name:'?';});
+    let autoText='';
+    if(giveNames.length)autoText+=`[내가 줄 카드: ${giveNames.join(', ')}]\n`;
+    if(getNames.length)autoText+=`[내가 받을 카드: ${getNames.join(', ')}]\n`;
+    inp.value=autoText;
+    inp.focus();
+    // 커서를 맨 끝으로
+    inp.selectionStart=inp.selectionEnd=inp.value.length;
+  }
+}
+
+/* ── 글 수정 ── */
+async function openMXEdit(postId){
+  try{
+    const posts=await _supa('GET',`/rest/v1/mx_posts?id=eq.${postId}&select=*,mx_users(id,nickname),mx_cards(card_id,mode)`);
+    if(!posts||!posts.length)return;
+    const p=posts[0];
+    const cards=p.mx_cards||[];
+    // 기존 카드 불러와서 등록 모달 재사용
+    _mxReg={
+      wantIds:new Set(cards.filter(c=>c.mode==='want').map(c=>c.card_id)),
+      haveIds:new Set(cards.filter(c=>c.mode==='have').map(c=>c.card_id)),
+      contactType:p.contact_type||'kakao',
+      contactVal:p.contact_value||'',
+      memo:p.memo||'',
+      step:1,
+      editPostId:postId, // 수정 모드 표시
+    };
+    renderMXRegModal();
+  }catch(e){toast('오류: '+e.message);}
 }
 
 function closeMXDetail(){const el=document.getElementById('mx-detail-ov');if(el)el.remove();}
@@ -2095,11 +2153,15 @@ function openMXRegister(){
 
 function renderMXRegModal(){
   const existing=document.getElementById('mx-reg-ov');if(existing)existing.remove();
+  const isEdit=!!_mxReg.editPostId;
   const html=`
-  <div id="mx-reg-ov" style="position:fixed;inset:0;z-index:500;background:rgba(8,9,15,.85);display:flex;align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeMXReg()">
+  <div id="mx-reg-ov" style="position:fixed;inset:0;z-index:700;background:rgba(8,9,15,.85);display:flex;align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeMXReg()">
     <div style="background:var(--s1);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:520px;max-height:90svh;overflow-y:auto;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))">
       <div style="display:flex;align-items:center;margin-bottom:14px">
-        <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:15px">교환 글 등록</div>
+        <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:15px">${isEdit?'교환 글 수정':'교환 글 등록'}</div>
+        <div style="flex:1"></div>
+        <button onclick="closeMXReg()" style="font-size:18px;color:var(--tx2);background:none;border:none;cursor:pointer">✕</button>
+      </div>
         <div style="flex:1"></div>
         <button onclick="closeMXReg()" style="font-size:18px;color:var(--tx2);background:none;border:none;cursor:pointer">✕</button>
       </div>
@@ -2114,7 +2176,7 @@ function renderMXRegModal(){
         ${_mxReg.step>1?`<button onclick="_mxReg.step--;renderMXRegModal()" style="flex:1;padding:10px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);font-weight:700;font-size:12px;cursor:pointer;color:var(--tx)">← 이전</button>`:'<div style="flex:1"></div>'}
         ${_mxReg.step<3
           ?`<button onclick="_mxReg.step++;renderMXRegModal()" style="flex:2;padding:10px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border-radius:var(--r-sm);font-weight:800;font-size:12px;border:none;cursor:pointer">다음 →</button>`
-          :`<button onclick="submitMXPost()" style="flex:2;padding:10px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border-radius:var(--r-sm);font-weight:800;font-size:12px;border:none;cursor:pointer">등록하기 ✓</button>`
+          :`<button onclick="submitMXPost()" style="flex:2;padding:10px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border-radius:var(--r-sm);font-weight:800;font-size:12px;border:none;cursor:pointer">${_mxReg.editPostId?'수정 완료 ✓':'등록하기 ✓'}</button>`
         }
       </div>
     </div>
@@ -2220,11 +2282,48 @@ async function submitMXPost(){
   if(!contactVal){
     const errEl=document.getElementById('mx-contact-err');
     if(errEl)errEl.textContent='연락처를 입력해 주세요.';
-    toast('연락처를 입력해 주세요.');
-    return;
+    toast('연락처를 입력해 주세요.');return;
   }
   if(!_mxReg.wantIds.size&&!_mxReg.haveIds.size){toast('구해요 또는 있어요 카드를 선택해 주세요.');return;}
   const memo=(document.getElementById('mx-memo')?.value||_mxReg.memo||'').trim();
+  try{
+    if(_mxReg.editPostId){
+      // 수정 모드
+      const postId=_mxReg.editPostId;
+      await _supa('PATCH',`/rest/v1/mx_posts?id=eq.${postId}`,{
+        contact_type:_mxReg.contactType,
+        contact_value:contactVal,
+        memo:memo||null,
+      });
+      // 카드 목록 교체
+      await _supa('DELETE',`/rest/v1/mx_cards?post_id=eq.${postId}`);
+      const cardRows=[
+        ...[..._mxReg.wantIds].map(id=>({post_id:postId,card_id:id,mode:'want'})),
+        ...[..._mxReg.haveIds].map(id=>({post_id:postId,card_id:id,mode:'have'})),
+      ];
+      if(cardRows.length)await _supa('POST','/rest/v1/mx_cards',cardRows);
+      toast('✅ 수정됐어요!');
+    } else {
+      // 신규 등록
+      const posts=await _supa('POST','/rest/v1/mx_posts',{
+        user_id:MX.user.id,
+        contact_type:_mxReg.contactType,
+        contact_value:contactVal,
+        memo:memo||null,
+      });
+      if(!posts||!posts.length)throw new Error('게시글 생성 실패');
+      const postId=posts[0].id;
+      const cardRows=[
+        ...[..._mxReg.wantIds].map(id=>({post_id:postId,card_id:id,mode:'want'})),
+        ...[..._mxReg.haveIds].map(id=>({post_id:postId,card_id:id,mode:'have'})),
+      ];
+      if(cardRows.length)await _supa('POST','/rest/v1/mx_cards',cardRows);
+      toast('✅ 교환 글이 등록됐어요!');
+    }
+    closeMXReg();
+    renderMatchingHome(document.getElementById('page-content'));
+  }catch(e){toast('오류: '+e.message);}
+}
   try{
     // 게시글 생성
     const posts=await _supa('POST','/rest/v1/mx_posts',{
