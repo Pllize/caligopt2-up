@@ -1994,26 +1994,22 @@ async function _renderMXDetailModal(p,postId){
       </div>
       ${statusSection}
       <div style="border-top:1px solid var(--bd);padding-top:12px;margin-top:${canManage?'10px':'0'}">
-        <div style="font-size:11px;font-weight:800;margin-bottom:8px">${isMe||isAdmin?`📬 받은 제안 (${(proposals||[]).length})`:'💌 제안하기'}</div>
+        <div style="font-size:11px;font-weight:800;margin-bottom:8px">${isMe||isAdmin?('📬 받은 제안 ('+(proposals||[]).length+')'):'💌 제안하기'}</div>
         ${visibleProps.length?visibleProps.map(pr=>{
           const fromNick=pr.mx_users?.nickname||'?';
           const dt2=new Date(pr.created_at).toLocaleDateString('ko-KR',{month:'short',day:'numeric'});
           const canDel=MX.user&&(pr.from_user_id===MX.user.id||isMe||isAdmin);
+          const delBtn=canDel?'<button onclick="deleteMXProposal(\''+pr.id+'\',\''+postId+'\')" style="margin-left:auto;font-size:9px;color:var(--want);background:none;border:1px solid rgba(244,63,94,.3);border-radius:4px;padding:1px 6px;cursor:pointer">삭제</button>':'';
           return`<div style="background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);padding:9px;margin-bottom:6px">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
               <span style="font-size:10px;font-weight:700">${isMe||isAdmin?fromNick:'나'}</span>
               <span style="font-size:9px;color:var(--tx3)">${dt2}</span>
-              ${canDel?`<button onclick="deleteMXProposal('${pr.id}','${postId}')" style="margin-left:auto;font-size:9px;color:var(--want);background:none;border:1px solid rgba(244,63,94,.3);border-radius:4px;padding:1px 6px;cursor:pointer">삭제</button>`:''}
+              ${delBtn}
             </div>
             <div style="font-size:11px;color:var(--tx);line-height:1.6;white-space:pre-wrap">${pr.memo}</div>
           </div>`;
-        }).join(''):`<div style="font-size:11px;color:var(--tx3);margin-bottom:8px">${isMe||isAdmin?'아직 받은 제안이 없어요.':''}</div>`}
-        ${!isMe&&!isAdmin?`<div id="mx-proposal-wrap">
-          <div id="mx-check-hint" style="font-size:10px;color:var(--tx2);background:rgba(79,138,255,.08);border:1px solid rgba(79,138,255,.2);border-radius:var(--r-sm);padding:7px;margin-bottom:6px">${_mxDetailState.giveChecked.size>0||_mxDetailState.getChecked.size>0?`✅ 선택: 줄 카드 ${_mxDetailState.giveChecked.size}개 / 받을 카드 ${_mxDetailState.getChecked.size}개`:'카드를 탭해서 교환할 카드를 선택하세요'}</div>
-          <textarea id="mx-proposal-input" rows="3" placeholder="${nick}님에게 제안이나 메모를 남겨보세요..." style="width:100%;padding:8px 10px;font-size:12px;border-radius:var(--r-sm);resize:none"></textarea>
-          <button onclick="submitMXProposal('${postId}')" style="margin-top:6px;width:100%;padding:9px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border-radius:var(--r-sm);font-weight:800;font-size:12px;border:none;cursor:pointer">제안 보내기 →</button>
-          <div style="font-size:9px;color:var(--tx3);margin-top:4px;text-align:center">게시글 등록자에게만 보여요</div>
-        </div>`:''}
+        }).join(''):'<div style="font-size:11px;color:var(--tx3);margin-bottom:8px">'+(isMe||isAdmin?'아직 받은 제안이 없어요.':'')+'</div>'}
+        ${!isMe&&!isAdmin?'<div id="mx-proposal-wrap"><div id="mx-check-hint" style="font-size:10px;color:var(--tx2);background:rgba(79,138,255,.08);border:1px solid rgba(79,138,255,.2);border-radius:var(--r-sm);padding:7px;margin-bottom:6px">카드를 탭해서 교환할 카드를 선택하세요</div><textarea id="mx-proposal-input" rows="3" placeholder="'+nick+'님에게 제안이나 메모를 남겨보세요..." style="width:100%;padding:8px 10px;font-size:12px;border-radius:var(--r-sm);resize:none"></textarea><button onclick="submitMXProposal(\''+postId+'\')" style="margin-top:6px;width:100%;padding:9px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border-radius:var(--r-sm);font-weight:800;font-size:12px;border:none;cursor:pointer">제안 보내기 →</button><div style="font-size:9px;color:var(--tx3);margin-top:4px;text-align:center">게시글 등록자에게만 보여요</div></div>':''}
       </div>
     </div>
   </div>`;
@@ -2323,27 +2319,6 @@ async function submitMXPost(){
     closeMXReg();
     renderMatchingHome(document.getElementById('page-content'));
   }catch(e){toast('오류: '+e.message);}
-}
-  try{
-    // 게시글 생성
-    const posts=await _supa('POST','/rest/v1/mx_posts',{
-      user_id:MX.user.id,
-      contact_type:_mxReg.contactType,
-      contact_value:contactVal,
-      memo:memo||null,
-    });
-    if(!posts||!posts.length)throw new Error('게시글 생성 실패');
-    const postId=posts[0].id;
-    // 카드 목록 저장
-    const cardRows=[
-      ...[..._mxReg.wantIds].map(id=>({post_id:postId,card_id:id,mode:'want'})),
-      ...[..._mxReg.haveIds].map(id=>({post_id:postId,card_id:id,mode:'have'})),
-    ];
-    if(cardRows.length) await _supa('POST','/rest/v1/mx_cards',cardRows);
-    toast('✅ 교환 글이 등록됐어요!');
-    closeMXReg();
-    renderMatchingHome(document.getElementById('page-content'));
-  }catch(e){toast('등록 실패: '+e.message);}
 }
 
 function closeMXReg(){const el=document.getElementById('mx-reg-ov');if(el)el.remove();}
